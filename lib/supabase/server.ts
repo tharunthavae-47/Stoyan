@@ -1,9 +1,12 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-// Stoyan's Supabase project. The publishable key is safe for Supabase SSR clients.
-const SUPABASE_URL = "https://xxtegnwqvbgxubxbkluc.supabase.co"
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Hc5iMqSlLz6ndAi7Szw0z_A_KNI2YHAF"
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://xxtegnwqvbgxubxbkluc.supabase.co"
+const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
+if (!SUPABASE_PUBLISHABLE_KEY) {
+  throw new Error("Missing Supabase public API key. Set NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel.")
+}
 
 export async function createClient() {
   const cookieStore = await cookies()
