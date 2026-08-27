@@ -41,6 +41,15 @@ create table public.employee_profiles (
   updated_at timestamptz not null default now()
 );
 
+create table public.employee_images (
+  id uuid primary key default gen_random_uuid(),
+  employee_id uuid not null references public.employee_profiles(id) on delete cascade,
+  image_url text not null,
+  image_name text,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
 create table public.companies (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null unique references public.profiles(id) on delete cascade,
@@ -112,6 +121,7 @@ create table public.contact_requests (
 
 alter table public.profiles enable row level security;
 alter table public.employee_profiles enable row level security;
+alter table public.employee_images enable row level security;
 alter table public.companies enable row level security;
 alter table public.jobs enable row level security;
 alter table public.matches enable row level security;
@@ -125,6 +135,9 @@ create policy "profiles own update" on public.profiles for update using (auth.ui
 create policy "employees own profile" on public.employee_profiles for all using (auth.uid() = id) with check (auth.uid() = id);
 create policy "visible employee profiles" on public.employee_profiles for select using (profile_visible = true);
 
+create policy "employee images own access" on public.employee_images for all using (auth.uid() = employee_id) with check (auth.uid() = employee_id);
+create policy "employee images visible read" on public.employee_images for select using (exists (select 1 from public.employee_profiles e where e.id = employee_id and e.profile_visible = true));
+
 create policy "company owner access" on public.companies for all using (auth.uid() = owner_id) with check (auth.uid() = owner_id);
 create policy "employer jobs access" on public.jobs for all using (exists (select 1 from public.companies c where c.id = company_id and c.owner_id = auth.uid())) with check (exists (select 1 from public.companies c where c.id = company_id and c.owner_id = auth.uid()));
 create policy "active jobs readable" on public.jobs for select using (active = true);
@@ -133,8 +146,16 @@ create policy "employee matches" on public.matches for select using (auth.uid() 
 create policy "employee applications" on public.applications for all using (auth.uid() = employee_id or exists (select 1 from public.jobs j join public.companies c on c.id = j.company_id where j.id = job_id and c.owner_id = auth.uid()));
 create policy "contact participants" on public.contact_requests for all using (auth.uid() = employee_id or auth.uid() = employer_id);
 
+insert into storage.buckets (id, name, public) values ('employee-media','employee-media',true) on conflict (id) do nothing;
+
+create policy "employee media insert own" on storage.objects for insert with check (bucket_id = 'employee-media' and auth.uid()::text = (storage.foldername(name))[1]);
+create policy "employee media update own" on storage.objects for update using (bucket_id = 'employee-media' and auth.uid()::text = (storage.foldername(name))[1]);
+create policy "employee media delete own" on storage.objects for delete using (bucket_id = 'employee-media' and auth.uid()::text = (storage.foldername(name))[1]);
+create policy "employee media public read" on storage.objects for select using (bucket_id = 'employee-media');
+
 create index jobs_active_idx on public.jobs(active);
 create index jobs_profession_idx on public.jobs(profession);
 create index employee_profession_idx on public.employee_profiles(profession);
 create index employee_skills_idx on public.employee_profiles using gin(skills);
 create index job_skills_idx on public.jobs using gin(skills);
+create index employee_images_employee_idx on public.employee_images(employee_id, sort_order);
