@@ -19,24 +19,68 @@ function RegisterForm() {
     setError("")
     setMessage("")
     setLoading(true)
+
     const supabase = createClient()
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { role } } })
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: { data: { role } },
+    })
+
     if (error) {
       setError(error.message)
       setLoading(false)
       return
     }
+
     if (data.session) {
-      window.location.href = "/dashboard"
+      window.location.href = role === "employer" ? "/arbeitgeber" : "/arbeitnehmer"
       return
     }
-    setMessage("Konto erstellt. Bitte bestätige deine E-Mail-Adresse.")
+
+    if (data.user) {
+      setMessage("Konto erstellt. Du kannst dich jetzt direkt anmelden.")
+      setLoading(false)
+      return
+    }
+
+    setError("Das Konto konnte nicht erstellt werden.")
     setLoading(false)
   }
 
-  return <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"><Link href="/" className="text-sm font-semibold text-blue-600">← Stoyan</Link><h1 className="mt-6 text-3xl font-black">Konto erstellen</h1><p className="mt-2 text-slate-500">Wähle zuerst aus, wie du Stoyan nutzen möchtest.</p><div className="mt-7 grid grid-cols-2 gap-3">{[["employee","Arbeitnehmer"],["employer","Arbeitgeber"]].map(([value,label])=><button key={value} type="button" onClick={()=>setRole(value)} className={`rounded-2xl border p-4 text-left font-bold ${role===value?"border-blue-600 bg-blue-50 text-blue-700":"border-slate-200"}`}>{value==="employee"?"👤":"🏢"} {label}</button>)}</div><form onSubmit={submit} className="mt-7 space-y-4"><input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="E-Mail-Adresse" className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-600"/><input required type="password" minLength={8} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Passwort (mind. 8 Zeichen)" className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-600"/><button disabled={loading} className="w-full rounded-xl bg-blue-600 py-3.5 font-bold text-white hover:bg-blue-700 disabled:opacity-50">{loading?"Konto wird erstellt…":"Konto erstellen"}</button></form>{error&&<p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}{message&&<p className="mt-4 rounded-xl bg-blue-50 p-3 text-sm text-blue-700">{message}</p>}<p className="mt-6 text-center text-sm text-slate-500">Bereits registriert? <Link href="/login" className="font-bold text-blue-600">Anmelden</Link></p></div>
+  return (
+    <div className="w-full max-w-lg rounded-3xl border border-slate-800 bg-slate-950 p-8 text-white shadow-2xl">
+      <Link href="/" className="text-sm font-semibold text-blue-400">← Stoyan</Link>
+      <h1 className="mt-6 text-3xl font-black">Konto erstellen</h1>
+      <p className="mt-2 text-slate-400">Wähle zuerst aus, wie du Stoyan nutzen möchtest.</p>
+
+      <div className="mt-7 grid grid-cols-2 gap-3">
+        {[['employee','Arbeitnehmer'],['employer','Arbeitgeber']].map(([value,label]) => (
+          <button key={value} type="button" onClick={() => setRole(value)} className={`rounded-2xl border p-4 text-left font-bold transition ${role === value ? 'border-blue-500 bg-blue-500/10 text-blue-300' : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <form onSubmit={submit} className="mt-7 space-y-4">
+        <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="E-Mail-Adresse" className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-blue-500" />
+        <input required type="password" minLength={8} value={password} onChange={e => setPassword(e.target.value)} placeholder="Passwort (mind. 8 Zeichen)" className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-blue-500" />
+        <button disabled={loading} className="w-full rounded-xl bg-blue-600 py-3.5 font-bold text-white transition hover:bg-blue-500 disabled:opacity-50">{loading ? "Konto wird erstellt…" : role === "employer" ? "Firmenkonto erstellen" : "Arbeitnehmerkonto erstellen"}</button>
+      </form>
+
+      {error && <p className="mt-4 rounded-xl border border-red-900 bg-red-950/40 p-3 text-sm text-red-300">{error}</p>}
+      {message && <p className="mt-4 rounded-xl border border-emerald-900 bg-emerald-950/40 p-3 text-sm text-emerald-300">{message}</p>}
+      <p className="mt-6 text-center text-sm text-slate-500">Bereits registriert? <Link href="/login" className="font-bold text-blue-400">Anmelden</Link></p>
+    </div>
+  )
 }
 
 export default function RegisterPage() {
-  return <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-12"><Suspense fallback={<div className="rounded-3xl border bg-white p-8">Registrierung wird geladen…</div>}><RegisterForm /></Suspense></main>
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#05070b] px-6 py-12">
+      <Suspense fallback={<div className="rounded-3xl border border-slate-800 bg-slate-950 p-8 text-white">Registrierung wird geladen…</div>}>
+        <RegisterForm />
+      </Suspense>
+    </main>
+  )
 }
