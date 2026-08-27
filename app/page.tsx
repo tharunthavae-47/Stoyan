@@ -1,19 +1,77 @@
 import Link from "next/link"
 
-const categories = [
-  ["Automobil", "Mechanik, Diagnose, Verkauf", "/images/automotive.svg"],
-  ["IT & Technologie", "Software, Support, Data", "/images/technology.svg"],
-  ["Handwerk", "Technik, Bau, Werkstatt", "/images/craft.svg"],
-  ["Logistik", "Lager, Transport, Disposition", "/images/logistics.svg"],
-]
-function Check({children}:{children:React.ReactNode}) { return <span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-xs font-black text-blue-700">✓</span>{children}</span> }
-export default function Home() { return <main className="min-h-screen bg-white text-[#16212b]">
-<header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur"><nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8"><Link href="/" className="text-3xl font-black tracking-tight">Stoyan<span className="text-blue-600">.</span></Link><div className="hidden items-center gap-8 text-sm font-semibold text-slate-600 lg:flex"><a href="#jobs">Jobs</a><a href="#arbeitnehmer">Für Arbeitnehmer</a><a href="#arbeitgeber">Für Arbeitgeber</a><a href="#matching">Matching</a></div><div className="flex items-center gap-2"><Link href="/login" className="hidden rounded-lg px-4 py-2.5 font-bold text-slate-700 sm:block">Anmelden</Link><Link href="/registrieren?role=employer" className="rounded-lg bg-blue-600 px-5 py-3 text-sm font-bold text-white">Stelle aufgeben</Link></div></nav></header>
-<section className="overflow-hidden bg-[#f4f7fb]"><div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-12 sm:px-8 sm:py-20 lg:grid-cols-[.9fr_1.1fr] lg:py-24"><div><p className="mb-5 text-sm font-black uppercase tracking-[.18em] text-blue-600">Die Job-Matching-Plattform</p><h1 className="max-w-2xl text-5xl font-black leading-[.98] tracking-[-.05em] sm:text-6xl lg:text-[72px]">Der richtige Job.<br/><span className="text-blue-600">Der richtige Mensch.</span></h1><p className="mt-7 max-w-xl text-lg leading-8 text-slate-600">Arbeitnehmer präsentieren sich mit einem vollständigen Profil. Arbeitgeber suchen nach ihren Anforderungen und finden die Kandidaten, die wirklich passen.</p><div className="mt-8 flex flex-wrap gap-3"><Link href="/registrieren?role=employee" className="rounded-lg bg-blue-600 px-6 py-3.5 font-bold text-white">Als Arbeitnehmer starten</Link><Link href="/registrieren?role=employer" className="rounded-lg border border-slate-300 bg-white px-6 py-3.5 font-bold">Mitarbeiter finden</Link></div><div className="mt-7 flex flex-wrap gap-x-6 gap-y-3"><Check>Kostenloses Profil</Check><Check>Transparente Matches</Check><Check>Direkter Kontakt</Check></div></div><div className="relative"><div className="overflow-hidden rounded-[32px] shadow-2xl ring-1 ring-slate-200"><img src="/images/hero.svg" alt="Stoyan Matching Plattform" className="aspect-[4/3] w-full object-cover"/></div><div className="absolute -bottom-6 left-5 w-[calc(100%-40px)] max-w-sm rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:left-8"><div className="flex items-center gap-3"><img src="/images/employee.svg" alt="Kandidat" className="h-12 w-12 rounded-xl object-cover"/><div><p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Passender Kandidat</p><p className="font-black">Automobil-Mechatroniker</p><p className="text-xs text-slate-500">Luzern · 5 Jahre Erfahrung</p></div><div className="ml-auto text-right"><p className="text-2xl font-black text-blue-600">94%</p><p className="text-[11px] font-bold text-slate-400">MATCH</p></div></div></div></div></div></section>
-<section id="jobs" className="relative z-10 mx-auto -mt-1 max-w-6xl px-5 sm:px-8"><div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-xl sm:p-4"><div className="grid gap-3 md:grid-cols-[1fr_1fr_auto]"><div className="rounded-xl border border-slate-200 px-5 py-3.5"><p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Was suchst du?</p><p className="mt-1 font-semibold">Beruf, Position oder Stichwort</p></div><div className="rounded-xl border border-slate-200 px-5 py-3.5"><p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Wo?</p><p className="mt-1 font-semibold">Ort oder PLZ</p></div><Link href="/registrieren?role=employee" className="flex items-center justify-center rounded-xl bg-slate-950 px-8 font-bold text-white">Jobs suchen</Link></div></div></section>
-<section id="matching" className="mx-auto max-w-7xl px-5 py-24 sm:px-8"><div className="grid gap-12 lg:grid-cols-[.85fr_1.15fr] lg:items-end"><div><p className="text-sm font-black uppercase tracking-[.18em] text-blue-600">Matching</p><h2 className="mt-3 text-4xl font-black tracking-[-.04em] sm:text-5xl">Nicht irgendein Job.<br/>Der richtige.</h2><p className="mt-5 text-lg leading-8 text-slate-600">Arbeitgeber definieren ihre Anforderungen. Arbeitnehmer zeigen, was sie können. Stoyan macht daraus nachvollziehbare Matches.</p></div><div className="rounded-[28px] bg-slate-950 p-7 text-white shadow-xl sm:p-9"><div className="flex items-start justify-between"><div><p className="text-xs font-black uppercase tracking-widest text-slate-400">Kandidat</p><h3 className="mt-2 text-2xl font-black">Max Muster</h3><p className="mt-2 text-slate-400">Automobil-Mechatroniker · Luzern</p></div><strong className="rounded-full bg-blue-600 px-4 py-2 text-sm">96 % Match</strong></div><div className="mt-8 grid gap-5 sm:grid-cols-2">{[["Ausbildung","100%"],["Erfahrung","95%"],["Skills","98%"],["Arbeitsort","100%"],["Pensum","100%"]].map(([n,v])=><div key={n}><div className="mb-2 flex justify-between text-sm"><span className="text-slate-400">{n}</span><b>{v}</b></div><div className="h-2 rounded-full bg-white/10"><div className="h-2 w-[96%] rounded-full bg-blue-500"/></div></div>)}</div></div></div></section>
-<section id="arbeitnehmer" className="border-y border-slate-200 bg-[#f4f7fb]"><div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 sm:px-8 lg:grid-cols-2"><div className="overflow-hidden rounded-[32px] shadow-xl"><img src="/images/employee.svg" alt="Arbeitnehmerprofil" className="aspect-[4/3] w-full object-cover"/></div><div><p className="text-sm font-black uppercase tracking-[.18em] text-blue-600">Für Arbeitnehmer</p><h2 className="mt-3 text-4xl font-black tracking-[-.04em] sm:text-5xl">Dein Profil kann mehr als ein Lebenslauf.</h2><p className="mt-5 text-lg leading-8 text-slate-600">Ausbildung, Berufserfahrung, Skills, Wunschposition, Arbeitsort, Pensum, Lohnvorstellung, Verfügbarkeit und Bilder – alles an einem Ort.</p><div className="mt-7 space-y-3"><Check>Persönliches Profil mit Foto</Check><Check>Erfahrung, Ausbildung und Skills</Check><Check>Passende Arbeitgeber können dich finden</Check></div><Link href="/registrieren?role=employee" className="mt-8 inline-flex rounded-lg bg-slate-950 px-6 py-3.5 font-bold text-white">Profil erstellen</Link></div></div></section>
-<section id="arbeitgeber" className="mx-auto max-w-7xl px-5 py-24 sm:px-8"><div className="grid items-center gap-12 lg:grid-cols-[1.05fr_.95fr]"><div><p className="text-sm font-black uppercase tracking-[.18em] text-blue-600">Für Arbeitgeber</p><h2 className="mt-3 text-4xl font-black tracking-[-.04em] sm:text-5xl">Finden Sie Menschen, die wirklich zu Ihrer Stelle passen.</h2><p className="mt-5 text-lg leading-8 text-slate-600">Definieren Sie Beruf, Qualifikationen, Erfahrung, Skills, Arbeitsort, Pensum und weitere Kriterien. Stoyan sortiert passende Arbeitnehmer nach Match.</p><div className="mt-8 grid gap-4 sm:grid-cols-3"><div className="rounded-2xl border p-5"><p className="font-black">01</p><p className="mt-3 font-bold">Kriterien eingeben</p></div><div className="rounded-2xl border p-5"><p className="font-black">02</p><p className="mt-3 font-bold">Matches sehen</p></div><div className="rounded-2xl border p-5"><p className="font-black">03</p><p className="mt-3 font-bold">Kontaktieren</p></div></div><Link href="/registrieren?role=employer" className="mt-8 inline-flex rounded-lg bg-blue-600 px-6 py-3.5 font-bold text-white">Arbeitnehmer suchen</Link></div><div className="overflow-hidden rounded-[32px] shadow-xl"><img src="/images/employer.svg" alt="Arbeitgeber und Recruiting" className="aspect-[4/3] w-full object-cover"/></div></div></section>
-<section className="border-y border-slate-200 bg-[#f4f7fb]"><div className="mx-auto max-w-7xl px-5 py-24 sm:px-8"><p className="text-sm font-black uppercase tracking-[.18em] text-blue-600">Branchen</p><h2 className="mt-3 text-4xl font-black tracking-[-.04em]">Finde deine Richtung.</h2><div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{categories.map(([title,desc,image])=><div key={title} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"><img src={image} alt={title} className="aspect-[4/3] w-full object-cover"/><div className="p-5"><h3 className="font-black">{title}</h3><p className="mt-1 text-sm leading-6 text-slate-500">{desc}</p></div></div>)}</div></div></section>
-<section className="mx-auto max-w-7xl px-5 py-24 sm:px-8"><div className="rounded-[32px] bg-slate-950 px-7 py-14 text-white sm:px-12"><h2 className="text-4xl font-black tracking-[-.04em] sm:text-5xl">Bereit für den nächsten Schritt?</h2><p className="mt-4 max-w-xl text-lg text-slate-400">Erstelle dein Profil oder starte deine Suche nach passenden Arbeitnehmern.</p><div className="mt-8 flex flex-wrap gap-3"><Link href="/registrieren?role=employee" className="rounded-lg bg-blue-600 px-6 py-3.5 font-bold">Als Arbeitnehmer starten</Link><Link href="/registrieren?role=employer" className="rounded-lg bg-white px-6 py-3.5 font-bold text-slate-950">Als Arbeitgeber starten</Link></div></div></section>
-<footer className="border-t border-slate-200"><div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between"><span className="text-xl font-black text-slate-950">Stoyan<span className="text-blue-600">.</span></span><span>Die Matching-Plattform für Arbeitnehmer und Arbeitgeber.</span></div></footer></main> }
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-white text-slate-950">
+      <header className="border-b border-slate-200 bg-white">
+        <nav className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+          <Link href="/" className="text-3xl font-black tracking-tight">
+            Stoyan<span className="text-blue-600">.</span>
+          </Link>
+          <Link href="/login" className="text-sm font-semibold text-slate-700 hover:text-blue-600">
+            Firmen-Login
+          </Link>
+        </nav>
+      </header>
+
+      <section className="bg-[#f7f8fa]">
+        <div className="mx-auto max-w-6xl px-6 py-24 text-center sm:py-32">
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-600">Stoyan · Job Matching</p>
+          <h1 className="mx-auto mt-5 max-w-4xl text-5xl font-black leading-[1.02] tracking-[-0.05em] sm:text-6xl lg:text-7xl">
+            Menschen und Unternehmen zusammenbringen.
+          </h1>
+          <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-slate-600">
+            Arbeitnehmer erstellen ein vollständiges Profil und zeigen, wer sie sind, was sie können und was sie suchen. Unternehmen geben ihre Anforderungen ein und finden passende Profile anhand eines transparenten Matches.
+          </p>
+          <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href="/registrieren?role=employee" className="rounded-xl bg-blue-600 px-7 py-4 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
+              Als Arbeitnehmer registrieren
+            </Link>
+            <Link href="/login" className="rounded-xl border border-slate-300 bg-white px-7 py-4 font-bold text-slate-900 transition hover:bg-slate-50">
+              Für Firmen einloggen
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid gap-6 md:grid-cols-3">
+          <article className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <p className="text-sm font-black text-blue-600">01</p>
+            <h2 className="mt-4 text-2xl font-black">Arbeitnehmerprofil</h2>
+            <p className="mt-3 leading-7 text-slate-600">Profilbild, persönliche Vorstellung, Ausbildung, Berufserfahrung, Skills, Sprachen, Wunschlohn, Arbeitsort, Pensum, Verfügbarkeit und weitere Angaben.</p>
+          </article>
+          <article className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <p className="text-sm font-black text-blue-600">02</p>
+            <h2 className="mt-4 text-2xl font-black">Unternehmenssuche</h2>
+            <p className="mt-3 leading-7 text-slate-600">Unternehmen suchen nach Beruf, Qualifikation, Erfahrung, Skills, Entfernung, Pensum, Lohn und weiteren Kriterien.</p>
+          </article>
+          <article className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+            <p className="text-sm font-black text-blue-600">03</p>
+            <h2 className="mt-4 text-2xl font-black">Matching & Kontakt</h2>
+            <p className="mt-3 leading-7 text-slate-600">Stoyan vergleicht die Kriterien, zeigt passende Arbeitnehmer nach Match an und ermöglicht die Kontaktaufnahme.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="border-y border-slate-200 bg-slate-950">
+        <div className="mx-auto max-w-6xl px-6 py-20 text-center text-white">
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-300">Das Prinzip</p>
+          <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl">Der Arbeitnehmer präsentiert sich. Die Firma sucht gezielt. Stoyan verbindet beide.</h2>
+          <div className="mt-10 grid gap-4 text-left md:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5"><p className="font-bold">Profil</p><p className="mt-2 text-sm leading-6 text-slate-300">Ein professioneller Auftritt statt eines einfachen Lebenslaufs.</p></div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5"><p className="font-bold">Kriterien</p><p className="mt-2 text-sm leading-6 text-slate-300">Klare Anforderungen statt unübersichtlicher Bewerbungen.</p></div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5"><p className="font-bold">Match</p><p className="mt-2 text-sm leading-6 text-slate-300">Passende Profile mit nachvollziehbarer Übereinstimmung.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <span className="text-xl font-black text-slate-950">Stoyan<span className="text-blue-600">.</span></span>
+          <span>Job Matching für Arbeitnehmer und Unternehmen.</span>
+        </div>
+      </footer>
+    </main>
+  )
+}
