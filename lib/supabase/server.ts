@@ -1,13 +1,14 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://xxtegnwqvbgxubxbkluc.supabase.co"
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_Hc5iMqSlLz6ndAi7Szw0zA_KNI2YHAF"
+// Stoyan's Supabase project. The publishable key is safe for Supabase SSR clients.
+const SUPABASE_URL = "https://xxtegnwqvbgxubxbkluc.supabase.co"
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Hc5iMqSlLz6ndAi7Szw0z_A_KNI2YHAF"
 
 export async function createClient() {
   const cookieStore = await cookies()
 
-  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  return createServerClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     cookies: {
       getAll() {
         return cookieStore.getAll()
