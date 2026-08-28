@@ -40,4 +40,13 @@ button, input, select, textarea { font: inherit; }
   transition: opacity .75s cubic-bezier(.22,1,.36,1), transform .75s cubic-bezier(.22,1,.36,1);
 }
 .reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+
+/* High-contrast navigation links on dark surfaces. */
+main a:not([class]) {
+  color: #fff;
+}
+main a:not([class]):hover {
+  color: #fff;
+}
+
 ::selection { background: rgba(91,140,255,.35); color: #fff; }
