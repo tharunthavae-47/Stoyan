@@ -1,4 +1,5 @@
-import Link from "next/link"
+import { SiteHeader } from "@/components/site-header"
+import { SiteFooter } from "@/components/site-footer"
 import { ScrollReveal } from "@/components/scroll-reveal"
 
 const steps = [
@@ -18,6 +19,20 @@ const steps = [
     text: "Stoyan vergleicht die Angaben und zeigt passende Kandidaten übersichtlich und nachvollziehbar an.",
   },
 ]
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-[#edf8fc] text-slate-950">
+      <SiteHeader />
+
+      <main>
+        {/* dein kompletter Homepage-Inhalt */}
+      </main>
+
+      <SiteFooter />
+    </div>
+  )
+}
 
 const employeeFeatures = [
   "Profilbild & persönliche Bilder",
