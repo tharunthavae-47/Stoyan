@@ -249,9 +249,15 @@ export default function Home() {
           <div className="mt-14 grid gap-4 md:grid-cols-3">
             {steps.map((step, index) => (
               <ScrollReveal
-                key={step.number}
-                className={index ? `[transition-delay:${index * 100}ms]` : ""}
-              >
+  key={step.number}
+  className={
+    index === 1
+      ? "[transition-delay:100ms]"
+      : index === 2
+        ? "[transition-delay:200ms]"
+        : ""
+  }
+>
                 <article className="group relative h-full overflow-hidden rounded-[28px] border border-white/[0.08] bg-white/[0.025] p-7 transition duration-500 hover:-translate-y-1 hover:border-blue-400/20 hover:bg-white/[0.045]">
                   <div className="absolute right-[-30px] top-[-30px] text-[130px] font-black leading-none text-white/[0.025] transition group-hover:text-blue-400/[0.06]">
                     {step.number}
