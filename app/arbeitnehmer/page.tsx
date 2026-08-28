@@ -1,3 +1,4 @@
+```tsx
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 
@@ -22,7 +23,7 @@ export default async function EmployeeDashboard() {
   }
 
   // =========================================================
-  // PROFIL
+  // PROFIL LADEN
   // =========================================================
 
   const { data: profile } = await supabase
@@ -32,7 +33,7 @@ export default async function EmployeeDashboard() {
     .maybeSingle()
 
   // =========================================================
-  // ARBEITNEHMER-PROFIL
+  // ARBEITNEHMER-PROFIL LADEN
   // =========================================================
 
   const { data: employee } = await supabase
@@ -44,7 +45,7 @@ export default async function EmployeeDashboard() {
     .maybeSingle()
 
   // =========================================================
-  // KONTAKTANFRAGEN
+  // OFFENE KONTAKTANFRAGEN LADEN
   // =========================================================
 
   const { data: contactRequests, error: contactRequestsError } =
@@ -61,7 +62,36 @@ export default async function EmployeeDashboard() {
       .eq("status", "pending")
       .order("created_at", { ascending: false })
 
-  const pendingRequests = contactRequests?.length ?? 0
+  // =========================================================
+  // FIRMEN ZU DEN ANFRAGEN LADEN
+  // =========================================================
+
+  const employerIds =
+    contactRequests?.map((request) => request.employer_id) ?? []
+
+  const { data: companies } =
+    employerIds.length > 0
+      ? await supabase
+          .from("companies")
+          .select("owner_id,name,industry,city")
+          .in("owner_id", employerIds)
+      : { data: [] }
+
+  // =========================================================
+  // ANFRAGEN + FIRMEN VERBINDEN
+  // =========================================================
+
+  const requestsWithCompanies =
+    contactRequests?.map((request) => ({
+      ...request,
+      company:
+        companies?.find(
+          (company) =>
+            company.owner_id === request.employer_id
+        ) ?? null,
+    })) ?? []
+
+  const pendingRequests = requestsWithCompanies.length
 
   // =========================================================
   // DASHBOARD
@@ -75,6 +105,7 @@ export default async function EmployeeDashboard() {
       {/* ===================================================== */}
 
       <header className="border-b border-slate-200 bg-white">
+
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
 
           <Link
@@ -129,6 +160,7 @@ export default async function EmployeeDashboard() {
           </form>
 
         </div>
+
       </header>
 
       {/* ===================================================== */}
@@ -138,7 +170,7 @@ export default async function EmployeeDashboard() {
       <div className="mx-auto max-w-7xl px-6 py-10">
 
         {/* =================================================== */}
-        {/* DASHBOARD KOPF */}
+        {/* KOPF */}
         {/* =================================================== */}
 
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -176,7 +208,7 @@ export default async function EmployeeDashboard() {
         <div className="mt-10 grid gap-6 lg:grid-cols-[340px_1fr]">
 
           {/* ================================================= */}
-          {/* LINKES PROFIL */}
+          {/* PROFIL LINKS */}
           {/* ================================================= */}
 
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -248,14 +280,12 @@ export default async function EmployeeDashboard() {
           </section>
 
           {/* ================================================= */}
-          {/* RECHTE SEITE */}
+          {/* DASHBOARD KARTEN */}
           {/* ================================================= */}
 
           <section className="grid gap-6 sm:grid-cols-2">
 
-            {/* =============================================== */}
             {/* PROFIL */}
-            {/* =============================================== */}
 
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
@@ -281,9 +311,7 @@ export default async function EmployeeDashboard() {
 
             </div>
 
-            {/* =============================================== */}
             {/* ARBEITSWUNSCH */}
-            {/* =============================================== */}
 
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
@@ -315,9 +343,7 @@ export default async function EmployeeDashboard() {
 
             </div>
 
-            {/* =============================================== */}
-            {/* KONTAKTANFRAGEN ZAHL */}
-            {/* =============================================== */}
+            {/* KONTAKTANFRAGEN */}
 
             <div className="rounded-3xl border border-sky-200 bg-sky-50 p-6 shadow-sm">
 
@@ -336,9 +362,7 @@ export default async function EmployeeDashboard() {
 
             </div>
 
-            {/* =============================================== */}
-            {/* PROFIL VERVOLLSTÄNDIGEN */}
-            {/* =============================================== */}
+            {/* NÄCHSTER SCHRITT */}
 
             <div className="rounded-3xl border border-slate-200 bg-slate-950 p-6 text-white shadow-sm">
 
@@ -388,9 +412,9 @@ export default async function EmployeeDashboard() {
                   Ein Unternehmen möchte dich kontaktieren
                 </h2>
 
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Ein Arbeitgeber hat dein Profil gefunden und
-                  möchte mit dir Kontakt aufnehmen.
+                <p className="mt-2 text-sm text-slate-500">
+                  Diese Unternehmen haben dein Profil gefunden
+                  und möchten mit dir Kontakt aufnehmen.
                 </p>
 
               </div>
@@ -401,26 +425,46 @@ export default async function EmployeeDashboard() {
 
             </div>
 
-            {/* ANFRAGEN */}
+            {/* ================================================= */}
+            {/* EINZELNE ANFRAGEN */}
+            {/* ================================================= */}
 
             <div className="mt-6 space-y-4">
 
-              {contactRequests?.map((request) => (
+              {requestsWithCompanies.map((request) => (
 
                 <div
                   key={request.id}
                   className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
                 >
 
-                  <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                  <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+
+                    {/* FIRMA */}
 
                     <div>
 
-                      <p className="text-sm font-bold text-sky-600">
-                        Neue Kontaktanfrage
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                        Unternehmen
                       </p>
 
-                      <p className="mt-2 font-black text-slate-950">
+                      <p className="mt-1 text-xl font-black text-slate-950">
+                        {request.company?.name ||
+                          "Unternehmen"}
+                      </p>
+
+                      <p className="mt-1 text-sm text-slate-500">
+
+                        {request.company?.industry ||
+                          "Branche nicht angegeben"}
+
+                        {request.company?.city
+                          ? ` · ${request.company.city}`
+                          : ""}
+
+                      </p>
+
+                      <p className="mt-3 text-sm font-semibold text-slate-700">
                         Ein Arbeitgeber möchte dein Profil
                         kontaktieren.
                       </p>
@@ -432,17 +476,13 @@ export default async function EmployeeDashboard() {
                         ).toLocaleDateString("de-CH")}
                       </p>
 
-                      {request.job_id && (
-                        <p className="mt-1 text-xs text-slate-400">
-                          Stellen-ID: {request.job_id}
-                        </p>
-                      )}
-
                     </div>
+
+                    {/* BUTTON */}
 
                     <Link
                       href={`/arbeitnehmer/anfragen/${request.id}`}
-                      className="rounded-xl bg-sky-500 px-5 py-3 text-center font-bold text-white transition hover:bg-sky-600"
+                      className="shrink-0 rounded-xl bg-sky-500 px-5 py-3 text-center font-bold text-white transition hover:bg-sky-600"
                     >
                       Anfrage ansehen
                     </Link>
@@ -501,3 +541,4 @@ export default async function EmployeeDashboard() {
     </main>
   )
 }
+```
