@@ -1,4 +1,3 @@
-```tsx
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 
@@ -941,4 +940,3 @@ export default function Home() {
     </main>
   )
 }
-```
