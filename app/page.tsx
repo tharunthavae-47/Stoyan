@@ -1,5 +1,3 @@
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
 import { ScrollReveal } from "@/components/scroll-reveal"
 
 const steps = [
@@ -19,20 +17,6 @@ const steps = [
     text: "Stoyan vergleicht die Angaben und zeigt passende Kandidaten übersichtlich und nachvollziehbar an.",
   },
 ]
-
-export default function Home() {
-  return (
-    <div className="min-h-screen bg-[#edf8fc] text-slate-950">
-      <SiteHeader />
-
-      <main>
-        {/* dein kompletter Homepage-Inhalt */}
-      </main>
-
-      <SiteFooter />
-    </div>
-  )
-}
 
 const employeeFeatures = [
   "Profilbild & persönliche Bilder",
@@ -59,20 +43,20 @@ export default function Home() {
       {/* Hintergrund */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-40 -top-40 h-[550px] w-[550px] rounded-full bg-sky-200/50 blur-[120px]" />
-        <div className="absolute right-[-180px] top-[20%] h-[600px] w-[600px] rounded-full bg-cyan-100/70 blur-[130px]" />
-        <div className="absolute bottom-[-200px] left-[25%] h-[500px] w-[500px] rounded-full bg-blue-100/60 blur-[120px]" />
+        <div className="absolute right-[-180px] top-[15%] h-[600px] w-[600px] rounded-full bg-cyan-100/70 blur-[130px]" />
+        <div className="absolute bottom-[-180px] left-[25%] h-[500px] w-[500px] rounded-full bg-blue-100/60 blur-[120px]" />
       </div>
 
       {/* ================================================== */}
       {/* HERO */}
       {/* ================================================== */}
 
-      <section className="px-4 pt-4 sm:px-6 sm:pt-6">
+      <section className="px-4 pt-5 sm:px-6 sm:pt-7">
         <div className="mx-auto grid max-w-6xl items-stretch gap-5 lg:grid-cols-[1.14fr_.86fr]">
 
           {/* Linke Bubble */}
           <ScrollReveal>
-            <div className="flex h-full flex-col justify-center rounded-[40px] border border-white/90 bg-white px-7 py-14 shadow-[0_30px_90px_rgba(30,64,175,.10)] sm:px-12 sm:py-20 lg:px-14">
+            <div className="flex h-full flex-col justify-center rounded-[42px] border border-white/90 bg-white px-7 py-14 shadow-[0_30px_90px_rgba(30,64,175,.10)] sm:px-12 sm:py-20 lg:px-14">
 
               <div className="inline-flex w-fit items-center gap-2 rounded-full bg-sky-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-sky-600">
                 <span className="h-2 w-2 rounded-full bg-sky-500" />
@@ -94,19 +78,21 @@ export default function Home() {
               </p>
 
               <div className="mt-9 flex flex-wrap gap-3">
-                <Link
+
+                <a
                   href="/registrieren?role=employee"
                   className="rounded-xl bg-sky-500 px-6 py-3.5 font-bold text-white shadow-[0_14px_35px_rgba(14,165,233,.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
                 >
                   Als Arbeitnehmer starten
-                </Link>
+                </a>
 
-                <Link
+                <a
                   href="/login"
                   className="rounded-xl border border-slate-200 bg-white px-6 py-3.5 font-bold text-slate-900 transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
                 >
                   Für Firmen einloggen
-                </Link>
+                </a>
+
               </div>
 
               <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm font-semibold text-slate-500">
@@ -130,27 +116,26 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
-          {/* Rechte Seite mit kleinerem Bild */}
+          {/* Rechte Bildseite */}
           <ScrollReveal className="[transition-delay:120ms]">
-            <div className="relative flex min-h-[500px] items-center justify-center rounded-[40px] bg-transparent p-3 lg:min-h-full">
+            <div className="relative flex min-h-[500px] items-center justify-center rounded-[42px] bg-transparent p-3 lg:min-h-full">
 
-              <div className="pointer-events-none absolute -right-10 top-10 h-52 w-52 rounded-full bg-sky-200/60 blur-3xl" />
+              <div className="pointer-events-none absolute -right-8 top-10 h-52 w-52 rounded-full bg-sky-200/60 blur-3xl" />
 
               <div className="relative w-full max-w-[430px]">
 
-                <div className="overflow-hidden rounded-[34px] border border-white/90 bg-white p-3 shadow-[0_25px_70px_rgba(30,64,175,.13)]">
+                <div className="overflow-hidden rounded-[36px] border border-white/90 bg-white p-3 shadow-[0_25px_70px_rgba(30,64,175,.13)]">
 
-                  <div className="overflow-hidden rounded-[26px] bg-slate-100">
+                  <div className="overflow-hidden rounded-[28px] bg-slate-100">
                     <img
                       src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=85"
                       alt="Modernes Team in einem professionellen Arbeitsumfeld"
-                      className="h-[330px] w-full object-cover sm:h-[390px]"
+                      className="h-[320px] w-full object-cover sm:h-[370px]"
                     />
                   </div>
 
                 </div>
 
-                {/* Kleine Info-Bubble */}
                 <div className="absolute -bottom-7 left-4 right-4 rounded-[24px] border border-white/90 bg-white/95 p-4 shadow-[0_20px_50px_rgba(15,23,42,.13)] backdrop-blur-xl sm:left-[-25px] sm:right-auto sm:w-[285px]">
 
                   <div className="flex items-center justify-between gap-4">
@@ -188,8 +173,9 @@ export default function Home() {
       {/* INTRO */}
       {/* ================================================== */}
 
-      <section className="px-4 py-4 sm:px-6">
-        <div className="mx-auto max-w-6xl rounded-[40px] border border-white/90 bg-white px-6 py-14 shadow-[0_24px_70px_rgba(30,64,175,.08)] sm:px-10 lg:px-14">
+      <section className="px-4 py-5 sm:px-6">
+
+        <div className="mx-auto max-w-6xl rounded-[42px] border border-white/90 bg-white px-6 py-14 shadow-[0_24px_70px_rgba(30,64,175,.08)] sm:px-10 lg:px-14">
 
           <ScrollReveal>
 
@@ -282,7 +268,9 @@ export default function Home() {
             </ScrollReveal>
 
           </div>
+
         </div>
+
       </section>
 
       {/* ================================================== */}
@@ -291,9 +279,10 @@ export default function Home() {
 
       <section
         id="so-funktioniert"
-        className="px-4 py-4 sm:px-6"
+        className="px-4 py-5 sm:px-6"
       >
-        <div className="mx-auto max-w-6xl rounded-[40px] border border-white/90 bg-white px-6 py-14 shadow-[0_24px_70px_rgba(30,64,175,.08)] sm:px-10 lg:px-14">
+
+        <div className="mx-auto max-w-6xl rounded-[42px] border border-white/90 bg-white px-6 py-14 shadow-[0_24px_70px_rgba(30,64,175,.08)] sm:px-10 lg:px-14">
 
           <ScrollReveal>
 
@@ -306,7 +295,7 @@ export default function Home() {
             </h2>
 
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              Von der ersten Anmeldung bis zur passenden Verbindung bleibt
+              Von der Erstellung des Profils bis zum passenden Kontakt bleibt
               alles klar und nachvollziehbar.
             </p>
 
@@ -325,9 +314,10 @@ export default function Home() {
                       : ""
                 }
               >
-                <div className="grid gap-5 py-9 md:grid-cols-[90px_1fr_1.2fr] md:items-center">
 
-                  <div className="text-4xl font-black tracking-[-0.06em] text-sky-500">
+                <div className="grid gap-6 py-9 md:grid-cols-[90px_1fr_1.25fr] md:items-center">
+
+                  <div className="text-4xl font-black tracking-[-0.05em] text-sky-500">
                     {step.number}
                   </div>
 
@@ -340,12 +330,14 @@ export default function Home() {
                   </p>
 
                 </div>
+
               </ScrollReveal>
             ))}
 
           </div>
 
         </div>
+
       </section>
 
       {/* ================================================== */}
@@ -354,13 +346,14 @@ export default function Home() {
 
       <section
         id="arbeitnehmer"
-        className="px-4 py-4 sm:px-6"
+        className="px-4 py-5 sm:px-6"
       >
-        <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[40px] border border-white/90 bg-white shadow-[0_24px_70px_rgba(30,64,175,.08)] lg:grid-cols-[.8fr_1.2fr]">
+
+        <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[42px] border border-white/90 bg-white shadow-[0_24px_70px_rgba(30,64,175,.08)] lg:grid-cols-[.85fr_1.15fr]">
 
           <ScrollReveal>
 
-            <div className="relative min-h-[440px] overflow-hidden bg-slate-100">
+            <div className="relative min-h-[470px] overflow-hidden bg-slate-100">
 
               <img
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=85"
@@ -391,7 +384,7 @@ export default function Home() {
               </h2>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
-                Erstelle ein persönliches Profil und zeige Unternehmen
+                Erstelle dein persönliches Profil und zeige Unternehmen
                 deine Erfahrung, Fähigkeiten, Wünsche und Persönlichkeit.
               </p>
 
@@ -405,24 +398,26 @@ export default function Home() {
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-black text-sky-600">
                       ✓
                     </span>
+
                     {feature}
                   </div>
                 ))}
 
               </div>
 
-              <Link
+              <a
                 href="/registrieren?role=employee"
                 className="mt-8 inline-flex rounded-xl bg-sky-500 px-6 py-3.5 font-bold text-white shadow-lg shadow-sky-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
               >
                 Mein Profil erstellen
-              </Link>
+              </a>
 
             </div>
 
           </ScrollReveal>
 
         </div>
+
       </section>
 
       {/* ================================================== */}
@@ -431,9 +426,10 @@ export default function Home() {
 
       <section
         id="arbeitgeber"
-        className="px-4 py-4 sm:px-6"
+        className="px-4 py-5 sm:px-6"
       >
-        <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[40px] border border-white/90 bg-white shadow-[0_24px_70px_rgba(30,64,175,.08)] lg:grid-cols-[1.08fr_.92fr]">
+
+        <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[42px] border border-white/90 bg-white shadow-[0_24px_70px_rgba(30,64,175,.08)] lg:grid-cols-[1.08fr_.92fr]">
 
           <ScrollReveal>
 
@@ -452,8 +448,8 @@ export default function Home() {
               </h2>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
-                Definieren Sie Ihre Anforderungen und sehen Sie schneller,
-                welche Arbeitnehmer zu Ihrer Suche passen.
+                Definieren Sie Ihre Kriterien und erhalten Sie eine
+                strukturierte Auswahl passender Arbeitnehmer.
               </p>
 
               <div className="mt-8 rounded-[28px] border border-slate-200 bg-slate-50 p-5">
@@ -495,12 +491,12 @@ export default function Home() {
 
                 </div>
 
-                <Link
+                <a
                   href="/login"
                   className="mt-5 inline-flex rounded-xl bg-sky-500 px-6 py-3 font-bold text-white transition hover:bg-sky-600"
                 >
                   Kandidaten suchen
-                </Link>
+                </a>
 
               </div>
 
@@ -510,11 +506,11 @@ export default function Home() {
 
           <ScrollReveal className="[transition-delay:120ms]">
 
-            <div className="relative min-h-[480px] overflow-hidden bg-slate-100">
+            <div className="relative min-h-[500px] overflow-hidden bg-slate-100">
 
               <img
                 src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1000&q=85"
-                alt="Professioneller Mitarbeiter im modernen Arbeitsumfeld"
+                alt="Professioneller Mitarbeiter in einem modernen Arbeitsumfeld"
                 className="absolute inset-0 h-full w-full object-cover"
               />
 
@@ -525,6 +521,7 @@ export default function Home() {
                 <div className="flex items-end justify-between gap-4">
 
                   <div>
+
                     <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
                       Stoyan Match
                     </p>
@@ -536,9 +533,11 @@ export default function Home() {
                     <p className="mt-1 text-sm text-slate-500">
                       Luzern · 5+ Jahre Erfahrung
                     </p>
+
                   </div>
 
                   <div className="text-right">
+
                     <p className="text-3xl font-black text-sky-500">
                       96%
                     </p>
@@ -546,6 +545,7 @@ export default function Home() {
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       Match
                     </p>
+
                   </div>
 
                 </div>
@@ -561,15 +561,16 @@ export default function Home() {
           </ScrollReveal>
 
         </div>
+
       </section>
 
       {/* ================================================== */}
       {/* FINAL CTA */}
       {/* ================================================== */}
 
-      <section className="px-4 py-4 pb-8 sm:px-6">
+      <section className="px-4 py-5 pb-8 sm:px-6">
 
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-[40px] bg-sky-500 px-7 py-16 text-center text-white shadow-[0_30px_80px_rgba(14,165,233,.20)] sm:px-12">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[42px] bg-sky-500 px-7 py-16 text-center text-white shadow-[0_30px_80px_rgba(14,165,233,.20)] sm:px-12">
 
           <ScrollReveal>
 
@@ -590,19 +591,19 @@ export default function Home() {
 
             <div className="mt-9 flex flex-wrap justify-center gap-3">
 
-              <Link
+              <a
                 href="/registrieren?role=employee"
                 className="rounded-xl bg-white px-6 py-3.5 font-bold text-sky-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 Als Arbeitnehmer starten
-              </Link>
+              </a>
 
-              <Link
+              <a
                 href="/login"
-                className="rounded-xl border border-white/50 bg-white/10 px-6 py-3.5 font-bold text-white transition hover:bg-white/15"
+                className="rounded-xl border border-white/50 bg-white/10 px-6 py-3.5 font-bold text-white transition hover:-translate-y-0.5 hover:bg-white/15"
               >
                 Für Firmen einloggen
-              </Link>
+              </a>
 
             </div>
 
