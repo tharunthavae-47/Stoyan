@@ -3,25 +3,37 @@ import { ScrollReveal } from "@/components/scroll-reveal"
 
 const benefits = [
   {
-    number: "01",
     title: "Professionelle Profile",
     text: "Arbeitnehmer präsentieren Erfahrung, Ausbildung, Skills und Persönlichkeit an einem Ort.",
   },
   {
-    number: "02",
     title: "Gezielte Suche",
     text: "Unternehmen definieren ihre Anforderungen und finden passende Fachkräfte.",
   },
   {
-    number: "03",
     title: "Intelligentes Matching",
     text: "Stoyan vergleicht beide Seiten und macht passende Möglichkeiten sichtbar.",
   },
 ]
 
+const steps = [
+  {
+    title: "Profil erstellen",
+    text: "Arbeitnehmer erstellen ein professionelles Profil mit Foto, Erfahrung, Ausbildung, Skills und persönlichen Wünschen.",
+  },
+  {
+    title: "Anforderungen definieren",
+    text: "Unternehmen bestimmen, welche Fähigkeiten, Erfahrung, Standort und Bedingungen sie für ihre Stelle suchen.",
+  },
+  {
+    title: "Passende Menschen finden",
+    text: "Stoyan vergleicht die Angaben und zeigt passende Kandidaten übersichtlich und nachvollziehbar an.",
+  },
+]
+
 const employeeFeatures = [
   "Profilbild & persönliche Bilder",
-  "Ausbildung & Erfahrung",
+  "Ausbildung & Berufserfahrung",
   "Skills & Sprachen",
   "Wunschlohn & Pensum",
   "Arbeitsort & Umkreis",
@@ -30,7 +42,7 @@ const employeeFeatures = [
 
 const employerCriteria = [
   ["Beruf", "Automobil-Mechatroniker"],
-  ["Ort", "Luzern + 30 km"],
+  ["Standort", "Luzern + 30 km"],
   ["Erfahrung", "5+ Jahre"],
   ["Pensum", "80–100 %"],
   ["Skills", "Diagnose · BMW · MFK"],
@@ -40,37 +52,34 @@ const employerCriteria = [
 export default function Home() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#edf8fc] text-slate-950">
-
       {/* ========================================================= */}
-      {/* SOFTER BACKGROUND */}
+      {/* HINTERGRUND */}
       {/* ========================================================= */}
 
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-sky-200/50 blur-[110px]" />
-        <div className="absolute right-[-180px] top-[15%] h-[600px] w-[600px] rounded-full bg-cyan-100/70 blur-[130px]" />
-        <div className="absolute bottom-[-220px] left-[25%] h-[550px] w-[550px] rounded-full bg-blue-100/60 blur-[120px]" />
+        <div className="absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-sky-200/50 blur-[120px]" />
+        <div className="absolute -right-48 top-[18%] h-[620px] w-[620px] rounded-full bg-cyan-100/70 blur-[140px]" />
+        <div className="absolute bottom-[-220px] left-[25%] h-[540px] w-[540px] rounded-full bg-blue-100/60 blur-[130px]" />
       </div>
 
       {/* ========================================================= */}
       {/* HERO */}
       {/* ========================================================= */}
 
-      <section className="px-4 pt-5 sm:px-6 sm:pt-8">
+      <section className="px-4 pt-7 sm:px-6 sm:pt-10">
         <div className="mx-auto max-w-6xl">
+          <div className="grid items-center gap-8 lg:grid-cols-[1.12fr_.88fr]">
 
-          <div className="grid items-center gap-7 lg:grid-cols-[1.1fr_.9fr]">
-
-            {/* LINKER TEXT-BEREICH */}
-
+            {/* LINKER BEREICH */}
             <ScrollReveal>
-              <div className="rounded-[42px] border border-white/90 bg-white px-7 py-14 shadow-[0_30px_90px_rgba(30,64,175,.10)] sm:px-12 sm:py-16 lg:px-14">
+              <div className="rounded-[42px] border border-white bg-white px-7 py-14 shadow-[0_30px_90px_rgba(30,64,175,.09)] sm:px-12 sm:py-16 lg:px-14 lg:py-20">
 
                 <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-sky-600">
                   <span className="h-2 w-2 rounded-full bg-sky-500" />
                   Job Matching Plattform
                 </div>
 
-                <h1 className="mt-7 max-w-[680px] text-5xl font-black leading-[0.94] tracking-[-0.065em] text-slate-950 sm:text-6xl lg:text-[70px]">
+                <h1 className="mt-7 max-w-[700px] text-5xl font-black leading-[0.94] tracking-[-0.065em] text-slate-950 sm:text-6xl lg:text-[72px]">
                   Menschen finden.
                   <br />
                   <span className="text-sky-500">
@@ -87,7 +96,7 @@ export default function Home() {
                 <div className="mt-9 flex flex-wrap gap-3">
                   <Link
                     href="/registrieren?role=employee"
-                    className="rounded-xl bg-sky-500 px-6 py-3.5 font-bold text-white shadow-[0_14px_35px_rgba(14,165,233,.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
+                    className="rounded-xl bg-sky-500 px-6 py-3.5 font-bold text-white shadow-[0_14px_35px_rgba(14,165,233,.20)] transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
                   >
                     Als Arbeitnehmer starten
                   </Link>
@@ -101,7 +110,6 @@ export default function Home() {
                 </div>
 
                 <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm font-semibold text-slate-500">
-
                   <span className="flex items-center gap-2">
                     <span className="text-sky-500">✓</span>
                     Professionelle Profile
@@ -116,36 +124,29 @@ export default function Home() {
                     <span className="text-sky-500">✓</span>
                     Für beide Seiten
                   </span>
-
                 </div>
-
               </div>
             </ScrollReveal>
 
-            {/* RECHTES KLEINES BILD */}
-
+            {/* RECHTE SEITE / KLEINES BILD */}
             <ScrollReveal className="[transition-delay:120ms]">
               <div className="relative flex justify-center lg:justify-end">
 
-                <div className="absolute right-0 top-10 h-44 w-44 rounded-full bg-sky-200/60 blur-3xl" />
+                <div className="absolute right-0 top-8 h-48 w-48 rounded-full bg-sky-200/60 blur-3xl" />
 
-                <div className="relative w-full max-w-[400px]">
+                <div className="relative w-full max-w-[390px]">
 
-                  <div className="rounded-[38px] border border-white/90 bg-white p-3 shadow-[0_25px_70px_rgba(30,64,175,.13)]">
-
-                    <div className="overflow-hidden rounded-[30px] bg-slate-100">
-
+                  <div className="rounded-[36px] border border-white bg-white p-3 shadow-[0_25px_70px_rgba(30,64,175,.12)]">
+                    <div className="overflow-hidden rounded-[29px] bg-slate-100">
                       <img
                         src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=900&q=85"
-                        alt="Professionelles Team in einem modernen Arbeitsumfeld"
-                        className="h-[300px] w-full object-cover sm:h-[350px]"
+                        alt="Modernes Team in einem professionellen Arbeitsumfeld"
+                        className="h-[300px] w-full object-cover sm:h-[345px]"
                       />
-
                     </div>
-
                   </div>
 
-                  <div className="absolute -bottom-6 left-3 rounded-[24px] border border-white/90 bg-white px-5 py-4 shadow-[0_20px_45px_rgba(15,23,42,.12)] sm:-left-6">
+                  <div className="absolute -bottom-6 left-3 rounded-[23px] border border-white bg-white/95 px-5 py-4 shadow-[0_20px_45px_rgba(15,23,42,.12)] backdrop-blur-xl sm:-left-5">
 
                     <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
                       Stoyan
@@ -162,7 +163,6 @@ export default function Home() {
                   </div>
 
                 </div>
-
               </div>
             </ScrollReveal>
 
@@ -175,11 +175,9 @@ export default function Home() {
       {/* ========================================================= */}
 
       <section className="px-4 py-7 sm:px-6">
-
-        <div className="mx-auto max-w-6xl rounded-[42px] border border-white/90 bg-white px-7 py-14 shadow-[0_24px_70px_rgba(30,64,175,.08)] sm:px-12 lg:px-14">
+        <div className="mx-auto max-w-6xl rounded-[42px] border border-white bg-white px-7 py-14 shadow-[0_24px_70px_rgba(30,64,175,.07)] sm:px-12 lg:px-14">
 
           <ScrollReveal>
-
             <div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-end">
 
               <div>
@@ -197,19 +195,20 @@ export default function Home() {
               </div>
 
               <p className="max-w-2xl text-lg leading-8 text-slate-600">
-                Eine Plattform für Menschen und Unternehmen, die nicht einfach
-                irgendwelche Kontakte suchen, sondern die passenden.
+                Stoyan schafft eine klare Verbindung zwischen Menschen,
+                die Arbeit suchen, und Unternehmen, die passende Fachkräfte
+                suchen. Einfach, übersichtlich und auf die wichtigen
+                Kriterien konzentriert.
               </p>
 
             </div>
-
           </ScrollReveal>
 
           <div className="mt-12 grid gap-4 md:grid-cols-3">
 
             {benefits.map((benefit, index) => (
               <ScrollReveal
-                key={benefit.number}
+                key={benefit.title}
                 className={
                   index === 1
                     ? "[transition-delay:100ms]"
@@ -218,14 +217,11 @@ export default function Home() {
                       : ""
                 }
               >
+                <article className="group rounded-[28px] bg-[#f5fbfe] p-7 transition duration-500 hover:-translate-y-1 hover:bg-sky-50">
 
-                <article className="group rounded-[28px] bg-[#f4fbfe] p-7 transition duration-500 hover:-translate-y-1 hover:bg-sky-50">
+                  <div className="h-2 w-12 rounded-full bg-sky-500 transition-all duration-500 group-hover:w-20" />
 
-                  <span className="text-sm font-black text-sky-500">
-                    {benefit.number}
-                  </span>
-
-                  <h3 className="mt-5 text-xl font-black tracking-[-0.02em] text-slate-950">
+                  <h3 className="mt-7 text-xl font-black tracking-[-0.02em] text-slate-950">
                     {benefit.title}
                   </h3>
 
@@ -234,14 +230,11 @@ export default function Home() {
                   </p>
 
                 </article>
-
               </ScrollReveal>
             ))}
 
           </div>
-
         </div>
-
       </section>
 
       {/* ========================================================= */}
@@ -250,13 +243,11 @@ export default function Home() {
 
       <section
         id="so-funktioniert"
-        className="px-4 py-2 sm:px-6"
+        className="px-4 py-3 sm:px-6"
       >
-
-        <div className="mx-auto max-w-6xl rounded-[42px] border border-white/90 bg-white px-7 py-14 shadow-[0_24px_70px_rgba(30,64,175,.08)] sm:px-12 lg:px-14">
+        <div className="mx-auto max-w-6xl rounded-[42px] border border-white bg-white px-7 py-14 shadow-[0_24px_70px_rgba(30,64,175,.07)] sm:px-12 lg:px-14">
 
           <ScrollReveal>
-
             <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
               So funktioniert&apos;s
             </p>
@@ -269,13 +260,17 @@ export default function Home() {
               </span>
             </h2>
 
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+              Von der Profilerstellung bis zur Kontaktaufnahme bleibt der
+              gesamte Prozess klar und nachvollziehbar.
+            </p>
           </ScrollReveal>
 
           <div className="mt-10 divide-y divide-slate-100">
 
             {steps.map((step, index) => (
               <ScrollReveal
-                key={step.number}
+                key={step.title}
                 className={
                   index === 1
                     ? "[transition-delay:100ms]"
@@ -284,14 +279,9 @@ export default function Home() {
                       : ""
                 }
               >
+                <div className="grid gap-5 py-9 md:grid-cols-[1fr_1.25fr] md:items-center">
 
-                <div className="grid gap-5 py-8 md:grid-cols-[75px_1fr_1.25fr] md:items-center">
-
-                  <span className="text-3xl font-black tracking-[-0.05em] text-sky-500">
-                    {step.number}
-                  </span>
-
-                  <h3 className="text-2xl font-black text-slate-950">
+                  <h3 className="text-2xl font-black tracking-[-0.03em] text-slate-950 sm:text-3xl">
                     {step.title}
                   </h3>
 
@@ -300,14 +290,12 @@ export default function Home() {
                   </p>
 
                 </div>
-
               </ScrollReveal>
             ))}
 
           </div>
 
         </div>
-
       </section>
 
       {/* ========================================================= */}
@@ -318,29 +306,29 @@ export default function Home() {
         id="arbeitnehmer"
         className="px-4 py-7 sm:px-6"
       >
+        <div className="mx-auto grid max-w-6xl items-center gap-8 rounded-[42px] border border-white bg-white p-4 shadow-[0_24px_70px_rgba(30,64,175,.07)] lg:grid-cols-[.72fr_1.28fr] lg:p-5">
 
-        <div className="mx-auto grid max-w-6xl items-center gap-8 rounded-[42px] border border-white/90 bg-white p-4 shadow-[0_24px_70px_rgba(30,64,175,.08)] lg:grid-cols-[.72fr_1.28fr] lg:p-5">
-
-          {/* kleines Bild links */}
-
+          {/* Kleines Bild */}
           <ScrollReveal>
+            <div className="relative flex justify-center">
 
-            <div className="relative overflow-hidden rounded-[32px] bg-slate-100">
+              <div className="absolute left-10 top-10 h-36 w-36 rounded-full bg-sky-100/80 blur-3xl" />
 
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=85"
-                alt="Professionelle Arbeitnehmerin"
-                className="h-[360px] w-full object-cover"
-              />
+              <div className="relative w-full max-w-[360px] overflow-hidden rounded-[32px] bg-slate-100">
+
+                <img
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=85"
+                  alt="Professionelle Arbeitnehmerin"
+                  className="h-[360px] w-full object-cover"
+                />
+
+              </div>
 
             </div>
-
           </ScrollReveal>
 
-          {/* Text rechts */}
-
+          {/* Text */}
           <ScrollReveal className="[transition-delay:120ms]">
-
             <div className="px-4 py-8 sm:px-8 lg:px-10">
 
               <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
@@ -365,7 +353,7 @@ export default function Home() {
                 {employeeFeatures.map((feature) => (
                   <div
                     key={feature}
-                    className="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700"
+                    className="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3.5 text-sm font-semibold text-slate-700"
                   >
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-black text-sky-600">
                       ✓
@@ -379,17 +367,15 @@ export default function Home() {
 
               <Link
                 href="/registrieren?role=employee"
-                className="mt-8 inline-flex rounded-xl bg-sky-500 px-6 py-3.5 font-bold text-white shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-600"
+                className="mt-8 inline-flex rounded-xl bg-sky-500 px-6 py-3.5 font-bold text-white shadow-lg shadow-sky-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
               >
                 Profil erstellen
               </Link>
 
             </div>
-
           </ScrollReveal>
 
         </div>
-
       </section>
 
       {/* ========================================================= */}
@@ -398,15 +384,12 @@ export default function Home() {
 
       <section
         id="arbeitgeber"
-        className="px-4 py-2 sm:px-6"
+        className="px-4 py-3 sm:px-6"
       >
-
-        <div className="mx-auto grid max-w-6xl items-center gap-8 rounded-[42px] border border-white/90 bg-white p-4 shadow-[0_24px_70px_rgba(30,64,175,.08)] lg:grid-cols-[1.2fr_.8fr] lg:p-5">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 rounded-[42px] border border-white bg-white p-4 shadow-[0_24px_70px_rgba(30,64,175,.07)] lg:grid-cols-[1.2fr_.8fr] lg:p-5">
 
           {/* Text links */}
-
           <ScrollReveal>
-
             <div className="px-4 py-8 sm:px-8 lg:px-10">
 
               <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
@@ -422,13 +405,13 @@ export default function Home() {
               </h2>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
-                Definieren Sie Ihre Anforderungen und erhalten Sie eine
-                strukturierte Auswahl passender Arbeitnehmer.
+                Definieren Sie Ihre Anforderungen und finden Sie schneller
+                passende Arbeitnehmer.
               </p>
 
-              <div className="mt-8 rounded-[28px] bg-[#f4fbfe] p-5">
+              <div className="mt-8 rounded-[28px] bg-[#f5fbfe] p-5">
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4">
 
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
@@ -451,9 +434,8 @@ export default function Home() {
                   {employerCriteria.map(([label, value]) => (
                     <div
                       key={label}
-                      className="rounded-xl bg-white px-4 py-3 shadow-sm"
+                      className="rounded-xl bg-white px-4 py-3.5 shadow-sm"
                     >
-
                       <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
                         {label}
                       </p>
@@ -461,7 +443,6 @@ export default function Home() {
                       <p className="mt-1 text-sm font-bold text-slate-800">
                         {value}
                       </p>
-
                     </div>
                   ))}
 
@@ -477,31 +458,28 @@ export default function Home() {
               </div>
 
             </div>
-
           </ScrollReveal>
 
-          {/* kleines Bild rechts */}
-
+          {/* Kleines Bild rechts */}
           <ScrollReveal className="[transition-delay:120ms]">
+            <div className="relative flex justify-center lg:justify-end">
 
-            <div className="relative flex justify-center px-2 py-4 lg:justify-end">
+              <div className="absolute right-8 top-12 h-36 w-36 rounded-full bg-sky-100 blur-3xl" />
 
-              <div className="overflow-hidden rounded-[32px] border border-white bg-slate-100 p-2 shadow-[0_20px_60px_rgba(30,64,175,.10)]">
+              <div className="relative w-full max-w-[350px] overflow-hidden rounded-[32px] border border-white bg-slate-100 p-2 shadow-[0_20px_55px_rgba(30,64,175,.10)]">
 
                 <img
                   src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=85"
                   alt="Professioneller Mitarbeiter"
-                  className="h-[370px] w-full max-w-[340px] rounded-[26px] object-cover"
+                  className="h-[380px] w-full rounded-[25px] object-cover"
                 />
 
               </div>
 
             </div>
-
           </ScrollReveal>
 
         </div>
-
       </section>
 
       {/* ========================================================= */}
@@ -533,14 +511,14 @@ export default function Home() {
 
               <Link
                 href="/registrieren?role=employee"
-                className="rounded-xl bg-white px-6 py-3.5 font-bold text-sky-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-sky-50"
+                className="rounded-xl bg-white px-6 py-3.5 font-bold text-sky-700 shadow-lg transition duration-300 hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 Als Arbeitnehmer starten
               </Link>
 
               <Link
                 href="/login"
-                className="rounded-xl border border-white/50 bg-white/10 px-6 py-3.5 font-bold text-white transition hover:bg-white/15"
+                className="rounded-xl border border-white/50 bg-white/10 px-6 py-3.5 font-bold text-white transition duration-300 hover:bg-white/15"
               >
                 Für Firmen einloggen
               </Link>
