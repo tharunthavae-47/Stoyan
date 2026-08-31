@@ -15,15 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      <body className="bg-[#f7f9fc] text-slate-950 antialiased">
+      <body>
         <div className="min-h-screen">
-
           <SiteHeader />
 
-          <main>
-            {children}
-          </main>
-
+          <main>{children}</main>
         </div>
       </body>
     </html>
