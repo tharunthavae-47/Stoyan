@@ -1,13 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { ArrowRight, Building2, Check, Clock3, MessageCircle, RefreshCw, Search, Send, Users, X } from "lucide-react"
+import { useEffect, useState, type ComponentType } from "react"
+import { ArrowRight, Building2, Check, Clock3, MessageCircle, RefreshCw, Search, Send, Users, X, type LucideProps } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
 type Company = { name: string | null; industry: string | null; city: string | null }
 type ContactRequest = { id: string; employer_id: string; employee_id: string; job_id: string | null; status: string; created_at: string }
 type EmployeeProfile = { id: string; vorname?: string | null; nachname?: string | null; beruf?: string | null; city?: string | null; stadt?: string | null }
+type Stat = { label: string; count: number; Icon: ComponentType<LucideProps>; style: string }
 
 export default function ArbeitgeberPage() {
   const [company, setCompany] = useState<Company | null>(null)
@@ -66,8 +67,6 @@ export default function ArbeitgeberPage() {
     void loadDashboard()
   }, [])
 
-  // Wichtig: Wenn der Arbeitnehmer die Anfrage annimmt, bekommt der Arbeitgeber
-  // die Änderung sofort mit, ohne die Seite neu laden zu müssen.
   useEffect(() => {
     let mounted = true
     const supabase = createClient()
@@ -129,6 +128,13 @@ export default function ArbeitgeberPage() {
   const acceptedRequests = requests.filter((r) => r.status === "accepted")
   const rejectedRequests = requests.filter((r) => r.status === "rejected")
 
+  const stats: Stat[] = [
+    { label: "Alle Anfragen", count: requests.length, Icon: Send, style: "bg-[var(--brand)]/10 text-[var(--brand)]" },
+    { label: "Ausstehend", count: pendingRequests.length, Icon: Clock3, style: "bg-amber-50 text-amber-600" },
+    { label: "Angenommen", count: acceptedRequests.length, Icon: Check, style: "bg-emerald-50 text-emerald-600" },
+    { label: "Abgelehnt", count: rejectedRequests.length, Icon: X, style: "bg-red-50 text-red-500" },
+  ]
+
   if (loading) return <div className="card card-pad text-center"><div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[var(--line)] border-t-[var(--brand)]" /><p className="mt-5 font-semibold text-[var(--muted)]">Dashboard wird geladen…</p></div>
 
   return (
@@ -148,7 +154,19 @@ export default function ArbeitgeberPage() {
       {error && <div className="mt-6 rounded-2xl border border-[var(--danger)]/30 bg-[var(--danger)]/8 p-4 text-sm font-semibold text-[var(--danger)]">{error}</div>}
 
       <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[["Alle Anfragen", requests.length, Send, "bg-[var(--brand)]/10 text-[var(--brand)]"], ["Ausstehend", pendingRequests.length, Clock3, "bg-amber-50 text-amber-600"], ["Angenommen", acceptedRequests.length, Check, "bg-emerald-50 text-emerald-600"], ["Abgelehnt", rejectedRequests.length, X, "bg-red-50 text-red-500"]].map(([label, count, Icon, style]) => <div key={String(label)} className="card card-pad"><div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-[var(--muted)]">{label}</p><p className="mt-2 text-3xl font-black text-[var(--navy)]">{count as number}</p></div><div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${style}`}><Icon className="h-5 w-5" /></div></div></div>)}
+        {stats.map(({ label, count, Icon, style }) => (
+          <div key={label} className="card card-pad">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-[var(--muted)]">{label}</p>
+                <p className="mt-2 text-3xl font-black text-[var(--navy)]">{count}</p>
+              </div>
+              <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${style}`}>
+                <Icon className="h-5 w-5" />
+              </div>
+            </div>
+          </div>
+        ))}
       </section>
 
       <section className="card card-pad mt-6"><div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center"><div className="flex items-center gap-4"><div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--navy)] text-xl font-black text-white">{(company?.name || "O").charAt(0).toUpperCase()}</div><div><p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--muted-light)]">Unternehmen</p><h2 className="mt-1 text-xl font-black text-[var(--navy)]">{company?.name || "Ihr Unternehmen"}</h2><p className="mt-1 text-sm text-[var(--muted)]">{company?.industry || "Branche noch nicht angegeben"}{company?.city ? ` · ${company.city}` : ""}</p></div></div><Link href="/arbeitgeber/firma" className="btn-ghost">Unternehmensprofil bearbeiten<ArrowRight className="ml-2 h-4 w-4" /></Link></div></section>
@@ -163,7 +181,7 @@ export default function ArbeitgeberPage() {
           const location = getEmployeeLocation(request.employee_id)
           const accepted = request.status === "accepted"
           return <div key={request.id} className={`group rounded-[24px] border bg-white p-5 shadow-sm transition-all hover:shadow-md ${accepted ? "border-emerald-200 ring-1 ring-emerald-100" : "border-[var(--line)]"}`}>
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--navy)] text-lg font-black text-white">{getInitials(request.employee_id)}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-black text-[var(--navy)]">{name}</h3>{request.status === "accepted" && <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700"><Check className="h-3 w-3" />Angenommen</span>}{request.status === "pending" && <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-black text-amber-700"><Clock3 className="h-3 w-3" />Ausstehend</span>}{request.status === "rejected" && <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-[11px] font-black text-red-600"><X className="h-3 w-3" />Abgelehnt</span>}</div><p className="mt-1 text-sm font-semibold text-[var(--foreground)]">{profession}</p><div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[var(--muted-light)]">{location && <span>{location}</span>}<span>Anfrage vom {new Date(request.created_at).toLocaleDateString("de-CH")}</span></div></div><div className="flex shrink-0 flex-col gap-2 sm:items-end">{accepted ? <Link href={`/arbeitgeber/anfragen/${request.id}`} className="btn-primary"><MessageCircle className="h-4 w-4" />Chat öffnen<ArrowRight className="h-4 w-4" /></Link> : <Link href={`/arbeitgeber/anfragen/${request.id}`} className="btn-ghost">Anfrage ansehen<ArrowRight className="ml-2 h-4 w-4" /></Link>}</div></div>
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--navy)] text-lg font-black text-white">{getInitials(request.employee_id)}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-black text-[var(--navy)]">{name}</h3>{request.status === "accepted" && <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700"><Check className="h-3 w-3" />Angenommen</span>}{request.status === "pending" && <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-black text-amber-700"><Clock3 className="h-3 w-3" />Ausstehend</span>}{request.status === "rejected" && <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-[11px] font-black text-red-600"><X className="h-3 w-3" />Abgelehnt</span>}</div><p className="mt-1 text-sm font-semibold text-[var(--foreground)]">{profession}</p><div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[var(--muted-light)]">{location && <span>{location}</span>}<span>Anfrage vom {new Date(request.created_at).toLocaleDateString("de-CH")}</span></div></div><div className="flex shrink-0 flex-col gap-2 sm:items-end">{accepted ? <Link href={`/arbeitgeber/anfragen/${request.id}`} className="btn-primary"><MessageCircle className="h-4 w-4" />Chat öffnen<ArrowRight className="h-4 w-4" /></Link> : <Link href={`/arbeitgeber/anfragen/${request.id}`} className="btn-ghost">Anfrage ansehen<ArrowRight className="h-4 w-4" /></Link>}</div></div>
           </div>
         })}</div>}
       </section>
