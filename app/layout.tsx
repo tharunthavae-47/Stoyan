@@ -1,6 +1,13 @@
 import type { Metadata } from "next"
+import { Inter } from "next/font/google"
 import "./globals.css"
 import { SiteHeader } from "@/components/site-header"
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: "STOYAN – Menschen verbinden",
@@ -14,13 +21,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="de">
+    <html lang="de" className={inter.variable}>
       <body>
-        <div className="min-h-screen">
-          <SiteHeader />
-
-          <main>{children}</main>
-        </div>
+        <SiteHeader />
+        <main>{children}</main>
       </body>
     </html>
   )

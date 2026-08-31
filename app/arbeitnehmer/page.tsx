@@ -10,14 +10,11 @@ export default async function EmployeeDashboard() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-[#f7f8fa] p-10">
-        <Link
-          href="/login"
-          className="font-bold text-blue-600"
-        >
+      <div className="card card-pad">
+        <Link href="/login" className="font-bold text-[var(--brand)]">
           Zum Login
         </Link>
-      </main>
+      </div>
     )
   }
 
@@ -97,74 +94,8 @@ export default async function EmployeeDashboard() {
   // =========================================================
 
   return (
-    <main className="min-h-screen bg-[#f7f8fa] text-slate-950">
+    <div className="animate-fade-up">
 
-      {/* ===================================================== */}
-      {/* HEADER */}
-      {/* ===================================================== */}
-
-      <header className="border-b border-slate-200 bg-white">
-
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-
-          <Link
-            href="/arbeitnehmer"
-            className="text-2xl font-black"
-          >
-            Stoyan<span className="text-blue-600">.</span>
-          </Link>
-
-          <nav className="hidden gap-7 text-sm font-semibold md:flex">
-
-            <Link
-              href="/arbeitnehmer"
-              className="text-blue-600"
-            >
-              Dashboard
-            </Link>
-
-            <Link
-              href="/arbeitnehmer/profil"
-              className="transition hover:text-blue-600"
-            >
-              Mein Profil
-            </Link>
-
-            <Link
-              href="#"
-              className="transition hover:text-blue-600"
-            >
-              Meine Matches
-            </Link>
-
-            <Link
-              href="#"
-              className="transition hover:text-blue-600"
-            >
-              Einstellungen
-            </Link>
-
-          </nav>
-
-          <form
-            action="/api/auth/signout"
-            method="post"
-          >
-            <button
-              type="submit"
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold transition hover:bg-slate-50"
-            >
-              Abmelden
-            </button>
-          </form>
-
-        </div>
-
-      </header>
-
-      {/* ===================================================== */}
-      {/* HAUPTINHALT */}
-      {/* ===================================================== */}
 
       <div className="mx-auto max-w-7xl px-6 py-10">
 
@@ -537,6 +468,6 @@ export default async function EmployeeDashboard() {
 
       </div>
 
-    </main>
+    </div>
   )
 }

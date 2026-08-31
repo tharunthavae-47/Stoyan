@@ -957,46 +957,7 @@ export default function EmployerSearch() {
    */
 
   return (
-    <main className="min-h-screen bg-[#f7f8fa] text-slate-950">
-
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-
-          <Link
-            href="/arbeitgeber"
-            className="text-2xl font-black"
-          >
-            Stoyan
-            <span className="text-blue-600">
-              .
-            </span>
-          </Link>
-
-          <nav className="flex gap-6 text-sm font-semibold">
-            <Link
-              href="/arbeitgeber/suche"
-              className="text-blue-600"
-            >
-              Kandidaten
-            </Link>
-
-            <Link
-              href="/arbeitgeber/firma"
-              className="transition hover:text-blue-600"
-            >
-              Unternehmen
-            </Link>
-          </nav>
-
-          <Link
-            href="/arbeitgeber"
-            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold transition hover:bg-slate-50"
-          >
-            Dashboard
-          </Link>
-
-        </div>
-      </header>
+    <div className="animate-fade-up">
 
       <div className="mx-auto max-w-7xl px-6 py-10">
 
@@ -1449,6 +1410,6 @@ export default function EmployerSearch() {
         </section>
 
       </div>
-    </main>
+    </div>
   )
 }

@@ -1,5 +1,83 @@
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 
-export default async function EmployerPage(){const s=await createClient();const {data:{user}}=await s.auth.getUser();if(!user)return <main className="p-10"><Link href="/login" className="text-blue-600">Zum Login</Link></main>;const {data:company}=await s.from("companies").select("name,industry,city,employee_count").eq("owner_id",user.id).maybeSingle();return <main className="min-h-screen bg-[#f7f8fa]"><header className="border-b bg-white"><div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6"><Link href="/" className="text-2xl font-black">Stoyan<span className="text-blue-600">.</span></Link><nav className="hidden gap-8 text-sm font-semibold md:flex"><Link href="/arbeitgeber/suche" className="text-blue-600">Kandidaten</Link><Link href="/arbeitgeber/firma">Unternehmen</Link></nav><form action="/api/auth/signout" method="post"><button className="rounded-lg border px-4 py-2 text-sm font-bold">Abmelden</button></form></div></header><div className="mx-auto max-w-7xl px-6 py-10"><div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end"><div><p className="text-sm font-black uppercase tracking-widest text-blue-600">Arbeitgeber</p><h1 className="mt-2 text-4xl font-black">Mitarbeiter finden.</h1><p className="mt-3 max-w-2xl text-slate-600">Suchen Sie nach Ihren Kriterien und entdecken Sie passende Arbeitnehmerprofile.</p></div><Link href="/arbeitgeber/suche" className="rounded-xl bg-blue-600 px-6 py-3.5 font-bold text-white">Kandidaten suchen</Link></div><div className="mt-10 grid gap-5 md:grid-cols-3"><div className="rounded-3xl border bg-white p-6 shadow-sm md:col-span-2"><p className="text-sm font-bold uppercase tracking-widest text-slate-400">Unternehmen</p><h2 className="mt-2 text-2xl font-black">{company?.name||"Ihr Unternehmen"}</h2><p className="mt-2 text-slate-500">{company?.industry||"Branche noch nicht angegeben"}{company?.city?` · ${company.city}`:""}</p><Link href="/arbeitgeber/firma" className="mt-5 inline-block font-bold text-blue-600">Unternehmensprofil bearbeiten →</Link></div><div className="rounded-3xl bg-slate-950 p-6 text-white"><p className="text-sm font-bold text-blue-300">NÄCHSTER SCHRITT</p><h2 className="mt-2 text-2xl font-black">Kandidaten finden</h2><p className="mt-3 text-sm leading-6 text-slate-300">Beruf, Erfahrung, Skills, Ort, Pensum und weitere Kriterien eingeben.</p><Link href="/arbeitgeber/suche" className="mt-5 inline-flex rounded-lg bg-white px-5 py-3 font-bold text-slate-950">Suche starten</Link></div></div></div></main>
+export default async function EmployerPage() {
+  const s = await createClient()
+  const {
+    data: { user },
+  } = await s.auth.getUser()
+
+  if (!user) {
+    return (
+      <div className="card card-pad">
+        <Link href="/login" className="font-bold text-[var(--brand)]">
+          Zum Login
+        </Link>
+      </div>
+    )
+  }
+
+  const { data: company } = await s
+    .from("companies")
+    .select("name,industry,city,employee_count")
+    .eq("owner_id", user.id)
+    .maybeSingle()
+
+  return (
+    <div className="animate-fade-up">
+      {/* Kopf */}
+      <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-sm font-black uppercase tracking-widest text-[var(--brand)]">
+            Arbeitgeber
+          </p>
+          <h1 className="mt-2 text-4xl font-black tracking-tight text-[var(--navy)]">
+            Mitarbeiter finden.
+          </h1>
+          <p className="mt-3 max-w-2xl text-[var(--muted)]">
+            Suchen Sie nach Ihren Kriterien und entdecken Sie passende Arbeitnehmerprofile.
+          </p>
+        </div>
+        <Link href="/arbeitgeber/suche" className="btn-primary">
+          Kandidaten suchen
+        </Link>
+      </div>
+
+      {/* Karten */}
+      <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="card card-pad md:col-span-2">
+          <p className="text-sm font-bold uppercase tracking-widest text-[var(--muted-light)]">
+            Unternehmen
+          </p>
+          <h2 className="mt-2 text-2xl font-black text-[var(--navy)]">
+            {company?.name || "Ihr Unternehmen"}
+          </h2>
+          <p className="mt-2 text-[var(--muted)]">
+            {company?.industry || "Branche noch nicht angegeben"}
+            {company?.city ? ` · ${company.city}` : ""}
+          </p>
+          <Link
+            href="/arbeitgeber/firma"
+            className="mt-5 inline-block font-bold text-[var(--brand)]"
+          >
+            Unternehmensprofil bearbeiten →
+          </Link>
+        </div>
+
+        <div className="hero-navy !p-6">
+          <p className="text-sm font-bold text-blue-200">NÄCHSTER SCHRITT</p>
+          <h2 className="mt-2 text-2xl font-black">Kandidaten finden</h2>
+          <p className="mt-3 text-sm leading-6 text-blue-100/90">
+            Beruf, Erfahrung, Skills, Ort, Pensum und weitere Kriterien eingeben.
+          </p>
+          <Link
+            href="/arbeitgeber/suche"
+            className="mt-5 inline-flex rounded-lg bg-white px-5 py-3 font-bold text-[var(--navy)] transition hover:bg-slate-100"
+          >
+            Suche starten
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
 }

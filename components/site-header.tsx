@@ -1,4 +1,10 @@
+"use client"
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
+
+// Routes that use the dedicated dark sidebar shell instead of the marketing header
+const APP_ROUTE_PREFIXES = ["/arbeitgeber", "/arbeitnehmer", "/dashboard"]
 
 const links = [
   { href: "#ueber-stoyan", label: "Über STOYAN" },
@@ -9,6 +15,12 @@ const links = [
 ]
 
 export function SiteHeader() {
+  const pathname = usePathname()
+
+  if (APP_ROUTE_PREFIXES.some((prefix) => pathname?.startsWith(prefix))) {
+    return null
+  }
+
   return (
     <header className="sticky top-0 z-50 px-4 pt-4 sm:px-6">
       <div className="mx-auto max-w-[1440px]">
