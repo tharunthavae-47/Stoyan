@@ -1,4 +1,3 @@
-```tsx
 import Link from "next/link"
 
 const navigation = [
@@ -38,7 +37,6 @@ export function SiteHeader() {
 
           {/* Navigation */}
           <nav className="ml-auto hidden items-center gap-3 lg:flex">
-
             {navigation.map((item) => (
               <a
                 key={item.href}
@@ -48,7 +46,6 @@ export function SiteHeader() {
                 {item.label}
               </a>
             ))}
-
           </nav>
 
           {/* Buttons */}
@@ -69,6 +66,7 @@ export function SiteHeader() {
             </Link>
 
           </div>
+
         </div>
 
         {/* Mobile Navigation */}
@@ -92,4 +90,3 @@ export function SiteHeader() {
     </header>
   )
 }
-```
