@@ -1,584 +1,725 @@
 import Link from "next/link"
-import { ScrollReveal } from "@/components/scroll-reveal"
-
-const navigation = [
-  { label: "Über STOYAN", href: "#ueber-stoyan" },
-  { label: "So funktioniert's", href: "#so-funktioniert" },
-  { label: "Arbeitnehmer", href: "#arbeitnehmer" },
-  { label: "Arbeitgeber", href: "#arbeitgeber" },
-  { label: "Matching", href: "#matching" },
-]
-
-const benefits = [
-  {
-    title: "Professionelle Profile",
-    text: "Erfahrung, Ausbildung, Skills und Persönlichkeit übersichtlich an einem Ort.",
-  },
-  {
-    title: "Gezielte Suche",
-    text: "Unternehmen definieren ihre Anforderungen und finden passende Fachkräfte.",
-  },
-  {
-    title: "Intelligentes Matching",
-    text: "Stoyan vergleicht relevante Kriterien und macht passende Möglichkeiten sichtbar.",
-  },
-]
+import { ArrowRight, Check, Search, ShieldCheck, Sparkles, Users, Building2, MessageCircle } from "lucide-react"
+import { SiteHeader } from "@/components/site-header"
 
 const steps = [
   {
     number: "01",
     title: "Profil erstellen",
-    text: "Arbeitnehmer präsentieren Erfahrung, Ausbildung, Skills und persönliche Wünsche.",
+    text: "Erstelle ein professionelles Profil mit deinen Erfahrungen, Skills und Vorstellungen.",
+    icon: Users,
   },
   {
     number: "02",
-    title: "Anforderungen definieren",
-    text: "Unternehmen legen Beruf, Standort, Erfahrung, Pensum und gewünschte Skills fest.",
+    title: "Passende Menschen finden",
+    text: "STOYAN vergleicht Anforderungen und Profile und zeigt passende Matches.",
+    icon: Search,
   },
   {
     number: "03",
-    title: "Passende Menschen finden",
-    text: "Stoyan vergleicht die Angaben und zeigt passende Kandidaten nachvollziehbar an.",
+    title: "Kontakt aufnehmen",
+    text: "Bei Interesse kann eine private Kontaktanfrage gesendet werden.",
+    icon: MessageCircle,
   },
 ]
 
-const employeeFeatures = [
-  "Profilbild & persönliche Bilder",
-  "Ausbildung & Berufserfahrung",
-  "Skills & Sprachen",
-  "Wunschlohn & Pensum",
-  "Arbeitsort & Umkreis",
-  "Verfügbarkeit",
+const benefits = [
+  "Professionelle Profile",
+  "Intelligentes Matching",
+  "Private Kontaktanfragen",
+  "Direkter Chat nach Annahme",
 ]
 
-const employerCriteria = [
-  ["Beruf", "Automobil-Mechatroniker"],
-  ["Standort", "Luzern + 30 km"],
-  ["Erfahrung", "5+ Jahre"],
-  ["Pensum", "80–100 %"],
-  ["Skills", "Diagnose · BMW · MFK"],
-  ["Match", "92 %"],
-]
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="min-h-screen overflow-x-hidden bg-white text-slate-950">
+    <main className="min-h-screen bg-[#f5f7fb] text-slate-950">
 
       {/* =====================================================
           HEADER
-          ===================================================== */}
+      ===================================================== */}
 
-      <header className="sticky top-0 z-50 px-4 pt-4 sm:px-6">
-        <div className="mx-auto max-w-[1440px]">
-
-          <div className="flex min-h-[76px] items-center gap-4 rounded-2xl border border-slate-200 bg-white/95 px-4 shadow-[0_12px_40px_rgba(15,23,42,0.07)] backdrop-blur-xl sm:px-6">
-
-            {/* Logo */}
-            <Link
-              href="/"
-              className="group flex shrink-0 items-center gap-3"
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white shadow-lg shadow-blue-600/20 transition duration-300 group-hover:scale-105">
-                S
-              </div>
-
-              <div className="hidden sm:block">
-                <div className="text-xl font-black tracking-[-0.06em] text-slate-950">
-                  STOYAN
-                </div>
-
-                <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                  Menschen verbinden
-                </div>
-              </div>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="ml-auto hidden items-center gap-2 lg:flex">
-
-              {navigation.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-xs font-bold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-md"
-                >
-                  {item.label}
-                </a>
-              ))}
-
-            </nav>
-
-            {/* Aktionen */}
-            <div className="ml-2 flex shrink-0 items-center gap-2">
-
-              <Link
-                href="/login"
-                className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 sm:inline-flex"
-              >
-                Einloggen
-              </Link>
-
-              <Link
-                href="/registrieren"
-                className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-700"
-              >
-                Registrieren
-              </Link>
-
-            </div>
-          </div>
-
-          {/* Mobile Navigation */}
-          <div className="mt-2 overflow-x-auto pb-1 lg:hidden">
-            <div className="flex min-w-max gap-2">
-
-              {navigation.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
-                >
-                  {item.label}
-                </a>
-              ))}
-
-            </div>
-          </div>
-
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* =====================================================
           HERO
-          ===================================================== */}
+      ===================================================== */}
 
-      <section className="px-5 pb-24 pt-20 sm:px-8 lg:px-10 lg:pb-32 lg:pt-28">
+      <section className="relative overflow-hidden">
 
-        <div className="mx-auto max-w-[1440px]">
+        {/* Background Glow */}
 
-          <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_.95fr]">
+        <div
+          className="
+            pointer-events-none
+            absolute
+            left-1/2
+            top-[-220px]
+            h-[600px]
+            w-[900px]
+            -translate-x-1/2
+            rounded-full
+            bg-blue-500/10
+            blur-[120px]
+          "
+        />
 
-            <ScrollReveal>
+        <div
+          className="
+            pointer-events-none
+            absolute
+            right-[-200px]
+            top-[200px]
+            h-[400px]
+            w-[400px]
+            rounded-full
+            bg-indigo-400/10
+            blur-[100px]
+          "
+        />
 
-              <div className="max-w-4xl">
+        <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 sm:pb-32 sm:pt-28 lg:pt-32">
 
-                <div className="inline-flex items-center gap-3 rounded-full border border-blue-100 bg-blue-50 px-4 py-2.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
+          <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]">
 
-                  <span className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-600">
-                    Job Matching Plattform
-                  </span>
+            {/* =================================================
+                LEFT
+            ================================================= */}
+
+            <div className="max-w-3xl">
+
+              {/* Badge */}
+
+              <div
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-full
+                  border
+                  border-blue-200
+                  bg-white
+                  px-4
+                  py-2
+                  text-sm
+                  font-bold
+                  text-blue-700
+                  shadow-sm
+                "
+              >
+                <Sparkles className="h-4 w-4" />
+
+                Die moderne Plattform für Arbeit
+              </div>
+
+              {/* Headline */}
+
+              <h1
+                className="
+                  mt-7
+                  max-w-4xl
+                  text-5xl
+                  font-black
+                  leading-[1.02]
+                  tracking-[-0.055em]
+                  text-slate-950
+                  sm:text-6xl
+                  lg:text-7xl
+                "
+              >
+                Menschen und
+                <span className="block text-blue-600">
+                  Unternehmen.
+                </span>
+                Besser verbunden.
+              </h1>
+
+              {/* Text */}
+
+              <p
+                className="
+                  mt-7
+                  max-w-2xl
+                  text-lg
+                  leading-8
+                  text-slate-600
+                  sm:text-xl
+                "
+              >
+                STOYAN bringt Arbeitnehmer und Arbeitgeber
+                zusammen. Professionelle Profile, intelligentes
+                Matching und direkte Kommunikation – einfach
+                und transparent.
+              </p>
+
+              {/* Buttons */}
+
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+
+                <Link
+                  href="/registrieren?role=employee"
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    bg-slate-950
+                    px-6
+                    py-3.5
+                    font-bold
+                    text-white
+                    shadow-xl
+                    shadow-slate-950/10
+                    transition-all
+                    duration-200
+                    hover:-translate-y-0.5
+                    hover:bg-blue-600
+                    hover:shadow-blue-600/20
+                  "
+                >
+                  Als Arbeitnehmer starten
+
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+
+                <Link
+                  href="/registrieren?role=employer"
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-white
+                    px-6
+                    py-3.5
+                    font-bold
+                    text-slate-800
+                    shadow-sm
+                    transition-all
+                    duration-200
+                    hover:-translate-y-0.5
+                    hover:border-blue-200
+                    hover:bg-blue-50
+                    hover:text-blue-700
+                  "
+                >
+                  Für Arbeitgeber
+
+                  <Building2 className="h-4 w-4" />
+                </Link>
+
+              </div>
+
+              {/* Trust */}
+
+              <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-slate-500">
+
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  Professionelle Profile
                 </div>
 
-                <h1 className="mt-8 text-5xl font-black leading-[0.92] tracking-[-0.075em] text-slate-950 sm:text-7xl lg:text-[88px]">
-                  Menschen finden.
-                  <br />
-                  <span className="text-blue-600">
-                    Potenzial erkennen.
-                  </span>
-                </h1>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  Private Kommunikation
+                </div>
 
-                <p className="mt-9 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-                  Stoyan verbindet Arbeitnehmer und Unternehmen.
-                  Professionelle Profile, gezielte Suche und intelligentes
-                  Matching bringen Menschen und Möglichkeiten zusammen.
+              </div>
+
+            </div>
+
+            {/* =================================================
+                RIGHT – MATCHING CARD
+            ================================================= */}
+
+            <div className="relative">
+
+              <div
+                className="
+                  absolute
+                  -inset-5
+                  rounded-[36px]
+                  bg-blue-500/10
+                  blur-2xl
+                "
+              />
+
+              <div
+                className="
+                  relative
+                  rounded-[30px]
+                  border
+                  border-slate-200
+                  bg-white
+                  p-5
+                  shadow-[0_25px_80px_rgba(15,23,42,0.10)]
+                  sm:p-7
+                "
+              >
+
+                {/* Card Header */}
+
+                <div className="flex items-center justify-between">
+
+                  <div>
+
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">
+                      STOYAN MATCHING
+                    </p>
+
+                    <h2 className="mt-1 text-xl font-black">
+                      Passende Kandidaten
+                    </h2>
+
+                  </div>
+
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                    <Search className="h-5 w-5" />
+                  </div>
+
+                </div>
+
+                {/* Candidate 1 */}
+
+                <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+
+                  <div className="flex items-center gap-4">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-950 text-lg font-black text-white">
+                      M
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+
+                      <p className="font-black">
+                        Michael Keller
+                      </p>
+
+                      <p className="text-sm text-slate-500">
+                        Automobil-Mechatroniker
+                      </p>
+
+                    </div>
+
+                    <div className="text-right">
+
+                      <p className="text-xl font-black text-blue-600">
+                        94%
+                      </p>
+
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Match
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+
+                    {[
+                      "Diagnose",
+                      "Service",
+                      "Mechanik",
+                    ].map((skill) => (
+                      <span
+                        key={skill}
+                        className="
+                          rounded-full
+                          bg-white
+                          px-3
+                          py-1
+                          text-xs
+                          font-semibold
+                          text-slate-600
+                        "
+                      >
+                        {skill}
+                      </span>
+                    ))}
+
+                  </div>
+
+                </div>
+
+                {/* Candidate 2 */}
+
+                <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-4">
+
+                  <div className="flex items-center gap-4">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white">
+                      A
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+
+                      <p className="font-black">
+                        Anna Meier
+                      </p>
+
+                      <p className="text-sm text-slate-500">
+                        Automobil-Fachfrau
+                      </p>
+
+                    </div>
+
+                    <div className="text-right">
+
+                      <p className="text-xl font-black text-blue-600">
+                        88%
+                      </p>
+
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Match
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* Bottom */}
+
+                <div className="mt-5 flex items-center justify-between rounded-2xl bg-slate-950 px-5 py-4 text-white">
+
+                  <div>
+
+                    <p className="text-sm font-bold">
+                      Intelligentes Matching
+                    </p>
+
+                    <p className="mt-1 text-xs text-slate-400">
+                      Anforderungen automatisch vergleichen
+                    </p>
+
+                  </div>
+
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600">
+                    <Check className="h-4 w-4" />
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* =====================================================
+          ABOUT
+      ===================================================== */}
+
+      <section
+        id="ueber-stoyan"
+        className="border-y border-slate-200 bg-white"
+      >
+
+        <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
+
+          <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+
+            <div>
+
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-600">
+                Über STOYAN
+              </p>
+
+              <h2 className="mt-3 text-4xl font-black tracking-[-0.04em] sm:text-5xl">
+                Arbeitssuche darf
+                <span className="block text-blue-600">
+                  einfacher sein.
+                </span>
+              </h2>
+
+            </div>
+
+            <div>
+
+              <p className="text-lg leading-8 text-slate-600">
+                STOYAN verbindet Menschen und Unternehmen auf
+                einer modernen Plattform. Statt unübersichtlicher
+                Bewerbungen und endloser Suche steht bei uns die
+                passende Verbindung im Mittelpunkt.
+              </p>
+
+              <p className="mt-5 text-lg leading-8 text-slate-600">
+                Arbeitnehmer präsentieren ihre Fähigkeiten.
+                Arbeitgeber definieren ihre Anforderungen.
+                Unser Matching hilft dabei, beide Seiten
+                zusammenzubringen.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* =====================================================
+          HOW IT WORKS
+      ===================================================== */}
+
+      <section
+        id="so-funktioniert"
+        className="bg-[#f5f7fb]"
+      >
+
+        <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
+
+          <div className="max-w-2xl">
+
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-600">
+              So funktioniert's
+            </p>
+
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.04em] sm:text-5xl">
+              Drei Schritte.
+              <span className="block text-slate-400">
+                Eine bessere Verbindung.
+              </span>
+            </h2>
+
+          </div>
+
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+
+            {steps.map((step) => {
+
+              const Icon = step.icon
+
+              return (
+                <div
+                  key={step.number}
+                  className="
+                    rounded-3xl
+                    border
+                    border-slate-200
+                    bg-white
+                    p-7
+                    shadow-sm
+                    transition-all
+                    duration-300
+                    hover:-translate-y-1
+                    hover:shadow-lg
+                  "
+                >
+
+                  <div className="flex items-center justify-between">
+
+                    <span className="text-sm font-black text-blue-600">
+                      {step.number}
+                    </span>
+
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                      <Icon className="h-5 w-5" />
+                    </div>
+
+                  </div>
+
+                  <h3 className="mt-8 text-xl font-black">
+                    {step.title}
+                  </h3>
+
+                  <p className="mt-3 text-sm leading-7 text-slate-500">
+                    {step.text}
+                  </p>
+
+                </div>
+              )
+            })}
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* =====================================================
+          ARBEITNEHMER / ARBEITGEBER
+      ===================================================== */}
+
+      <section className="bg-white">
+
+        <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
+
+          <div className="grid gap-6 lg:grid-cols-2">
+
+            {/* Arbeitnehmer */}
+
+            <div
+              id="arbeitnehmer"
+              className="
+                relative
+                overflow-hidden
+                rounded-[30px]
+                bg-slate-950
+                p-8
+                text-white
+                sm:p-10
+              "
+            >
+
+              <div className="absolute right-[-80px] top-[-80px] h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
+
+              <div className="relative">
+
+                <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-300">
+                  Für Arbeitnehmer
                 </p>
 
-                <div className="mt-10 flex flex-wrap gap-3">
+                <h2 className="mt-4 text-3xl font-black tracking-[-0.03em] sm:text-4xl">
+                  Zeige, was du
+                  <span className="block text-blue-400">
+                    kannst.
+                  </span>
+                </h2>
 
-                  <Link
-                    href="/registrieren?role=employee"
-                    className="rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700"
-                  >
-                    Als Arbeitnehmer starten
-                  </Link>
+                <p className="mt-5 max-w-lg leading-7 text-slate-300">
+                  Erstelle dein professionelles Profil und
+                  werde von passenden Arbeitgebern gefunden.
+                </p>
 
-                  <Link
-                    href="/registrieren?role=employer"
-                    className="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-sm font-bold text-slate-900 transition hover:-translate-y-0.5 hover:border-blue-600 hover:text-blue-600"
-                  >
-                    Für Unternehmen
-                  </Link>
+                <div className="mt-7 space-y-3">
 
-                </div>
-
-                <div className="mt-9 flex flex-wrap gap-x-8 gap-y-3">
-
-                  {[
-                    "Professionelle Profile",
-                    "Intelligentes Matching",
-                    "Für beide Seiten",
-                  ].map((item) => (
-                    <span
-                      key={item}
-                      className="flex items-center gap-2 text-sm font-semibold text-slate-500"
+                  {benefits.map((benefit) => (
+                    <div
+                      key={benefit}
+                      className="flex items-center gap-3 text-sm font-semibold text-slate-200"
                     >
-                      <span className="text-blue-600">✓</span>
-                      {item}
-                    </span>
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600">
+                        <Check className="h-3.5 w-3.5" />
+                      </div>
+
+                      {benefit}
+                    </div>
                   ))}
 
                 </div>
 
-              </div>
-
-            </ScrollReveal>
-
-            {/* Match Card */}
-
-            <ScrollReveal className="[transition-delay:120ms]">
-
-              <div className="relative mx-auto w-full max-w-[500px]">
-
-                <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-blue-100 blur-3xl" />
-
-                <div className="relative rounded-[34px] border border-slate-200 bg-white p-4 shadow-[0_35px_100px_rgba(15,23,42,.10)]">
-
-                  <div className="rounded-[27px] bg-slate-50 p-6 sm:p-7">
-
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-6">
-
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-600">
-                          STOYAN MATCH
-                        </p>
-
-                        <p className="mt-1.5 text-lg font-black text-slate-950">
-                          Passende Fachkraft
-                        </p>
-                      </div>
-
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full border-[5px] border-blue-100 bg-white text-sm font-black text-blue-600 shadow-sm">
-                        92%
-                      </div>
-
-                    </div>
-
-                    <div className="mt-7 flex items-center gap-4">
-
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xl font-black text-white">
-                        A
-                      </div>
-
-                      <div>
-                        <p className="font-black text-slate-950">
-                          Automobil-Mechatroniker
-                        </p>
-
-                        <p className="mt-1 text-sm text-slate-500">
-                          Luzern · 5+ Jahre Erfahrung
-                        </p>
-                      </div>
-
-                    </div>
-
-                    <div className="mt-7 grid grid-cols-2 gap-3">
-
-                      {[
-                        ["Pensum", "80–100 %"],
-                        ["Standort", "Luzern"],
-                      ].map(([label, value]) => (
-                        <div
-                          key={label}
-                          className="rounded-2xl border border-slate-200 bg-white p-4"
-                        >
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                            {label}
-                          </p>
-
-                          <p className="mt-1.5 text-sm font-bold text-slate-700">
-                            {value}
-                          </p>
-                        </div>
-                      ))}
-
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-
-                      {["BMW", "Diagnose", "MFK"].map((skill) => (
-                        <span
-                          key={skill}
-                          className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-600"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-                <div className="absolute -bottom-7 -left-5 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-xl">
-
-                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
-                    Match gefunden
-                  </p>
-
-                  <p className="mt-1 text-sm font-black text-slate-950">
-                    Schnell · gezielt · transparent
-                  </p>
-
-                </div>
-
-              </div>
-
-            </ScrollReveal>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* =====================================================
-          ÜBER STOYAN
-          ===================================================== */}
-
-      <section
-        id="ueber-stoyan"
-        className="scroll-mt-32 px-5 py-24 sm:px-8 lg:px-10 lg:py-32"
-      >
-
-        <div className="mx-auto max-w-[1440px] rounded-[36px] border border-slate-200 bg-slate-50 p-7 shadow-sm sm:p-10 lg:p-14">
-
-          <SectionHeading
-            label="Über STOYAN"
-            title={
-              <>
-                Ein moderner Weg,
-                <br />
-                <span className="text-blue-600">
-                  Menschen zu verbinden.
-                </span>
-              </>
-            }
-            text="Stoyan schafft eine klare Verbindung zwischen Menschen, die Arbeit suchen, und Unternehmen, die passende Fachkräfte suchen."
-          />
-
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-
-            {benefits.map((benefit, index) => (
-              <ScrollReveal
-                key={benefit.title}
-                className={
-                  index === 1
-                    ? "[transition-delay:100ms]"
-                    : index === 2
-                      ? "[transition-delay:200ms]"
-                      : ""
-                }
-              >
-
-                <article className="h-full rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 font-black text-blue-600">
-                    {index + 1}
-                  </div>
-
-                  <h3 className="mt-6 text-xl font-black text-slate-950">
-                    {benefit.title}
-                  </h3>
-
-                  <p className="mt-3 leading-7 text-slate-500">
-                    {benefit.text}
-                  </p>
-
-                </article>
-
-              </ScrollReveal>
-            ))}
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* =====================================================
-          SO FUNKTIONIERT'S
-          ===================================================== */}
-
-      <section
-        id="so-funktioniert"
-        className="scroll-mt-32 px-5 py-24 sm:px-8 lg:px-10 lg:py-32"
-      >
-
-        <div className="mx-auto max-w-[1440px] rounded-[36px] border border-slate-200 bg-white p-7 shadow-sm sm:p-10 lg:p-14">
-
-          <SectionHeading
-            label="So funktioniert's"
-            title={
-              <>
-                Ein klarer Weg.
-                <br />
-                <span className="text-blue-600">
-                  Ein passender Match.
-                </span>
-              </>
-            }
-            text="Der Prozess bleibt von der Profilerstellung bis zur Kontaktaufnahme einfach, übersichtlich und nachvollziehbar."
-          />
-
-          <div className="mt-12 grid gap-4 lg:grid-cols-3">
-
-            {steps.map((step) => (
-              <ScrollReveal key={step.number}>
-
-                <article className="h-full rounded-3xl border border-slate-200 bg-slate-50 p-7 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl">
-
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-sm font-black text-white">
-                    {step.number}
-                  </div>
-
-                  <h3 className="mt-7 text-2xl font-black text-slate-950">
-                    {step.title}
-                  </h3>
-
-                  <p className="mt-4 leading-7 text-slate-500">
-                    {step.text}
-                  </p>
-
-                </article>
-
-              </ScrollReveal>
-            ))}
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* =====================================================
-          ARBEITNEHMER
-          ===================================================== */}
-
-      <section
-        id="arbeitnehmer"
-        className="scroll-mt-32 px-5 py-24 sm:px-8 lg:px-10 lg:py-32"
-      >
-
-        <div className="mx-auto max-w-[1440px] rounded-[36px] border border-slate-200 bg-slate-50 p-7 shadow-sm sm:p-10 lg:p-14">
-
-          <SectionHeading
-            label="Arbeitnehmer"
-            title={
-              <>
-                Zeig, wer du bist.
-                <br />
-                <span className="text-blue-600">
-                  Nicht nur deinen Lebenslauf.
-                </span>
-              </>
-            }
-            text="Erstelle ein professionelles Profil und zeige Unternehmen, was dich ausmacht, was du kannst und wonach du suchst."
-          />
-
-          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-
-            {employeeFeatures.map((feature) => (
-              <div
-                key={feature}
-                className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 font-semibold text-slate-700 shadow-sm"
-              >
-
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-xs font-black text-blue-600">
-                  ✓
-                </span>
-
-                {feature}
-
-              </div>
-            ))}
-
-          </div>
-
-          <Link
-            href="/registrieren?role=employee"
-            className="mt-8 inline-flex rounded-xl bg-blue-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700"
-          >
-            Profil erstellen
-          </Link>
-
-        </div>
-
-      </section>
-
-      {/* =====================================================
-          ARBEITGEBER
-          ===================================================== */}
-
-      <section
-        id="arbeitgeber"
-        className="scroll-mt-32 px-5 py-24 sm:px-8 lg:px-10 lg:py-32"
-      >
-
-        <div className="mx-auto max-w-[1440px] rounded-[36px] border border-slate-200 bg-white p-7 shadow-sm sm:p-10 lg:p-14">
-
-          <SectionHeading
-            label="Arbeitgeber"
-            title={
-              <>
-                Finden Sie die
-                <br />
-                <span className="text-blue-600">
-                  richtigen Menschen.
-                </span>
-              </>
-            }
-            text="Definieren Sie Ihre Anforderungen und finden Sie schneller Arbeitnehmer, die fachlich und persönlich zu Ihrer Stelle passen."
-          />
-
-          <div className="mt-10 rounded-3xl border border-slate-200 bg-slate-50 p-5 sm:p-7">
-
-            <div className="flex items-center justify-between">
-
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[.18em] text-slate-400">
-                  Kandidatensuche
-                </p>
-
-                <p className="mt-1 font-black text-slate-950">
-                  Ihre Anforderungen
-                </p>
-              </div>
-
-              <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-[10px] font-black text-emerald-700">
-                AKTIV
-              </span>
-
-            </div>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-
-              {employerCriteria.map(([label, value]) => (
-                <div
-                  key={label}
-                  className="rounded-2xl border border-slate-200 bg-white p-4"
+                <Link
+                  href="/registrieren?role=employee"
+                  className="
+                    mt-9
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    bg-white
+                    px-5
+                    py-3
+                    font-bold
+                    text-slate-950
+                    transition
+                    hover:bg-blue-50
+                  "
                 >
+                  Profil erstellen
 
-                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                    {label}
-                  </p>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
 
-                  <p className="mt-1 text-sm font-bold text-slate-800">
-                    {value}
-                  </p>
-
-                </div>
-              ))}
+              </div>
 
             </div>
 
-            <Link
-              href="/registrieren?role=employer"
-              className="mt-5 inline-flex rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700"
+            {/* Arbeitgeber */}
+
+            <div
+              id="arbeitgeber"
+              className="
+                relative
+                overflow-hidden
+                rounded-[30px]
+                border
+                border-slate-200
+                bg-slate-50
+                p-8
+                sm:p-10
+              "
             >
-              Kandidaten suchen
-            </Link>
+
+              <div className="absolute right-[-80px] top-[-80px] h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
+
+              <div className="relative">
+
+                <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-600">
+                  Für Arbeitgeber
+                </p>
+
+                <h2 className="mt-4 text-3xl font-black tracking-[-0.03em] sm:text-4xl">
+                  Finde Menschen,
+                  <span className="block text-blue-600">
+                    die wirklich passen.
+                  </span>
+                </h2>
+
+                <p className="mt-5 max-w-lg leading-7 text-slate-600">
+                  Definiere deine Anforderungen und entdecke
+                  passende Kandidaten anhand transparenter
+                  Matching-Kriterien.
+                </p>
+
+                <div className="mt-7 space-y-3">
+
+                  {[
+                    "Kandidaten gezielt suchen",
+                    "Matching-Prozent anzeigen",
+                    "Profile ansehen",
+                    "Kontaktanfragen senden",
+                  ].map((benefit) => (
+                    <div
+                      key={benefit}
+                      className="flex items-center gap-3 text-sm font-semibold text-slate-700"
+                    >
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                        <Check className="h-3.5 w-3.5" />
+                      </div>
+
+                      {benefit}
+                    </div>
+                  ))}
+
+                </div>
+
+                <Link
+                  href="/registrieren?role=employer"
+                  className="
+                    mt-9
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    bg-blue-600
+                    px-5
+                    py-3
+                    font-bold
+                    text-white
+                    shadow-lg
+                    shadow-blue-600/15
+                    transition
+                    hover:bg-blue-700
+                  "
+                >
+                  Firmenkonto erstellen
+
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+
+              </div>
+
+            </div>
 
           </div>
 
@@ -588,52 +729,166 @@ export default function Home() {
 
       {/* =====================================================
           MATCHING
-          ===================================================== */}
+      ===================================================== */}
 
       <section
         id="matching"
-        className="scroll-mt-32 px-5 py-24 sm:px-8 lg:px-10 lg:py-32"
+        className="bg-[#f5f7fb]"
       >
 
-        <div className="mx-auto max-w-[1440px] rounded-[36px] border border-blue-100 bg-blue-50/40 p-8 text-center shadow-sm sm:p-14">
+        <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
 
-          <SectionHeading
-            center
-            label="Matching"
-            title={
-              <>
-                Der richtige Match
-                <br />
-                <span className="text-blue-600">
-                  beginnt mit den richtigen Daten.
-                </span>
-              </>
-            }
-            text="Stoyan bringt relevante Informationen zusammen und macht passende Chancen für beide Seiten sichtbar."
-          />
+          <div className="mx-auto max-w-3xl text-center">
 
-          <div className="mx-auto mt-10 grid max-w-3xl gap-3 sm:grid-cols-3">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
+              <Sparkles className="h-6 w-6" />
+            </div>
 
-            {[
-              ["01", "Profil"],
-              ["02", "Anforderungen"],
-              ["03", "Match"],
-            ].map(([number, title]) => (
-              <div
-                key={number}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-              >
+            <p className="mt-6 text-sm font-black uppercase tracking-[0.18em] text-blue-600">
+              Matching
+            </p>
 
-                <p className="text-3xl font-black text-blue-600">
-                  {number}
-                </p>
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.04em] sm:text-5xl">
+              Nicht einfach irgendein
+              <span className="block text-blue-600">
+                Match.
+              </span>
+            </h2>
 
-                <p className="mt-2 font-bold text-slate-900">
-                  {title}
-                </p>
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              STOYAN bewertet verschiedene Kriterien wie Beruf,
+              Erfahrung, Skills, Ausbildung, Pensum, Lohn und Ort.
+              Dadurch wird sichtbar, wie gut ein Profil zu den
+              Anforderungen passt.
+            </p>
+
+          </div>
+
+          <div className="mx-auto mt-12 max-w-4xl rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] sm:p-8">
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+              {[
+                ["94%", "Gesamt-Match"],
+                ["100%", "Beruf"],
+                ["95%", "Erfahrung"],
+                ["90%", "Skills"],
+              ].map(([value, label]) => (
+                <div
+                  key={label}
+                  className="rounded-2xl bg-slate-50 p-5 text-center"
+                >
+
+                  <p className="text-3xl font-black text-blue-600">
+                    {value}
+                  </p>
+
+                  <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-400">
+                    {label}
+                  </p>
+
+                </div>
+              ))}
+
+            </div>
+
+            <div className="mt-5 rounded-2xl bg-slate-950 p-5 text-white">
+
+              <div className="flex items-center gap-3">
+
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
+                  <Check className="h-5 w-5" />
+                </div>
+
+                <div>
+
+                  <p className="font-black">
+                    Warum passt dieser Kandidat?
+                  </p>
+
+                  <p className="mt-1 text-sm text-slate-400">
+                    Beruf passt · Erfahrung passt · Skills passen · Ort passt
+                  </p>
+
+                </div>
 
               </div>
-            ))}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* =====================================================
+          CTA
+      ===================================================== */}
+
+      <section className="bg-slate-950">
+
+        <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
+
+          <div className="relative overflow-hidden rounded-[30px] bg-blue-600 px-7 py-12 text-center sm:px-12 sm:py-16">
+
+            <div className="absolute left-1/2 top-[-180px] h-96 w-96 -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
+
+            <div className="relative">
+
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-100">
+                Bereit für den nächsten Schritt?
+              </p>
+
+              <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
+                Starte jetzt mit STOYAN.
+              </h2>
+
+              <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-blue-100">
+                Erstelle dein Profil oder registriere dein
+                Unternehmen und entdecke neue Möglichkeiten.
+              </p>
+
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+
+                <Link
+                  href="/registrieren?role=employee"
+                  className="
+                    rounded-xl
+                    bg-white
+                    px-6
+                    py-3.5
+                    font-bold
+                    text-blue-700
+                    transition
+                    hover:bg-blue-50
+                  "
+                >
+                  Als Arbeitnehmer starten
+                </Link>
+
+                <Link
+                  href="/registrieren?role=employer"
+                  className="
+                    rounded-xl
+                    border
+                    border-white/30
+                    bg-white/10
+                    px-6
+                    py-3.5
+                    font-bold
+                    text-white
+                    backdrop-blur
+                    transition
+                    hover:bg-white/20
+                  "
+                >
+                  Als Arbeitgeber starten
+                </Link>
+
+              </div>
+
+            </div>
 
           </div>
 
@@ -643,42 +898,65 @@ export default function Home() {
 
       {/* =====================================================
           FOOTER
-          ===================================================== */}
+      ===================================================== */}
 
-      <footer className="px-5 pb-10 sm:px-8 lg:px-10">
+      <footer className="border-t border-slate-800 bg-slate-950 text-white">
 
-        <div className="mx-auto max-w-[1440px] rounded-3xl border border-slate-200 bg-white px-6 py-8 shadow-sm sm:px-8">
+        <div className="mx-auto max-w-7xl px-6 py-10">
 
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
 
             <div>
-              <p className="font-black tracking-tight text-slate-950">
+
+              <div className="text-xl font-black tracking-[-0.04em]">
                 STOYAN
-              </p>
+                <span className="text-blue-500">
+                  .
+                </span>
+              </div>
 
               <p className="mt-1 text-sm text-slate-500">
-                Menschen. Unternehmen. Matching.
+                Menschen verbinden.
               </p>
+
             </div>
 
-            <div className="flex gap-5 text-sm font-semibold text-slate-500">
+            <div className="flex flex-wrap gap-5 text-sm font-semibold text-slate-400">
 
               <Link
                 href="/login"
-                className="transition hover:text-blue-600"
+                className="transition hover:text-white"
               >
-                Login
+                Einloggen
               </Link>
 
               <Link
                 href="/registrieren"
-                className="transition hover:text-blue-600"
+                className="transition hover:text-white"
               >
                 Registrieren
               </Link>
 
+              <Link
+                href="/arbeitnehmer"
+                className="transition hover:text-white"
+              >
+                Arbeitnehmer
+              </Link>
+
+              <Link
+                href="/arbeitgeber"
+                className="transition hover:text-white"
+              >
+                Arbeitgeber
+              </Link>
+
             </div>
 
+          </div>
+
+          <div className="mt-8 border-t border-slate-800 pt-6 text-xs text-slate-600">
+            © {new Date().getFullYear()} STOYAN. Alle Rechte vorbehalten.
           </div>
 
         </div>
@@ -686,59 +964,5 @@ export default function Home() {
       </footer>
 
     </main>
-  )
-}
-
-/* =========================================================
-   SECTION HEADING
-   ========================================================= */
-
-function SectionHeading({
-  label,
-  title,
-  text,
-  center = false,
-}: {
-  label: string
-  title: React.ReactNode
-  text: string
-  center?: boolean
-}) {
-  return (
-    <div
-      className={
-        center
-          ? "mx-auto max-w-4xl text-center"
-          : "max-w-5xl"
-      }
-    >
-
-      <div
-        className={`mb-6 flex items-center gap-4 ${
-          center ? "justify-center" : ""
-        }`}
-      >
-
-        <span className="h-2 w-2 rounded-full bg-blue-600" />
-
-        <span className="text-xs font-black uppercase tracking-[0.24em] text-slate-500">
-          {label}
-        </span>
-
-      </div>
-
-      <h2 className="text-4xl font-black leading-[0.96] tracking-[-0.06em] text-slate-950 sm:text-5xl lg:text-6xl">
-        {title}
-      </h2>
-
-      <p
-        className={`mt-6 text-lg leading-8 text-slate-500 ${
-          center ? "mx-auto" : ""
-        } max-w-2xl`}
-      >
-        {text}
-      </p>
-
-    </div>
   )
 }
