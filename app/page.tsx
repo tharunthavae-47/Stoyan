@@ -1,4 +1,3 @@
-```tsx
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 
@@ -743,4 +742,3 @@ function SectionHeading({
     </div>
   )
 }
-```
