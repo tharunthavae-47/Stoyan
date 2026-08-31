@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fbfd;
-  --background-soft: #f3faff;
-  --surface: #ffffff;
-  --surface-2: #f5fafc;
+  --background: #07090d;
+  --background-soft: #0b1017;
 
-  --foreground: #0f172a;
-  --muted: #64748b;
+  --surface: #0e141c;
+  --surface-2: #111720;
 
-  --brand: #38bdf8;
-  --brand-strong: #0ea5e9;
+  --foreground: #f8fafc;
+  --muted: #94a3b8;
 
-  --line: #e2e8f0;
+  --brand: #3b82f6;
+  --brand-strong: #60a5fa;
+
+  --line: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -21,7 +22,7 @@
 
 html {
   scroll-behavior: smooth;
-  background: #f8fbfd;
+  background: #07090d;
 }
 
 html,
@@ -33,18 +34,18 @@ body {
 body {
   background:
     radial-gradient(
-      circle at 10% 0%,
-      rgba(56, 189, 248, 0.08),
+      circle at 15% 0%,
+      rgba(59, 130, 246, 0.08),
       transparent 28%
     ),
     radial-gradient(
-      circle at 90% 10%,
-      rgba(125, 211, 252, 0.08),
-      transparent 28%
+      circle at 85% 10%,
+      rgba(34, 211, 238, 0.05),
+      transparent 25%
     ),
-    #f8fbfd;
+    #07090d;
 
-  color: #0f172a;
+  color: #f8fafc;
 
   font-family:
     Arial,
@@ -68,28 +69,51 @@ textarea {
 
 .input {
   width: 100%;
-  border: 1px solid #cbd5e1;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
   border-radius: 0.75rem;
-  background: #ffffff;
+
+  background: #111720;
+
   padding: 0.75rem 1rem;
-  color: #0f172a;
+
+  color: #f8fafc;
+
   outline: none;
 
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .input::placeholder {
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .input:focus {
-  border-color: #38bdf8;
+  border-color: #3b82f6;
+
+  background: #151c26;
 
   box-shadow:
-    0 0 0 3px rgba(56, 189, 248, 0.12);
+    0 0 0 3px rgba(59, 130, 246, 0.12);
 }
+
+/* ========================================================= */
+/* LINKS */
+/* ========================================================= */
+
+a {
+  text-decoration: none;
+}
+
+/*
+  Keine globale Linkfarbe setzen.
+  Dadurch können Tailwind-Klassen wie
+  text-white, text-blue-400 usw. sauber funktionieren.
+*/
 
 /* ========================================================= */
 /* SCROLL REVEAL */
@@ -97,6 +121,7 @@ textarea {
 
 .reveal-on-scroll {
   opacity: 0;
+
   transform: translateY(28px);
 
   transition:
@@ -106,30 +131,18 @@ textarea {
 
 .reveal-on-scroll.is-visible {
   opacity: 1;
+
   transform: translateY(0);
 }
 
 /* ========================================================= */
-/* LINKS */
-/* ========================================================= */
-
-/*
-   Keine globale weiße Link-Farbe mehr.
-   Jede Seite bzw. jeder Button darf seine eigene
-   Tailwind-Farbe verwenden.
-*/
-
-a {
-  text-decoration: none;
-}
-
-/* ========================================================= */
-/* TEXT SELECTION */
+/* SELECTION */
 /* ========================================================= */
 
 ::selection {
-  background: rgba(56, 189, 248, 0.22);
-  color: #0f172a;
+  background: rgba(59, 130, 246, 0.35);
+
+  color: #ffffff;
 }
 
 /* ========================================================= */
@@ -141,14 +154,46 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f8fbfd;
+  background: #07090d;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #1e293b;
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #334155;
+}
+
+/* ========================================================= */
+/* MOBILE */
+/* ========================================================= */
+
+@media (max-width: 640px) {
+  html {
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* ========================================================= */
+/* REDUCED MOTION */
+/* ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
