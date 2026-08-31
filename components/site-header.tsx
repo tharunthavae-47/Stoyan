@@ -1,220 +1,95 @@
+```tsx
 import Link from "next/link"
 
 const navigation = [
-  {
-    number: "01",
-    label: "Über STOYAN",
-    href: "/#ueber-stoyan",
-  },
-  {
-    number: "02",
-    label: "So funktioniert's",
-    href: "/#so-funktioniert",
-  },
-  {
-    number: "03",
-    label: "Arbeitnehmer",
-    href: "/#arbeitnehmer",
-  },
-  {
-    number: "04",
-    label: "Arbeitgeber",
-    href: "/#arbeitgeber",
-  },
-  {
-    number: "05",
-    label: "Matching",
-    href: "/#matching",
-  },
+  { label: "Über STOYAN", href: "#ueber-stoyan" },
+  { label: "So funktioniert's", href: "#so-funktioniert" },
+  { label: "Arbeitnehmer", href: "#arbeitnehmer" },
+  { label: "Arbeitgeber", href: "#arbeitgeber" },
+  { label: "Matching", href: "#matching" },
 ]
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 px-4 pt-4 sm:px-6">
-      <nav
-        className="
-          mx-auto
-          flex
-          min-h-[82px]
-          max-w-7xl
-          items-center
-          gap-5
-          rounded-[26px]
-          border
-          border-slate-200
-          bg-white/95
-          px-5
-          py-3
-          shadow-[0_15px_45px_rgba(15,23,42,0.08)]
-          backdrop-blur-xl
-          sm:px-7
-        "
-      >
+    <header className="sticky top-0 z-50 bg-white/95 px-4 pt-4 backdrop-blur-xl sm:px-6">
+      <div className="mx-auto max-w-[1440px]">
 
-        {/* LOGO */}
-        <Link
-          href="/"
-          className="
-            shrink-0
-            text-[28px]
-            font-black
-            tracking-[-0.065em]
-            text-slate-950
-            transition
-            hover:opacity-70
-          "
-        >
-          STOYAN<span className="text-sky-500">.</span>
-        </Link>
+        <div className="flex min-h-[76px] items-center gap-5 rounded-2xl border border-slate-200 bg-white px-4 shadow-[0_12px_40px_rgba(15,23,42,0.08)] sm:px-6">
 
-        {/* NAVIGATION */}
-        <div className="ml-auto hidden items-center gap-2 lg:flex">
+          {/* Logo */}
+          <Link
+            href="/"
+            className="group flex shrink-0 items-center gap-3"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white shadow-lg shadow-blue-600/20 transition duration-300 group-hover:scale-105">
+              S
+            </div>
 
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="
-                group
-                flex
-                items-center
-                gap-2.5
-                rounded-2xl
-                border
-                border-slate-200
-                bg-white
-                px-4
-                py-2.5
-                transition-all
-                duration-300
-                hover:-translate-y-0.5
-                hover:border-sky-200
-                hover:bg-sky-50
-                hover:shadow-[0_8px_22px_rgba(14,165,233,0.10)]
-              "
-            >
-              <span
-                className="
-                  flex
-                  h-6
-                  min-w-6
-                  items-center
-                  justify-center
-                  rounded-lg
-                  bg-slate-100
-                  px-1.5
-                  text-[9px]
-                  font-black
-                  tracking-wider
-                  text-slate-400
-                  transition
-                  group-hover:bg-sky-100
-                  group-hover:text-sky-600
-                "
-              >
-                {item.number}
-              </span>
+            <div className="hidden sm:block">
+              <div className="text-xl font-black tracking-[-0.06em] text-slate-950">
+                STOYAN
+              </div>
 
-              <span
-                className="
-                  whitespace-nowrap
-                  text-xs
-                  font-bold
-                  text-slate-600
-                  transition
-                  group-hover:text-sky-600
-                "
+              <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                Menschen verbinden
+              </div>
+            </div>
+          </Link>
+
+          {/* Navigation */}
+          <nav className="ml-auto hidden items-center gap-3 lg:flex">
+
+            {navigation.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-xs font-bold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 hover:shadow-md"
               >
                 {item.label}
-              </span>
+              </a>
+            ))}
+
+          </nav>
+
+          {/* Buttons */}
+          <div className="ml-3 flex shrink-0 items-center gap-2">
+
+            <Link
+              href="/login"
+              className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 sm:inline-flex"
+            >
+              Einloggen
             </Link>
-          ))}
 
+            <Link
+              href="/registrieren"
+              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-700"
+            >
+              Registrieren
+            </Link>
+
+          </div>
         </div>
 
-        {/* ACTIONS */}
-        <div className="ml-2 hidden items-center gap-2 md:flex">
+        {/* Mobile Navigation */}
+        <div className="mt-2 overflow-x-auto lg:hidden">
+          <div className="flex min-w-max gap-2 pb-2">
 
-          <Link
-            href="/login"
-            className="
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              px-4
-              py-2.5
-              text-sm
-              font-bold
-              text-slate-700
-              transition
-              hover:border-slate-300
-              hover:bg-slate-50
-              hover:text-slate-950
-            "
-          >
-            Einloggen
-          </Link>
+            {navigation.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600"
+              >
+                {item.label}
+              </a>
+            ))}
 
-          <Link
-            href="/registrieren?role=employee"
-            className="
-              rounded-xl
-              bg-sky-500
-              px-5
-              py-2.5
-              text-sm
-              font-bold
-              text-white
-              shadow-[0_8px_22px_rgba(14,165,233,0.18)]
-              transition-all
-              duration-300
-              hover:-translate-y-0.5
-              hover:bg-sky-600
-            "
-          >
-            Registrieren
-          </Link>
-
+          </div>
         </div>
 
-        {/* MOBILE */}
-        <div className="ml-auto flex items-center gap-2 md:hidden">
-
-          <Link
-            href="/login"
-            className="
-              rounded-xl
-              border
-              border-slate-200
-              px-3
-              py-2
-              text-xs
-              font-bold
-              text-slate-700
-            "
-          >
-            Login
-          </Link>
-
-          <Link
-            href="/registrieren?role=employee"
-            className="
-              rounded-xl
-              bg-sky-500
-              px-3
-              py-2
-              text-xs
-              font-bold
-              text-white
-            "
-          >
-            Starten
-          </Link>
-
-        </div>
-
-      </nav>
+      </div>
     </header>
   )
 }
+```
