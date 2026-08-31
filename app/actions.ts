@@ -1,4 +1,3 @@
-```ts
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
@@ -320,5 +319,3 @@ export async function updatePassword(formData: FormData) {
     message: "Passwort erfolgreich geändert.",
   }
 }
-```
-
