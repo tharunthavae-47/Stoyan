@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
+import { SiteHeader } from "@/components/site-header"
 
 const navigation = [
   { number: "01", label: "Über STOYAN", href: "#ueber-stoyan" },
