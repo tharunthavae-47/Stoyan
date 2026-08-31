@@ -1,52 +1,154 @@
 @import "tailwindcss";
 
 :root {
-  --background: #07090d;
-  --background-soft: #0c1017;
-  --surface: #111720;
-  --surface-2: #161d28;
-  --foreground: #f5f7fb;
-  --muted: #96a0ae;
-  --brand: #5b8cff;
-  --brand-strong: #7aa2ff;
-  --line: rgba(255,255,255,.10);
+  --background: #f8fbfd;
+  --background-soft: #f3faff;
+  --surface: #ffffff;
+  --surface-2: #f5fafc;
+
+  --foreground: #0f172a;
+  --muted: #64748b;
+
+  --brand: #38bdf8;
+  --brand-strong: #0ea5e9;
+
+  --line: #e2e8f0;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: var(--background); }
-html, body { margin: 0; min-height: 100%; }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #f8fbfd;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
 body {
   background:
-    radial-gradient(circle at 15% 0%, rgba(91,140,255,.12), transparent 30%),
-    radial-gradient(circle at 85% 15%, rgba(125,92,255,.10), transparent 28%),
-    var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(56, 189, 248, 0.08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(125, 211, 252, 0.08),
+      transparent 28%
+    ),
+    #f8fbfd;
+
+  color: #0f172a;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-button, input, select, textarea { font: inherit; }
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* ========================================================= */
+/* INPUTS */
+/* ========================================================= */
+
 .input {
   width: 100%;
   border: 1px solid #cbd5e1;
-  border-radius: .75rem;
-  background: #fff;
-  padding: .75rem 1rem;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.75rem 1rem;
+  color: #0f172a;
   outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
-.input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+
+.input::placeholder {
+  color: #94a3b8;
+}
+
+.input:focus {
+  border-color: #38bdf8;
+
+  box-shadow:
+    0 0 0 3px rgba(56, 189, 248, 0.12);
+}
+
+/* ========================================================= */
+/* SCROLL REVEAL */
+/* ========================================================= */
+
 .reveal-on-scroll {
   opacity: 0;
   transform: translateY(28px);
-  transition: opacity .75s cubic-bezier(.22,1,.36,1), transform .75s cubic-bezier(.22,1,.36,1);
-}
-.reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
 
-/* High-contrast navigation links on dark surfaces. */
-main a:not([class]) {
-  color: #fff;
-}
-main a:not([class]):hover {
-  color: #fff;
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-::selection { background: rgba(91,140,255,.35); color: #fff; }
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========================================================= */
+/* LINKS */
+/* ========================================================= */
+
+/*
+   Keine globale weiße Link-Farbe mehr.
+   Jede Seite bzw. jeder Button darf seine eigene
+   Tailwind-Farbe verwenden.
+*/
+
+a {
+  text-decoration: none;
+}
+
+/* ========================================================= */
+/* TEXT SELECTION */
+/* ========================================================= */
+
+::selection {
+  background: rgba(56, 189, 248, 0.22);
+  color: #0f172a;
+}
+
+/* ========================================================= */
+/* SCROLLBAR */
+/* ========================================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fbfd;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
