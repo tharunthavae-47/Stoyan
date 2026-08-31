@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import { SiteHeader } from "@/components/site-header"
 
 export const metadata: Metadata = {
-  title: "STOYAN – Menschen. Unternehmen. Matching.",
+  title: "STOYAN – Menschen verbinden",
   description:
-    "Stoyan verbindet Arbeitnehmer und Unternehmen mit professionellen Profilen, gezielter Suche und intelligentem Matching.",
-  themeColor: "#ffffff",
+    "STOYAN verbindet qualifizierte Arbeitnehmer mit passenden Arbeitgebern.",
 }
 
 export default function RootLayout({
@@ -15,7 +15,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      <body>{children}</body>
+      <body className="bg-[#f7f9fc] text-slate-950 antialiased">
+        <div className="min-h-screen">
+
+          <SiteHeader />
+
+          <main>
+            {children}
+          </main>
+
+        </div>
+      </body>
     </html>
   )
 }
