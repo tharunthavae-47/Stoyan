@@ -1,19 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F7F9FC;
-  --background-soft: #EEF4FA;
+  --background: #ffffff;
+  --background-soft: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
 
-  --surface: #FFFFFF;
-  --surface-2: #F1F5F9;
+  --foreground: #0f172a;
+  --muted: #64748b;
 
-  --foreground: #0F172A;
-  --muted: #64748B;
+  --brand: #2563eb;
+  --brand-strong: #1d4ed8;
 
-  --brand: #2563EB;
-  --brand-strong: #1D4ED8;
-
-  --line: #E2E8F0;
+  --line: #e2e8f0;
 }
 
 * {
@@ -22,38 +21,32 @@
 
 html {
   scroll-behavior: smooth;
-  background: #07090d;
+  background: #ffffff !important;
 }
 
 html,
 body {
   margin: 0;
   min-height: 100%;
+  background: #ffffff !important;
+  color: #0f172a;
 }
 
 body {
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
   background:
     radial-gradient(
-      circle at 15% 0%,
-      rgba(59, 130, 246, 0.08),
+      circle at 10% 0%,
+      rgba(37, 99, 235, 0.06),
       transparent 28%
     ),
     radial-gradient(
-      circle at 85% 10%,
-      rgba(34, 211, 238, 0.05),
+      circle at 90% 10%,
+      rgba(59, 130, 246, 0.04),
       transparent 25%
     ),
-    #07090d;
-
-  color: #f8fafc;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    #ffffff !important;
 }
 
 button,
@@ -63,67 +56,32 @@ textarea {
   font: inherit;
 }
 
-/* ========================================================= */
-/* INPUTS */
-/* ========================================================= */
-
-.input {
-  width: 100%;
-
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  border-radius: 0.75rem;
-
-  background: #111720;
-
-  padding: 0.75rem 1rem;
-
-  color: #f8fafc;
-
-  outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+button {
+  cursor: pointer;
 }
-
-.input::placeholder {
-  color: #64748b;
-}
-
-.input:focus {
-  border-color: #3b82f6;
-
-  background: #151c26;
-
-  box-shadow:
-    0 0 0 3px rgba(59, 130, 246, 0.12);
-}
-
-/* ========================================================= */
-/* LINKS */
-/* ========================================================= */
 
 a {
   text-decoration: none;
 }
 
-/*
-  Keine globale Linkfarbe setzen.
-  Dadurch können Tailwind-Klassen wie
-  text-white, text-blue-400 usw. sauber funktionieren.
-*/
+.input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0.75rem 1rem;
+  outline: none;
+}
 
-/* ========================================================= */
-/* SCROLL REVEAL */
-/* ========================================================= */
+.input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
 
 .reveal-on-scroll {
   opacity: 0;
-
   transform: translateY(28px);
-
   transition:
     opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
@@ -131,69 +89,10 @@ a {
 
 .reveal-on-scroll.is-visible {
   opacity: 1;
-
   transform: translateY(0);
 }
 
-/* ========================================================= */
-/* SELECTION */
-/* ========================================================= */
-
 ::selection {
-  background: rgba(59, 130, 246, 0.35);
-
-  color: #ffffff;
-}
-
-/* ========================================================= */
-/* SCROLLBAR */
-/* ========================================================= */
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #07090d;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-/* ========================================================= */
-/* MOBILE */
-/* ========================================================= */
-
-@media (max-width: 640px) {
-  html {
-    scroll-padding-top: 80px;
-  }
-
-  body {
-    overflow-x: hidden;
-  }
-}
-
-/* ========================================================= */
-/* REDUCED MOTION */
-/* ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  background: rgba(37, 99, 235, 0.2);
+  color: #0f172a;
 }
