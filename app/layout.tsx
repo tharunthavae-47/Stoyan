@@ -2,10 +2,10 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Stoyan – Menschen. Unternehmen. Matching.",
+  title: "STOYAN – Menschen. Unternehmen. Matching.",
   description:
-    "Stoyan bringt Arbeitnehmer und Unternehmen mit professionellen Profilen und intelligentem Matching zusammen.",
-  themeColor: "#F7F9FC",
+    "Stoyan verbindet Arbeitnehmer und Unternehmen mit professionellen Profilen, gezielter Suche und intelligentem Matching.",
+  themeColor: "#ffffff",
 }
 
 export default function RootLayout({
@@ -14,10 +14,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="de" className="bg-[#F7F9FC]">
-      <body className="min-h-screen bg-[#F7F9FC] text-[#0F172A]">
-        {children}
-      </body>
+    <html lang="de">
+      <body>{children}</body>
     </html>
   )
 }
