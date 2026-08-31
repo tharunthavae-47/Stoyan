@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Stoyan – Menschen. Unternehmen. Matching.",
   description:
     "Stoyan bringt Arbeitnehmer und Unternehmen mit professionellen Profilen und intelligentem Matching zusammen.",
-  themeColor: "#07090d",
+  themeColor: "#F7F9FC",
 }
 
 export default function RootLayout({
@@ -14,11 +14,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="de"
-      className="bg-[#07090d]"
-    >
-      <body className="min-h-screen bg-[#07090d] text-white">
+    <html lang="de" className="bg-[#F7F9FC]">
+      <body className="min-h-screen bg-[#F7F9FC] text-[#0F172A]">
         {children}
       </body>
     </html>
