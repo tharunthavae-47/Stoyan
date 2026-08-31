@@ -2,14 +2,6 @@ import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 import { SiteHeader } from "@/components/site-header"
 
-const navigation = [
-  { number: "01", label: "Über STOYAN", href: "#ueber-stoyan" },
-  { number: "02", label: "So funktioniert's", href: "#so-funktioniert" },
-  { number: "03", label: "Arbeitnehmer", href: "#arbeitnehmer" },
-  { number: "04", label: "Arbeitgeber", href: "#arbeitgeber" },
-  { number: "05", label: "Matching", href: "#matching" },
-]
-
 const benefits = [
   ["Professionelle Profile", "Erfahrung, Ausbildung, Skills und Persönlichkeit übersichtlich an einem Ort."],
   ["Gezielte Suche", "Unternehmen definieren ihre Anforderungen und finden passende Fachkräfte."],
