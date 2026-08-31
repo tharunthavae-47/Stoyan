@@ -1,6 +1,15 @@
+```tsx
 import Link from "next/link"
-import { ArrowRight, Check, Search, ShieldCheck, Sparkles, Users, Building2, MessageCircle } from "lucide-react"
-import { SiteHeader } from "@/components/site-header"
+import {
+  ArrowRight,
+  Building2,
+  Check,
+  MessageCircle,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from "lucide-react"
 
 const steps = [
   {
@@ -12,7 +21,7 @@ const steps = [
   {
     number: "02",
     title: "Passende Menschen finden",
-    text: "STOYAN vergleicht Anforderungen und Profile und zeigt passende Matches.",
+    text: "STOYAN vergleicht Anforderungen und Profile und zeigt dir passende Matches.",
     icon: Search,
   },
   {
@@ -23,22 +32,32 @@ const steps = [
   },
 ]
 
-const benefits = [
-  "Professionelle Profile",
+const employeeBenefits = [
+  "Professionelles Arbeitnehmerprofil",
+  "Von passenden Arbeitgebern gefunden werden",
   "Intelligentes Matching",
   "Private Kontaktanfragen",
   "Direkter Chat nach Annahme",
 ]
 
+const employerBenefits = [
+  "Kandidaten gezielt suchen",
+  "Matching-Prozent anzeigen",
+  "Profile detailliert ansehen",
+  "Kontaktanfragen senden",
+  "Direkter Chat nach Annahme",
+]
+
+const matchValues = [
+  ["94%", "Gesamt-Match"],
+  ["100%", "Beruf"],
+  ["95%", "Erfahrung"],
+  ["90%", "Skills"],
+]
+
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#f5f7fb] text-slate-950">
-
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
-      <SiteHeader />
+    <main className="min-h-screen overflow-hidden bg-[#f7f9fc] text-slate-950">
 
       {/* =====================================================
           HERO
@@ -46,86 +65,28 @@ export default function HomePage() {
 
       <section className="relative overflow-hidden">
 
-        {/* Background Glow */}
+        {/* Hintergrund */}
 
-        <div
-          className="
-            pointer-events-none
-            absolute
-            left-1/2
-            top-[-220px]
-            h-[600px]
-            w-[900px]
-            -translate-x-1/2
-            rounded-full
-            bg-blue-500/10
-            blur-[120px]
-          "
-        />
+        <div className="pointer-events-none absolute left-1/2 top-[-250px] h-[650px] w-[1000px] -translate-x-1/2 rounded-full bg-blue-500/10 blur-[130px]" />
 
-        <div
-          className="
-            pointer-events-none
-            absolute
-            right-[-200px]
-            top-[200px]
-            h-[400px]
-            w-[400px]
-            rounded-full
-            bg-indigo-400/10
-            blur-[100px]
-          "
-        />
+        <div className="pointer-events-none absolute right-[-200px] top-[300px] h-[450px] w-[450px] rounded-full bg-indigo-400/10 blur-[120px]" />
 
         <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 sm:pb-32 sm:pt-28 lg:pt-32">
 
           <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]">
 
             {/* =================================================
-                LEFT
+                HERO LINKS
             ================================================= */}
 
             <div className="max-w-3xl">
 
-              {/* Badge */}
-
-              <div
-                className="
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-full
-                  border
-                  border-blue-200
-                  bg-white
-                  px-4
-                  py-2
-                  text-sm
-                  font-bold
-                  text-blue-700
-                  shadow-sm
-                "
-              >
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-sm font-bold text-blue-700 shadow-sm">
                 <Sparkles className="h-4 w-4" />
-
                 Die moderne Plattform für Arbeit
               </div>
 
-              {/* Headline */}
-
-              <h1
-                className="
-                  mt-7
-                  max-w-4xl
-                  text-5xl
-                  font-black
-                  leading-[1.02]
-                  tracking-[-0.055em]
-                  text-slate-950
-                  sm:text-6xl
-                  lg:text-7xl
-                "
-              >
+              <h1 className="mt-7 max-w-4xl text-5xl font-black leading-[1.02] tracking-[-0.055em] text-slate-950 sm:text-6xl lg:text-7xl">
                 Menschen und
                 <span className="block text-blue-600">
                   Unternehmen.
@@ -133,22 +94,10 @@ export default function HomePage() {
                 Besser verbunden.
               </h1>
 
-              {/* Text */}
-
-              <p
-                className="
-                  mt-7
-                  max-w-2xl
-                  text-lg
-                  leading-8
-                  text-slate-600
-                  sm:text-xl
-                "
-              >
-                STOYAN bringt Arbeitnehmer und Arbeitgeber
-                zusammen. Professionelle Profile, intelligentes
-                Matching und direkte Kommunikation – einfach
-                und transparent.
+              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
+                STOYAN bringt Arbeitnehmer und Arbeitgeber zusammen.
+                Professionelle Profile, intelligentes Matching und
+                direkte Kommunikation – einfach und transparent.
               </p>
 
               {/* Buttons */}
@@ -157,69 +106,34 @@ export default function HomePage() {
 
                 <Link
                   href="/registrieren?role=employee"
-                  className="
-                    inline-flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-xl
-                    bg-slate-950
-                    px-6
-                    py-3.5
-                    font-bold
-                    text-white
-                    shadow-xl
-                    shadow-slate-950/10
-                    transition-all
-                    duration-200
-                    hover:-translate-y-0.5
-                    hover:bg-blue-600
-                    hover:shadow-blue-600/20
-                  "
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3.5 font-bold text-white shadow-xl shadow-slate-950/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-blue-600/20"
                 >
                   Als Arbeitnehmer starten
-
                   <ArrowRight className="h-4 w-4" />
                 </Link>
 
                 <Link
                   href="/registrieren?role=employer"
-                  className="
-                    inline-flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-xl
-                    border
-                    border-slate-200
-                    bg-white
-                    px-6
-                    py-3.5
-                    font-bold
-                    text-slate-800
-                    shadow-sm
-                    transition-all
-                    duration-200
-                    hover:-translate-y-0.5
-                    hover:border-blue-200
-                    hover:bg-blue-50
-                    hover:text-blue-700
-                  "
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 font-bold text-slate-800 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                 >
                   Für Arbeitgeber
-
                   <Building2 className="h-4 w-4" />
                 </Link>
 
               </div>
 
-              {/* Trust */}
+              {/* Vorteile */}
 
               <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-slate-500">
 
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-emerald-600" />
                   Professionelle Profile
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  Intelligentes Matching
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -232,40 +146,18 @@ export default function HomePage() {
             </div>
 
             {/* =================================================
-                RIGHT – MATCHING CARD
+                MATCHING CARD
             ================================================= */}
 
             <div className="relative">
 
-              <div
-                className="
-                  absolute
-                  -inset-5
-                  rounded-[36px]
-                  bg-blue-500/10
-                  blur-2xl
-                "
-              />
+              <div className="absolute -inset-5 rounded-[36px] bg-blue-500/10 blur-2xl" />
 
-              <div
-                className="
-                  relative
-                  rounded-[30px]
-                  border
-                  border-slate-200
-                  bg-white
-                  p-5
-                  shadow-[0_25px_80px_rgba(15,23,42,0.10)]
-                  sm:p-7
-                "
-              >
-
-                {/* Card Header */}
+              <div className="relative rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_80px_rgba(15,23,42,0.10)] sm:p-7">
 
                 <div className="flex items-center justify-between">
 
                   <div>
-
                     <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">
                       STOYAN MATCHING
                     </p>
@@ -273,7 +165,6 @@ export default function HomePage() {
                     <h2 className="mt-1 text-xl font-black">
                       Passende Kandidaten
                     </h2>
-
                   </div>
 
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
@@ -282,18 +173,17 @@ export default function HomePage() {
 
                 </div>
 
-                {/* Candidate 1 */}
+                {/* Kandidat 1 */}
 
                 <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-4">
 
                   <div className="flex items-center gap-4">
 
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-950 text-lg font-black text-white">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-950 text-lg font-black text-white">
                       M
                     </div>
 
                     <div className="min-w-0 flex-1">
-
                       <p className="font-black">
                         Michael Keller
                       </p>
@@ -301,11 +191,9 @@ export default function HomePage() {
                       <p className="text-sm text-slate-500">
                         Automobil-Mechatroniker
                       </p>
-
                     </div>
 
                     <div className="text-right">
-
                       <p className="text-xl font-black text-blue-600">
                         94%
                       </p>
@@ -313,45 +201,34 @@ export default function HomePage() {
                       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                         Match
                       </p>
-
                     </div>
 
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2">
 
-                    {[
-                      "Diagnose",
-                      "Service",
-                      "Mechanik",
-                    ].map((skill) => (
-                      <span
-                        key={skill}
-                        className="
-                          rounded-full
-                          bg-white
-                          px-3
-                          py-1
-                          text-xs
-                          font-semibold
-                          text-slate-600
-                        "
-                      >
-                        {skill}
-                      </span>
-                    ))}
+                    {["Diagnose", "Service", "Mechanik"].map(
+                      (skill) => (
+                        <span
+                          key={skill}
+                          className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600"
+                        >
+                          {skill}
+                        </span>
+                      )
+                    )}
 
                   </div>
 
                 </div>
 
-                {/* Candidate 2 */}
+                {/* Kandidat 2 */}
 
                 <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-4">
 
                   <div className="flex items-center gap-4">
 
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white">
                       A
                     </div>
 
@@ -383,7 +260,7 @@ export default function HomePage() {
 
                 </div>
 
-                {/* Bottom */}
+                {/* Matching Status */}
 
                 <div className="mt-5 flex items-center justify-between rounded-2xl bg-slate-950 px-5 py-4 text-white">
 
@@ -416,7 +293,7 @@ export default function HomePage() {
       </section>
 
       {/* =====================================================
-          ABOUT
+          ÜBER STOYAN
       ===================================================== */}
 
       <section
@@ -446,8 +323,8 @@ export default function HomePage() {
             <div>
 
               <p className="text-lg leading-8 text-slate-600">
-                STOYAN verbindet Menschen und Unternehmen auf
-                einer modernen Plattform. Statt unübersichtlicher
+                STOYAN verbindet Menschen und Unternehmen auf einer
+                modernen Plattform. Statt unübersichtlicher
                 Bewerbungen und endloser Suche steht bei uns die
                 passende Verbindung im Mittelpunkt.
               </p>
@@ -468,12 +345,12 @@ export default function HomePage() {
       </section>
 
       {/* =====================================================
-          HOW IT WORKS
+          SO FUNKTIONIERT'S
       ===================================================== */}
 
       <section
         id="so-funktioniert"
-        className="bg-[#f5f7fb]"
+        className="bg-[#f7f9fc]"
       >
 
         <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
@@ -502,18 +379,7 @@ export default function HomePage() {
               return (
                 <div
                   key={step.number}
-                  className="
-                    rounded-3xl
-                    border
-                    border-slate-200
-                    bg-white
-                    p-7
-                    shadow-sm
-                    transition-all
-                    duration-300
-                    hover:-translate-y-1
-                    hover:shadow-lg
-                  "
+                  className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                 >
 
                   <div className="flex items-center justify-between">
@@ -560,15 +426,7 @@ export default function HomePage() {
 
             <div
               id="arbeitnehmer"
-              className="
-                relative
-                overflow-hidden
-                rounded-[30px]
-                bg-slate-950
-                p-8
-                text-white
-                sm:p-10
-              "
+              className="relative overflow-hidden rounded-[30px] bg-slate-950 p-8 text-white sm:p-10"
             >
 
               <div className="absolute right-[-80px] top-[-80px] h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
@@ -587,22 +445,24 @@ export default function HomePage() {
                 </h2>
 
                 <p className="mt-5 max-w-lg leading-7 text-slate-300">
-                  Erstelle dein professionelles Profil und
-                  werde von passenden Arbeitgebern gefunden.
+                  Erstelle dein professionelles Profil und werde
+                  von passenden Arbeitgebern gefunden.
                 </p>
 
                 <div className="mt-7 space-y-3">
 
-                  {benefits.map((benefit) => (
+                  {employeeBenefits.map((benefit) => (
                     <div
                       key={benefit}
                       className="flex items-center gap-3 text-sm font-semibold text-slate-200"
                     >
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600">
+
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600">
                         <Check className="h-3.5 w-3.5" />
                       </div>
 
                       {benefit}
+
                     </div>
                   ))}
 
@@ -610,23 +470,9 @@ export default function HomePage() {
 
                 <Link
                   href="/registrieren?role=employee"
-                  className="
-                    mt-9
-                    inline-flex
-                    items-center
-                    gap-2
-                    rounded-xl
-                    bg-white
-                    px-5
-                    py-3
-                    font-bold
-                    text-slate-950
-                    transition
-                    hover:bg-blue-50
-                  "
+                  className="mt-9 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 font-bold text-slate-950 transition hover:bg-blue-50"
                 >
                   Profil erstellen
-
                   <ArrowRight className="h-4 w-4" />
                 </Link>
 
@@ -638,16 +484,7 @@ export default function HomePage() {
 
             <div
               id="arbeitgeber"
-              className="
-                relative
-                overflow-hidden
-                rounded-[30px]
-                border
-                border-slate-200
-                bg-slate-50
-                p-8
-                sm:p-10
-              "
+              className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-slate-50 p-8 sm:p-10"
             >
 
               <div className="absolute right-[-80px] top-[-80px] h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
@@ -673,21 +510,18 @@ export default function HomePage() {
 
                 <div className="mt-7 space-y-3">
 
-                  {[
-                    "Kandidaten gezielt suchen",
-                    "Matching-Prozent anzeigen",
-                    "Profile ansehen",
-                    "Kontaktanfragen senden",
-                  ].map((benefit) => (
+                  {employerBenefits.map((benefit) => (
                     <div
                       key={benefit}
                       className="flex items-center gap-3 text-sm font-semibold text-slate-700"
                     >
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                         <Check className="h-3.5 w-3.5" />
                       </div>
 
                       {benefit}
+
                     </div>
                   ))}
 
@@ -695,25 +529,9 @@ export default function HomePage() {
 
                 <Link
                   href="/registrieren?role=employer"
-                  className="
-                    mt-9
-                    inline-flex
-                    items-center
-                    gap-2
-                    rounded-xl
-                    bg-blue-600
-                    px-5
-                    py-3
-                    font-bold
-                    text-white
-                    shadow-lg
-                    shadow-blue-600/15
-                    transition
-                    hover:bg-blue-700
-                  "
+                  className="mt-9 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white shadow-lg shadow-blue-600/15 transition hover:bg-blue-700"
                 >
                   Firmenkonto erstellen
-
                   <ArrowRight className="h-4 w-4" />
                 </Link>
 
@@ -733,7 +551,7 @@ export default function HomePage() {
 
       <section
         id="matching"
-        className="bg-[#f5f7fb]"
+        className="bg-[#f7f9fc]"
       >
 
         <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
@@ -764,16 +582,13 @@ export default function HomePage() {
 
           </div>
 
+          {/* Match Card */}
+
           <div className="mx-auto mt-12 max-w-4xl rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] sm:p-8">
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
-              {[
-                ["94%", "Gesamt-Match"],
-                ["100%", "Beruf"],
-                ["95%", "Erfahrung"],
-                ["90%", "Skills"],
-              ].map(([value, label]) => (
+              {matchValues.map(([value, label]) => (
                 <div
                   key={label}
                   className="rounded-2xl bg-slate-50 p-5 text-center"
@@ -796,7 +611,7 @@ export default function HomePage() {
 
               <div className="flex items-center gap-3">
 
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600">
                   <Check className="h-5 w-5" />
                 </div>
 
@@ -853,35 +668,14 @@ export default function HomePage() {
 
                 <Link
                   href="/registrieren?role=employee"
-                  className="
-                    rounded-xl
-                    bg-white
-                    px-6
-                    py-3.5
-                    font-bold
-                    text-blue-700
-                    transition
-                    hover:bg-blue-50
-                  "
+                  className="rounded-xl bg-white px-6 py-3.5 font-bold text-blue-700 transition hover:bg-blue-50"
                 >
                   Als Arbeitnehmer starten
                 </Link>
 
                 <Link
                   href="/registrieren?role=employer"
-                  className="
-                    rounded-xl
-                    border
-                    border-white/30
-                    bg-white/10
-                    px-6
-                    py-3.5
-                    font-bold
-                    text-white
-                    backdrop-blur
-                    transition
-                    hover:bg-white/20
-                  "
+                  className="rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 font-bold text-white backdrop-blur transition hover:bg-white/20"
                 >
                   Als Arbeitgeber starten
                 </Link>
@@ -966,3 +760,4 @@ export default function HomePage() {
     </main>
   )
 }
+```
