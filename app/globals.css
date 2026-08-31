@@ -1,12 +1,14 @@
+```css
 @import "tailwindcss";
 
 /* =========================================================
    STOYAN – GLOBAL DESIGN
+   Helles, hochwertiges Interface
    ========================================================= */
 
 :root {
   --background: #ffffff;
-  --background-soft: #f8fafc;
+  --background-soft: #f7f9fc;
 
   --surface: #ffffff;
   --surface-soft: #f8fafc;
@@ -16,6 +18,7 @@
 
   --brand: #2563eb;
   --brand-strong: #1d4ed8;
+  --brand-soft: #eff6ff;
 
   --line: #e2e8f0;
   --line-strong: #cbd5e1;
@@ -47,18 +50,8 @@ body {
     Arial,
     Helvetica,
     sans-serif;
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* =========================================================
-   SELECTION
-   ========================================================= */
-
-::selection {
-  background: rgba(37, 99, 235, 0.18);
-  color: #0f172a;
 }
 
 /* =========================================================
@@ -71,7 +64,7 @@ a {
 }
 
 /* =========================================================
-   FORMS
+   BUTTONS / FORMS
    ========================================================= */
 
 button,
@@ -88,10 +81,10 @@ button {
 .input {
   width: 100%;
   border: 1px solid #cbd5e1;
-  border-radius: 0.75rem;
+  border-radius: 14px;
   background: #ffffff;
   color: #0f172a;
-  padding: 0.75rem 1rem;
+  padding: 12px 16px;
   outline: none;
   transition:
     border-color 0.2s ease,
@@ -104,7 +97,7 @@ button {
 
 .input:focus {
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
 /* =========================================================
@@ -123,6 +116,15 @@ button {
 .reveal-on-scroll.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+  background: rgba(37, 99, 235, 0.16);
+  color: #0f172a;
 }
 
 /* =========================================================
@@ -183,3 +185,4 @@ html::-webkit-scrollbar-thumb:hover {
     transform: none;
   }
 }
+```
