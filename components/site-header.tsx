@@ -1,26 +1,27 @@
+```tsx
 import Link from "next/link"
 
-const navigation = [
-  { label: "Über STOYAN", href: "#ueber-stoyan" },
-  { label: "So funktioniert's", href: "#so-funktioniert" },
-  { label: "Arbeitnehmer", href: "#arbeitnehmer" },
-  { label: "Arbeitgeber", href: "#arbeitgeber" },
-  { label: "Matching", href: "#matching" },
+const links = [
+  { href: "#ueber-stoyan", label: "Über STOYAN" },
+  { href: "#so-funktioniert", label: "So funktioniert's" },
+  { href: "#arbeitnehmer", label: "Arbeitnehmer" },
+  { href: "#arbeitgeber", label: "Arbeitgeber" },
+  { href: "#matching", label: "Matching" },
 ]
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 bg-white/95 px-4 pt-4 backdrop-blur-xl sm:px-6">
+    <header className="sticky top-0 z-50 px-4 pt-4 sm:px-6">
       <div className="mx-auto max-w-[1440px]">
 
-        <div className="flex min-h-[76px] items-center gap-5 rounded-2xl border border-slate-200 bg-white px-4 shadow-[0_12px_40px_rgba(15,23,42,0.08)] sm:px-6">
+        <nav className="flex min-h-[76px] items-center rounded-2xl border border-slate-200 bg-white px-5 shadow-[0_10px_35px_rgba(15,23,42,0.08)]">
 
           {/* Logo */}
           <Link
             href="/"
-            className="group flex shrink-0 items-center gap-3"
+            className="flex shrink-0 items-center gap-3"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white shadow-lg shadow-blue-600/20 transition duration-300 group-hover:scale-105">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white shadow-lg shadow-blue-600/20">
               S
             </div>
 
@@ -36,50 +37,95 @@ export function SiteHeader() {
           </Link>
 
           {/* Navigation */}
-          <nav className="ml-auto hidden items-center gap-3 lg:flex">
-            {navigation.map((item) => (
+          <div className="ml-auto hidden items-center gap-2 lg:flex">
+            {links.map((link) => (
               <a
-                key={item.href}
-                href={item.href}
-                className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-xs font-bold text-slate-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 hover:shadow-md"
+                key={link.href}
+                href={link.href}
+                className="
+                  rounded-xl
+                  border border-transparent
+                  px-4 py-3
+                  text-sm font-semibold
+                  text-slate-600
+                  transition-all
+                  duration-200
+                  hover:border-slate-200
+                  hover:bg-slate-50
+                  hover:text-blue-600
+                "
               >
-                {item.label}
+                {link.label}
               </a>
             ))}
-          </nav>
+          </div>
 
-          {/* Buttons */}
-          <div className="ml-3 flex shrink-0 items-center gap-2">
+          {/* Login / Registrierung */}
+          <div className="ml-4 flex items-center gap-2">
 
             <Link
               href="/login"
-              className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 sm:inline-flex"
+              className="
+                hidden
+                rounded-xl
+                border border-slate-200
+                bg-white
+                px-4 py-2.5
+                text-sm font-bold
+                text-slate-700
+                transition
+                hover:border-blue-200
+                hover:bg-blue-50
+                hover:text-blue-600
+                sm:inline-flex
+              "
             >
               Einloggen
             </Link>
 
             <Link
               href="/registrieren"
-              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-700"
+              className="
+                rounded-xl
+                bg-blue-600
+                px-5 py-2.5
+                text-sm font-bold
+                text-white
+                shadow-lg shadow-blue-600/20
+                transition
+                hover:-translate-y-0.5
+                hover:bg-blue-700
+              "
             >
               Registrieren
             </Link>
 
           </div>
-
-        </div>
+        </nav>
 
         {/* Mobile Navigation */}
         <div className="mt-2 overflow-x-auto lg:hidden">
           <div className="flex min-w-max gap-2 pb-2">
 
-            {navigation.map((item) => (
+            {links.map((link) => (
               <a
-                key={item.href}
-                href={item.href}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600"
+                key={link.href}
+                href={link.href}
+                className="
+                  rounded-xl
+                  border border-slate-200
+                  bg-white
+                  px-4 py-2.5
+                  text-xs font-bold
+                  text-slate-600
+                  shadow-sm
+                  transition
+                  hover:border-blue-200
+                  hover:bg-blue-50
+                  hover:text-blue-600
+                "
               >
-                {item.label}
+                {link.label}
               </a>
             ))}
 
@@ -90,3 +136,4 @@ export function SiteHeader() {
     </header>
   )
 }
+```
