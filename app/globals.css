@@ -93,17 +93,21 @@ body::before {
   mask-image: linear-gradient(to bottom, black, transparent 75%);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-  transition: color 0.2s ease, opacity 0.2s ease;
-}
+/* Element-level resets go in @layer base so Tailwind utilities
+   (text-white, bg-*, etc.) always win over these defaults. */
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
 
-button { cursor: pointer; border: 0; }
-button:disabled { cursor: not-allowed; }
-button, input, select, textarea { font: inherit; }
-input, select, textarea { color: var(--foreground); }
-input::placeholder, textarea::placeholder { color: var(--muted-light); }
+  button { cursor: pointer; border: 0; }
+  button:disabled { cursor: not-allowed; }
+  button, input, select, textarea { font: inherit; }
+  input, select, textarea { color: var(--foreground); }
+  input::placeholder, textarea::placeholder { color: var(--muted-light); }
+}
 
 /* =========================================================
    PREMIUM INPUTS
@@ -224,6 +228,25 @@ textarea:focus { outline: none; }
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
+
+/* Ghost = same visual as secondary, semantic alias used across app pages */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--navy);
+  font-weight: 700;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.btn-ghost:hover { background: #f8fafc; border-color: var(--line-strong); }
+
+/* Semantic surface alias used by pricing/marketing sections */
+:root { --surface-2: #eef2f8; }
 
 /* =========================================================
    MARKETING HEADER (public pages)

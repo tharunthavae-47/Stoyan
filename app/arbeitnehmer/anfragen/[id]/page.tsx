@@ -615,15 +615,12 @@ export default function ContactRequestPage({ params }: Props) {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f7f8fa] p-10">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
-
-          <p className="mt-5 font-semibold text-slate-500">
-            Anfrage wird geladen…
-          </p>
-        </div>
-      </main>
+      <div className="card card-pad text-center">
+        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[var(--line)] border-t-[var(--brand)]" />
+        <p className="mt-5 font-semibold text-[var(--muted)]">
+          Anfrage wird geladen…
+        </p>
+      </div>
     )
   }
 
@@ -635,25 +632,18 @@ export default function ContactRequestPage({ params }: Props) {
 
   if (!request) {
     return (
-      <main className="min-h-screen bg-[#f7f8fa] p-10">
-        <div className="mx-auto max-w-3xl rounded-3xl border border-red-200 bg-white p-10 shadow-sm">
-          <h1 className="text-2xl font-black">
-            Anfrage nicht gefunden
-          </h1>
-
-          <p className="mt-3 text-slate-600">
-            {error ||
-              "Diese Anfrage existiert nicht oder du hast keinen Zugriff darauf."}
-          </p>
-
-          <Link
-            href="/arbeitnehmer"
-            className="mt-6 inline-flex rounded-xl bg-slate-950 px-5 py-3 font-bold text-white"
-          >
-            Zurück zum Dashboard
-          </Link>
-        </div>
-      </main>
+      <div className="card card-pad border-[var(--danger)]/30">
+        <h1 className="text-2xl font-black text-[var(--navy)]">
+          Anfrage nicht gefunden
+        </h1>
+        <p className="mt-3 text-[var(--muted)]">
+          {error ||
+            "Diese Anfrage existiert nicht oder du hast keinen Zugriff darauf."}
+        </p>
+        <Link href="/arbeitnehmer" className="btn-primary mt-6 inline-flex">
+          Zurück zum Dashboard
+        </Link>
+      </div>
     )
   }
 
@@ -668,34 +658,8 @@ export default function ContactRequestPage({ params }: Props) {
    */
 
   return (
-    <main className="min-h-screen bg-[#f7f8fa] text-slate-950">
-
-      {/* HEADER */}
-
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex h-20 max-w-5xl items-center justify-between px-6">
-
-          <Link
-            href="/arbeitnehmer"
-            className="text-2xl font-black"
-          >
-            Stoyan
-            <span className="text-blue-600">
-              .
-            </span>
-          </Link>
-
-          <Link
-            href="/arbeitnehmer"
-            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold hover:bg-slate-50"
-          >
-            ← Dashboard
-          </Link>
-
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="animate-fade-up">
+      <div className="mx-auto max-w-5xl">
 
         {/* FEHLER */}
 
@@ -715,15 +679,15 @@ export default function ContactRequestPage({ params }: Props) {
 
         {/* FIRMA */}
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+        <section className="card card-pad">
 
-          <p className="text-sm font-black uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-black uppercase tracking-widest text-[var(--brand)]">
             Kontaktanfrage
           </p>
 
           <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
 
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-3xl font-black text-white">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[var(--navy)] text-3xl font-black text-white">
               {companyName
                 .charAt(0)
                 .toUpperCase()}
@@ -735,7 +699,7 @@ export default function ContactRequestPage({ params }: Props) {
                 {companyName}
               </h1>
 
-              <p className="mt-2 text-slate-500">
+              <p className="mt-2 text-[var(--muted)]">
                 {request.company?.industry ||
                   "Branche nicht angegeben"}
 
@@ -744,7 +708,7 @@ export default function ContactRequestPage({ params }: Props) {
                   : ""}
               </p>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-[var(--muted)]">
                 Anfrage vom{" "}
                 {new Date(
                   request.created_at
@@ -761,7 +725,7 @@ export default function ContactRequestPage({ params }: Props) {
 
           <div className="mt-7 rounded-2xl bg-slate-50 p-5">
 
-            <p className="text-xs font-black uppercase tracking-wider text-slate-400">
+            <p className="text-xs font-black uppercase tracking-wider text-[var(--muted)]">
               Status
             </p>
 
@@ -793,7 +757,7 @@ export default function ContactRequestPage({ params }: Props) {
                 type="button"
                 onClick={acceptRequest}
                 disabled={actionLoading}
-                className="rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl btn-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {actionLoading
                   ? "Wird gespeichert…"
@@ -820,7 +784,7 @@ export default function ContactRequestPage({ params }: Props) {
           "accepted" && (
           <section className="mt-7 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
-            <div className="border-b border-slate-200 bg-slate-950 px-6 py-5 text-white">
+            <div className="border-b border-slate-200 bg-[var(--navy)] px-6 py-5 text-white">
 
               <p className="text-xs font-black uppercase tracking-widest text-blue-300">
                 Privater Chat
@@ -830,7 +794,7 @@ export default function ContactRequestPage({ params }: Props) {
                 {companyName}
               </h2>
 
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-[var(--muted)]">
                 Nur du und dieser Arbeitgeber
                 können diesen Chat sehen.
               </p>
@@ -842,7 +806,7 @@ export default function ContactRequestPage({ params }: Props) {
             <div className="min-h-[420px] max-h-[550px] space-y-4 overflow-y-auto bg-slate-50 p-6">
 
               {loadingMessages && (
-                <p className="text-center text-sm text-slate-400">
+                <p className="text-center text-sm text-[var(--muted)]">
                   Nachrichten werden geladen…
                 </p>
               )}
@@ -861,7 +825,7 @@ export default function ContactRequestPage({ params }: Props) {
                         Noch keine Nachrichten
                       </h3>
 
-                      <p className="mt-2 text-sm text-slate-500">
+                      <p className="mt-2 text-sm text-[var(--muted)]">
                         Schreibe der Firma eine erste Nachricht.
                       </p>
 
@@ -902,7 +866,7 @@ export default function ContactRequestPage({ params }: Props) {
                           className={`mt-1 text-[10px] ${
                             own
                               ? "text-blue-100"
-                              : "text-slate-400"
+                              : "text-[var(--muted)]"
                           }`}
                         >
                           {new Date(
@@ -982,7 +946,7 @@ export default function ContactRequestPage({ params }: Props) {
 
               </div>
 
-              <p className="mt-2 text-xs text-slate-400">
+              <p className="mt-2 text-xs text-[var(--muted)]">
                 Enter = senden · Shift + Enter = neue Zeile
               </p>
 
@@ -993,6 +957,6 @@ export default function ContactRequestPage({ params }: Props) {
 
       </div>
 
-    </main>
+    </div>
   )
 }

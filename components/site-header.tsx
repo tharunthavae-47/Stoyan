@@ -12,6 +12,7 @@ const links = [
   { href: "#arbeitnehmer", label: "Arbeitnehmer" },
   { href: "#arbeitgeber", label: "Arbeitgeber" },
   { href: "#matching", label: "Matching" },
+  { href: "/preise", label: "Preise" },
 ]
 
 export function SiteHeader() {
