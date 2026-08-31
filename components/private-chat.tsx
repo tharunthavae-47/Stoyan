@@ -1,4 +1,3 @@
-```tsx
 "use client"
 
 import { useEffect, useRef, useState } from "react"
@@ -1184,5 +1183,3 @@ export default function PrivateChat({ requestId }: Props) {
     </div>
   )
 }
-```
-
