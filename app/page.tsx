@@ -38,7 +38,7 @@ const steps = [
 ]
 
 const employeeFeatures = [
-  "Profilbild & persönliche Bilder",
+  "Profilbild & persönliche Informationen",
   "Ausbildung & Berufserfahrung",
   "Skills & Sprachen",
   "Wunschlohn & Pensum",
@@ -57,108 +57,95 @@ const employerCriteria = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#f7fafc] text-slate-950">
-
+    <main className="min-h-screen overflow-x-hidden bg-[#f8fbfd] text-slate-900">
       {/* ====================================================== */}
       {/* NAVIGATION */}
       {/* ====================================================== */}
 
-      <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-[#f7fafc]/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-8">
-
           <Link
             href="/"
-            className="text-[25px] font-semibold tracking-[-0.06em] text-slate-950"
+            className="text-[24px] font-semibold tracking-[-0.06em] text-slate-900"
           >
             STOYAN
           </Link>
 
           <nav className="hidden items-center gap-8 lg:flex">
-
             <a
               href="#vorteile"
-              className="text-sm font-medium text-slate-500 transition hover:text-slate-950"
+              className="text-sm font-medium text-slate-500 transition hover:text-sky-600"
             >
               Vorteile
             </a>
 
             <a
               href="#so-funktioniert"
-              className="text-sm font-medium text-slate-500 transition hover:text-slate-950"
+              className="text-sm font-medium text-slate-500 transition hover:text-sky-600"
             >
               So funktioniert&apos;s
             </a>
 
             <a
               href="#arbeitnehmer"
-              className="text-sm font-medium text-slate-500 transition hover:text-slate-950"
+              className="text-sm font-medium text-slate-500 transition hover:text-sky-600"
             >
               Arbeitnehmer
             </a>
 
             <a
               href="#arbeitgeber"
-              className="text-sm font-medium text-slate-500 transition hover:text-slate-950"
+              className="text-sm font-medium text-slate-500 transition hover:text-sky-600"
             >
               Arbeitgeber
             </a>
-
           </nav>
 
           <div className="flex items-center gap-2">
-
             <Link
               href="/login"
-              className="hidden px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:text-slate-950 sm:inline-flex"
+              className="hidden px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:text-sky-600 sm:inline-flex"
             >
               Login
             </Link>
 
             <Link
               href="/registrieren"
-              className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
             >
               Registrieren
             </Link>
-
           </div>
-
         </div>
       </header>
-
 
       {/* ====================================================== */}
       {/* HERO */}
       {/* ====================================================== */}
 
-      <section className="relative border-b border-slate-200 bg-white">
-
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -left-32 -top-40 h-[500px] w-[500px] rounded-full bg-sky-100/60 blur-[130px]" />
-          <div className="absolute -right-40 top-20 h-[550px] w-[550px] rounded-full bg-blue-50 blur-[140px]" />
+      <section className="relative overflow-hidden border-b border-slate-200/70 bg-white">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -left-40 -top-48 h-[580px] w-[580px] rounded-full bg-sky-100/70 blur-[130px]" />
+          <div className="absolute -right-48 top-0 h-[600px] w-[600px] rounded-full bg-cyan-50 blur-[140px]" />
+          <div className="absolute bottom-0 left-[30%] h-[300px] w-[400px] rounded-full bg-blue-50 blur-[120px]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28 lg:py-32">
-
           <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_.95fr]">
-
             <ScrollReveal>
-
               <div className="max-w-3xl">
+                <div className="flex items-center gap-3">
+                  <span className="h-px w-10 bg-sky-500" />
 
-                <div className="mb-7 flex items-center gap-3">
-
-                  <span className="h-px w-8 bg-sky-500" />
-
-                  <span className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">
+                  <span className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-600">
                     Die moderne Job-Matching-Plattform
                   </span>
-
                 </div>
 
-                <h1 className="text-[52px] font-semibold leading-[0.98] tracking-[-0.055em] text-slate-950 sm:text-[68px] lg:text-[78px]">
+                <h1 className="mt-8 text-[50px] font-semibold leading-[0.98] tracking-[-0.06em] text-slate-900 sm:text-[68px] lg:text-[78px]">
                   Menschen finden.
                   <br />
+
                   <span className="text-sky-500">
                     Potenzial erkennen.
                   </span>
@@ -172,173 +159,133 @@ export default function Home() {
                 </p>
 
                 <div className="mt-9 flex flex-wrap gap-3">
-
                   <Link
                     href="/registrieren?role=employee"
-                    className="rounded-lg bg-sky-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/15 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
+                    className="rounded-xl bg-sky-500 px-6 py-3.5 text-sm font-semibold text-white shadow-xl shadow-sky-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
                   >
                     Als Arbeitnehmer starten
                   </Link>
 
                   <Link
                     href="/registrieren?role=employer"
-                    className="rounded-lg border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-800 transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                    className="rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50"
                   >
                     Für Unternehmen
                   </Link>
-
                 </div>
 
-                <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3">
-
-                  <span className="flex items-center gap-2 text-sm text-slate-500">
-                    <span className="text-sky-500">✓</span>
+                <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-sm font-medium text-slate-500">
+                  <span className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 text-xs text-sky-600">
+                      ✓
+                    </span>
                     Professionelle Profile
                   </span>
 
-                  <span className="flex items-center gap-2 text-sm text-slate-500">
-                    <span className="text-sky-500">✓</span>
+                  <span className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 text-xs text-sky-600">
+                      ✓
+                    </span>
                     Intelligentes Matching
                   </span>
 
-                  <span className="flex items-center gap-2 text-sm text-slate-500">
-                    <span className="text-sky-500">✓</span>
+                  <span className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 text-xs text-sky-600">
+                      ✓
+                    </span>
                     Für beide Seiten
                   </span>
-
                 </div>
-
               </div>
-
             </ScrollReveal>
 
-
-            {/* HERO VISUAL */}
-
             <ScrollReveal className="[transition-delay:120ms]">
-
               <div className="relative mx-auto w-full max-w-[500px]">
+                <div className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-sky-200/50 blur-3xl" />
 
-                <div className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-sky-100 blur-3xl" />
-
-                <div className="relative border border-slate-200 bg-white p-5 shadow-[0_30px_80px_rgba(15,23,42,.10)]">
-
-                  <div className="border border-slate-100 bg-slate-50 p-5">
-
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-5">
-
+                <div className="relative rounded-[32px] border border-white bg-white/90 p-4 shadow-[0_30px_80px_rgba(14,116,144,.12)] backdrop-blur">
+                  <div className="rounded-[24px] border border-sky-100 bg-[#f8fcfe] p-6">
+                    <div className="flex items-center justify-between border-b border-sky-100 pb-5">
                       <div>
-
                         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                           STOYAN MATCH
                         </p>
 
-                        <p className="mt-1 text-lg font-semibold text-slate-950">
+                        <p className="mt-1 text-lg font-semibold text-slate-900">
                           Passende Fachkraft
                         </p>
-
                       </div>
 
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-sm font-bold text-sky-600">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-600">
                         92%
                       </div>
-
                     </div>
 
-
-                    <div className="mt-6 flex items-center gap-4">
-
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-sky-500 text-xl font-semibold text-white">
+                    <div className="mt-7 flex items-center gap-4">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-sky-500 text-xl font-semibold text-white shadow-lg shadow-sky-500/20">
                         A
                       </div>
 
                       <div>
-
-                        <p className="font-semibold text-slate-950">
+                        <p className="font-semibold text-slate-900">
                           Automobil-Mechatroniker
                         </p>
 
                         <p className="mt-1 text-sm text-slate-500">
                           Luzern · 5+ Jahre Erfahrung
                         </p>
-
                       </div>
-
                     </div>
 
-
-                    <div className="mt-6 grid grid-cols-2 gap-3">
-
-                      <div className="border border-slate-200 bg-white p-4">
-
+                    <div className="mt-7 grid grid-cols-2 gap-3">
+                      <div className="rounded-2xl border border-sky-100 bg-white p-4">
                         <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                           Pensum
                         </p>
 
-                        <p className="mt-1 text-sm font-semibold text-slate-900">
+                        <p className="mt-1 text-sm font-semibold text-slate-800">
                           80–100 %
                         </p>
-
                       </div>
 
-                      <div className="border border-slate-200 bg-white p-4">
-
+                      <div className="rounded-2xl border border-sky-100 bg-white p-4">
                         <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                           Standort
                         </p>
 
-                        <p className="mt-1 text-sm font-semibold text-slate-900">
+                        <p className="mt-1 text-sm font-semibold text-slate-800">
                           Luzern
                         </p>
-
                       </div>
-
                     </div>
 
-
-                    <div className="mt-3 flex flex-wrap gap-2">
-
-                      <span className="border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
-                        BMW
-                      </span>
-
-                      <span className="border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
-                        Diagnose
-                      </span>
-
-                      <span className="border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
-                        MFK
-                      </span>
-
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {["BMW", "Diagnose", "MFK"].map((skill) => (
+                        <span
+                          key={skill}
+                          className="rounded-full border border-sky-100 bg-white px-3 py-1.5 text-xs font-medium text-slate-600"
+                        >
+                          {skill}
+                        </span>
+                      ))}
                     </div>
-
                   </div>
-
                 </div>
 
-
-                <div className="absolute -bottom-6 -left-5 border border-slate-200 bg-white px-5 py-4 shadow-xl">
-
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                <div className="absolute -bottom-6 -left-4 rounded-2xl border border-sky-100 bg-white/95 px-5 py-4 shadow-[0_20px_50px_rgba(15,23,42,.10)] backdrop-blur">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                     Match gefunden
                   </p>
 
-                  <p className="mt-1 text-sm font-semibold text-slate-950">
+                  <p className="mt-1 text-sm font-semibold text-slate-800">
                     Schnell · gezielt · transparent
                   </p>
-
                 </div>
-
               </div>
-
             </ScrollReveal>
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* ====================================================== */}
       {/* VORTEILE */}
@@ -346,76 +293,63 @@ export default function Home() {
 
       <section
         id="vorteile"
-        className="border-b border-slate-200 bg-[#f7fafc] px-5 py-20 sm:px-8 sm:py-28"
+        className="bg-[#f5fafc] px-5 py-24 sm:px-8 sm:py-32"
       >
-
         <div className="mx-auto max-w-7xl">
-
           <ScrollReveal>
-
-            <div className="max-w-3xl">
-
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">
                 Warum STOYAN
               </p>
 
-              <h2 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.045em] text-slate-950 sm:text-5xl">
+              <h2 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.05em] text-slate-900 sm:text-5xl">
                 Weniger suchen.
                 <br />
+
                 <span className="text-sky-500">
                   Besser finden.
                 </span>
               </h2>
 
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-500">
+              <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-500">
                 Stoyan konzentriert sich auf das Wesentliche und bringt
                 Arbeitnehmer und Unternehmen gezielter zusammen.
               </p>
-
             </div>
-
           </ScrollReveal>
 
-
-          <div className="mt-14 grid border border-slate-200 bg-white md:grid-cols-3">
-
+          <div className="mt-16 grid gap-5 md:grid-cols-3">
             {benefits.map((benefit, index) => (
-
               <ScrollReveal
                 key={benefit.title}
                 className={
-                  index > 0
+                  index === 1
                     ? "[transition-delay:100ms]"
-                    : ""
+                    : index === 2
+                      ? "[transition-delay:200ms]"
+                      : ""
                 }
               >
-
-                <article className="h-full border-b border-slate-200 p-7 transition duration-300 hover:bg-sky-50/40 md:border-b-0 md:border-r last:md:border-r-0">
-
+                <article className="h-full rounded-[28px] border border-white bg-white p-8 shadow-[0_15px_50px_rgba(30,64,175,.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_25px_60px_rgba(14,116,144,.10)]">
                   <span className="text-sm font-semibold text-sky-500">
                     {benefit.number}
                   </span>
 
-                  <h3 className="mt-8 text-xl font-semibold tracking-[-0.02em] text-slate-950">
+                  <div className="mt-7 h-px w-full bg-sky-100" />
+
+                  <h3 className="mt-7 text-xl font-semibold tracking-[-0.02em] text-slate-900">
                     {benefit.title}
                   </h3>
 
                   <p className="mt-4 leading-7 text-slate-500">
                     {benefit.text}
                   </p>
-
                 </article>
-
               </ScrollReveal>
-
             ))}
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* ====================================================== */}
       {/* SO FUNKTIONIERT */}
@@ -423,81 +357,69 @@ export default function Home() {
 
       <section
         id="so-funktioniert"
-        className="border-b border-slate-200 bg-white px-5 py-20 sm:px-8 sm:py-28"
+        className="bg-white px-5 py-24 sm:px-8 sm:py-32"
       >
-
         <div className="mx-auto max-w-7xl">
-
-          <div className="grid gap-16 lg:grid-cols-[.75fr_1.25fr]">
-
+          <div className="grid gap-16 lg:grid-cols-[0.8fr_1.2fr]">
             <ScrollReveal>
-
-              <div>
-
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">
+              <div className="lg:sticky lg:top-28">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">
                   So funktioniert&apos;s
                 </p>
 
-                <h2 className="mt-5 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-slate-950 sm:text-5xl">
-                  Von der Suche
+                <h2 className="mt-5 text-4xl font-semibold leading-[1.03] tracking-[-0.05em] text-slate-900 sm:text-5xl">
+                  Einfach starten.
                   <br />
-                  zum passenden
+                  Gezielt suchen.
                   <br />
+
                   <span className="text-sky-500">
-                    Match.
+                    Passend verbinden.
                   </span>
                 </h2>
 
+                <p className="mt-6 max-w-lg text-lg leading-8 text-slate-500">
+                  Der gesamte Prozess bleibt klar, übersichtlich und auf die
+                  wirklich wichtigen Informationen konzentriert.
+                </p>
               </div>
-
             </ScrollReveal>
 
-
-            <div className="border-t border-slate-200">
-
+            <div className="space-y-5">
               {steps.map((step, index) => (
-
                 <ScrollReveal
                   key={step.title}
                   className={
-                    index > 0
+                    index === 1
                       ? "[transition-delay:100ms]"
-                      : ""
+                      : index === 2
+                        ? "[transition-delay:200ms]"
+                        : ""
                   }
                 >
+                  <article className="rounded-[28px] border border-slate-100 bg-[#f8fbfd] p-7 transition hover:border-sky-100 hover:bg-sky-50/50 sm:p-9">
+                    <div className="grid gap-5 sm:grid-cols-[80px_1fr]">
+                      <span className="text-sm font-semibold text-sky-500">
+                        {step.number}
+                      </span>
 
-                  <div className="grid gap-5 border-b border-slate-200 py-9 sm:grid-cols-[80px_1fr]">
+                      <div>
+                        <h3 className="text-2xl font-semibold tracking-[-0.03em] text-slate-900">
+                          {step.title}
+                        </h3>
 
-                    <span className="text-sm font-semibold text-sky-500">
-                      {step.number}
-                    </span>
-
-                    <div>
-
-                      <h3 className="text-2xl font-semibold tracking-[-0.025em] text-slate-950">
-                        {step.title}
-                      </h3>
-
-                      <p className="mt-3 max-w-2xl leading-7 text-slate-500">
-                        {step.text}
-                      </p>
-
+                        <p className="mt-3 max-w-xl leading-7 text-slate-500">
+                          {step.text}
+                        </p>
+                      </div>
                     </div>
-
-                  </div>
-
+                  </article>
                 </ScrollReveal>
-
               ))}
-
             </div>
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* ====================================================== */}
       {/* ARBEITNEHMER */}
@@ -505,92 +427,70 @@ export default function Home() {
 
       <section
         id="arbeitnehmer"
-        className="border-b border-slate-200 bg-[#f7fafc] px-5 py-20 sm:px-8 sm:py-28"
+        className="bg-[#f5fafc] px-5 py-24 sm:px-8 sm:py-32"
       >
-
         <div className="mx-auto max-w-7xl">
-
-          <div className="grid items-center gap-14 lg:grid-cols-[.8fr_1.2fr]">
-
+          <div className="grid items-center gap-16 lg:grid-cols-[0.85fr_1.15fr]">
             <ScrollReveal>
+              <div className="relative mx-auto max-w-[440px]">
+                <div className="absolute -left-10 top-10 h-48 w-48 rounded-full bg-sky-200/50 blur-3xl" />
 
-              <div className="relative mx-auto max-w-[430px]">
-
-                <div className="absolute -left-10 -top-10 h-48 w-48 rounded-full bg-sky-100 blur-3xl" />
-
-                <div className="relative border border-slate-200 bg-white p-4 shadow-[0_25px_70px_rgba(15,23,42,.08)]">
-
-                  <div className="bg-slate-950 p-7 text-white">
-
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-400">
+                <div className="relative rounded-[32px] border border-white bg-white p-4 shadow-[0_25px_70px_rgba(14,116,144,.10)]">
+                  <div className="rounded-[25px] bg-sky-50 p-7">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-600">
                       Dein Profil
                     </p>
 
                     <div className="mt-8 flex items-center gap-4">
-
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-sky-500 text-xl font-semibold">
-                        T
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-sky-500 text-xl font-semibold text-white">
+                        S
                       </div>
 
                       <div>
-
-                        <p className="font-semibold">
+                        <p className="font-semibold text-slate-900">
                           Dein professionelles Profil
                         </p>
 
-                        <p className="mt-1 text-sm text-slate-400">
+                        <p className="mt-1 text-sm text-slate-500">
                           Alles Wichtige auf einen Blick
                         </p>
-
                       </div>
-
                     </div>
 
-                    <div className="mt-8 space-y-3">
-
-                      <div className="h-2 rounded-full bg-white/10" />
-                      <div className="h-2 w-4/5 rounded-full bg-white/10" />
-                      <div className="h-2 w-3/5 rounded-full bg-white/10" />
-
+                    <div className="mt-9 space-y-3">
+                      <div className="h-3 rounded-full bg-sky-100" />
+                      <div className="h-3 w-4/5 rounded-full bg-sky-100" />
+                      <div className="h-3 w-3/5 rounded-full bg-sky-100" />
                     </div>
 
-                    <div className="mt-8 flex flex-wrap gap-2">
-
-                      <span className="border border-white/10 px-3 py-1.5 text-xs text-slate-300">
-                        Skills
-                      </span>
-
-                      <span className="border border-white/10 px-3 py-1.5 text-xs text-slate-300">
-                        Erfahrung
-                      </span>
-
-                      <span className="border border-white/10 px-3 py-1.5 text-xs text-slate-300">
-                        Ausbildung
-                      </span>
-
+                    <div className="mt-9 flex flex-wrap gap-2">
+                      {["Skills", "Erfahrung", "Ausbildung"].map((item) => (
+                        <span
+                          key={item}
+                          className="rounded-full bg-white px-3 py-2 text-xs font-medium text-slate-600 shadow-sm"
+                        >
+                          {item}
+                        </span>
+                      ))}
                     </div>
-
                   </div>
-
                 </div>
-
               </div>
-
             </ScrollReveal>
 
-
             <ScrollReveal className="[transition-delay:120ms]">
-
               <div>
-
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">
                   Für Arbeitnehmer
                 </p>
 
-                <h2 className="mt-5 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-slate-950 sm:text-5xl">
+                <h2 className="mt-5 text-4xl font-semibold leading-[1.03] tracking-[-0.05em] text-slate-900 sm:text-5xl">
                   Zeig, was
                   <br />
-                  in dir steckt.
+
+                  <span className="text-sky-500">
+                    in dir steckt.
+                  </span>
                 </h2>
 
                 <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-500">
@@ -599,46 +499,32 @@ export default function Home() {
                   und werde für passende Unternehmen sichtbar.
                 </p>
 
-
-                <div className="mt-9 grid gap-x-6 gap-y-3 sm:grid-cols-2">
-
+                <div className="mt-9 grid gap-3 sm:grid-cols-2">
                   {employeeFeatures.map((feature) => (
-
                     <div
                       key={feature}
-                      className="flex items-center gap-3 border-b border-slate-200 py-3 text-sm font-medium text-slate-700"
+                      className="flex items-center gap-3 rounded-xl border border-sky-100 bg-white px-4 py-4 text-sm font-medium text-slate-600"
                     >
-
-                      <span className="text-sky-500">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs text-sky-600">
                         ✓
                       </span>
 
                       {feature}
-
                     </div>
-
                   ))}
-
                 </div>
-
 
                 <Link
                   href="/registrieren?role=employee"
-                  className="mt-9 inline-flex rounded-lg bg-slate-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  className="mt-9 inline-flex rounded-xl bg-sky-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
                 >
                   Profil erstellen
                 </Link>
-
               </div>
-
             </ScrollReveal>
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* ====================================================== */}
       {/* ARBEITGEBER */}
@@ -646,26 +532,22 @@ export default function Home() {
 
       <section
         id="arbeitgeber"
-        className="border-b border-slate-200 bg-white px-5 py-20 sm:px-8 sm:py-28"
+        className="bg-white px-5 py-24 sm:px-8 sm:py-32"
       >
-
         <div className="mx-auto max-w-7xl">
-
-          <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_.85fr]">
-
+          <div className="grid items-center gap-16 lg:grid-cols-[1.15fr_0.85fr]">
             <ScrollReveal>
-
               <div>
-
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">
                   Für Arbeitgeber
                 </p>
 
-                <h2 className="mt-5 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-slate-950 sm:text-5xl">
+                <h2 className="mt-5 text-4xl font-semibold leading-[1.03] tracking-[-0.05em] text-slate-900 sm:text-5xl">
                   Die richtige
                   <br />
                   Person für
                   <br />
+
                   <span className="text-sky-500">
                     Ihre Stelle.
                   </span>
@@ -673,270 +555,208 @@ export default function Home() {
 
                 <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-500">
                   Definieren Sie Ihre Anforderungen und erhalten Sie einen
-                  klaren Überblick über passende Kandidaten.
+                  klaren Überblick über Kandidaten, die wirklich zu Ihrem
+                  Unternehmen passen.
                 </p>
 
-
-                <div className="mt-9 border border-slate-200">
-
-                  <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-4">
-
+                <div className="mt-9 overflow-hidden rounded-[28px] border border-sky-100 bg-[#f8fcfe]">
+                  <div className="flex items-center justify-between border-b border-sky-100 bg-white px-6 py-5">
                     <div>
-
                       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                         Kandidatensuche
                       </p>
 
-                      <p className="mt-1 font-semibold text-slate-950">
+                      <p className="mt-1 font-semibold text-slate-900">
                         Ihre Anforderungen
                       </p>
-
                     </div>
 
-                    <span className="text-xs font-semibold text-emerald-600">
+                    <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-600">
                       AKTIV
                     </span>
-
                   </div>
 
-
                   <div className="grid sm:grid-cols-2">
-
                     {employerCriteria.map(([label, value]) => (
-
                       <div
                         key={label}
-                        className="border-b border-r border-slate-200 p-5 last:border-b-0"
+                        className="border-b border-sky-100 bg-white p-5 sm:border-r"
                       >
-
                         <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                           {label}
                         </p>
 
-                        <p className="mt-2 text-sm font-semibold text-slate-800">
+                        <p className="mt-2 text-sm font-semibold text-slate-700">
                           {value}
                         </p>
-
                       </div>
-
                     ))}
-
                   </div>
-
                 </div>
-
 
                 <Link
                   href="/registrieren?role=employer"
-                  className="mt-8 inline-flex rounded-lg bg-sky-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/15 transition hover:bg-sky-600"
+                  className="mt-9 inline-flex rounded-xl bg-sky-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
                 >
                   Unternehmen registrieren
                 </Link>
-
               </div>
-
             </ScrollReveal>
-
 
             <ScrollReveal className="[transition-delay:120ms]">
-
               <div className="relative mx-auto max-w-[400px]">
+                <div className="absolute -right-12 top-10 h-52 w-52 rounded-full bg-sky-100 blur-3xl" />
 
-                <div className="absolute -right-10 top-10 h-52 w-52 rounded-full bg-sky-100 blur-3xl" />
+                <div className="relative rounded-[32px] border border-white bg-[#f5fbfe] p-5 shadow-[0_30px_80px_rgba(14,116,144,.10)]">
+                  <div className="rounded-[24px] border border-sky-100 bg-white p-6">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-600">
+                        STOYAN
+                      </p>
 
-                <div className="relative border border-slate-200 bg-slate-950 p-6 shadow-[0_30px_80px_rgba(15,23,42,.12)]">
-
-                  <div className="flex items-center justify-between">
-
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                      STOYAN
-                    </p>
-
-                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
-
-                  </div>
-
-                  <div className="mt-10">
-
-                    <p className="text-sm text-slate-500">
-                      Passender Kandidat
-                    </p>
-
-                    <p className="mt-2 text-2xl font-semibold text-white">
-                      92 % Match
-                    </p>
-
-                  </div>
-
-                  <div className="mt-8 h-2 bg-white/10">
-
-                    <div className="h-full w-[92%] bg-sky-500" />
-
-                  </div>
-
-                  <div className="mt-8 space-y-4">
-
-                    <div className="flex justify-between border-b border-white/10 pb-3">
-
-                      <span className="text-sm text-slate-500">
-                        Erfahrung
-                      </span>
-
-                      <span className="text-sm font-medium text-white">
-                        5+ Jahre
-                      </span>
-
+                      <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                     </div>
 
-                    <div className="flex justify-between border-b border-white/10 pb-3">
+                    <div className="mt-10">
+                      <p className="text-sm text-slate-400">
+                        Passender Kandidat
+                      </p>
 
-                      <span className="text-sm text-slate-500">
-                        Standort
-                      </span>
-
-                      <span className="text-sm font-medium text-white">
-                        Luzern
-                      </span>
-
+                      <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-slate-900">
+                        92 % Match
+                      </p>
                     </div>
 
-                    <div className="flex justify-between">
-
-                      <span className="text-sm text-slate-500">
-                        Pensum
-                      </span>
-
-                      <span className="text-sm font-medium text-white">
-                        80–100 %
-                      </span>
-
+                    <div className="mt-7 h-3 overflow-hidden rounded-full bg-sky-100">
+                      <div className="h-full w-[92%] rounded-full bg-sky-500" />
                     </div>
 
+                    <div className="mt-9 space-y-5">
+                      <div className="flex justify-between border-b border-slate-100 pb-4">
+                        <span className="text-sm text-slate-400">
+                          Erfahrung
+                        </span>
+
+                        <span className="text-sm font-semibold text-slate-700">
+                          5+ Jahre
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between border-b border-slate-100 pb-4">
+                        <span className="text-sm text-slate-400">
+                          Standort
+                        </span>
+
+                        <span className="text-sm font-semibold text-slate-700">
+                          Luzern
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between">
+                        <span className="text-sm text-slate-400">
+                          Pensum
+                        </span>
+
+                        <span className="text-sm font-semibold text-slate-700">
+                          80–100 %
+                        </span>
+                      </div>
+                    </div>
                   </div>
-
                 </div>
-
               </div>
-
             </ScrollReveal>
-
           </div>
-
         </div>
-
       </section>
 
-
       {/* ====================================================== */}
-      {/* CTA */}
+      {/* FINAL CTA */}
       {/* ====================================================== */}
 
-      <section className="bg-slate-950 px-5 py-20 sm:px-8 sm:py-28">
-
-        <div className="mx-auto max-w-7xl">
-
+      <section className="bg-[#f3faff] px-5 py-24 sm:px-8 sm:py-32">
+        <div className="mx-auto max-w-6xl rounded-[36px] border border-sky-100 bg-white px-7 py-16 text-center shadow-[0_25px_80px_rgba(14,116,144,.08)] sm:px-12">
           <ScrollReveal>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">
+              STOYAN
+            </p>
 
-            <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+            <h2 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold leading-[1.03] tracking-[-0.05em] text-slate-900 sm:text-5xl lg:text-6xl">
+              Der nächste passende
+              <br />
 
-              <div>
+              <span className="text-sky-500">
+                Schritt beginnt hier.
+              </span>
+            </h2>
 
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-400">
-                  STOYAN
-                </p>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-500">
+              Erstelle dein professionelles Profil oder starte als Unternehmen
+              und finde die Menschen, die wirklich passen.
+            </p>
 
-                <h2 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-white sm:text-5xl lg:text-6xl">
-                  Der nächste passende Schritt beginnt hier.
-                </h2>
+            <div className="mt-10 flex flex-wrap justify-center gap-3">
+              <Link
+                href="/registrieren?role=employee"
+                className="rounded-xl bg-sky-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600"
+              >
+                Als Arbeitnehmer starten
+              </Link>
 
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-                  Erstelle dein Profil oder starte als Unternehmen und finde
-                  die passende Verbindung.
-                </p>
-
-              </div>
-
-
-              <div className="flex flex-wrap gap-3">
-
-                <Link
-                  href="/registrieren?role=employee"
-                  className="rounded-lg bg-sky-500 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-sky-400"
-                >
-                  Arbeitnehmer
-                </Link>
-
-                <Link
-                  href="/registrieren?role=employer"
-                  className="rounded-lg border border-slate-700 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800"
-                >
-                  Unternehmen
-                </Link>
-
-              </div>
-
+              <Link
+                href="/registrieren?role=employer"
+                className="rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 transition duration-300 hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50"
+              >
+                Für Unternehmen
+              </Link>
             </div>
-
           </ScrollReveal>
-
         </div>
-
       </section>
-
 
       {/* ====================================================== */}
       {/* FOOTER */}
       {/* ====================================================== */}
 
-      <footer className="bg-white px-5 py-10 sm:px-8">
-
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 border-t border-slate-200 pt-8 sm:flex-row sm:items-center sm:justify-between">
-
+      <footer className="border-t border-slate-200 bg-white px-5 py-10 sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
           <div>
-
             <Link
               href="/"
-              className="text-xl font-semibold tracking-[-0.05em] text-slate-950"
+              className="text-xl font-semibold tracking-[-0.05em] text-slate-900"
             >
               STOYAN
             </Link>
 
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-slate-400">
               Menschen finden. Potenzial erkennen.
             </p>
-
           </div>
 
-
-          <div className="flex flex-wrap gap-6 text-sm text-slate-500">
-
+          <div className="flex flex-wrap gap-6 text-sm font-medium text-slate-500">
             <Link
               href="/impressum"
-              className="transition hover:text-slate-950"
+              className="transition hover:text-sky-600"
             >
               Impressum
             </Link>
 
             <Link
               href="/datenschutz"
-              className="transition hover:text-slate-950"
+              className="transition hover:text-sky-600"
             >
               Datenschutz
             </Link>
 
             <Link
               href="/login"
-              className="transition hover:text-slate-950"
+              className="transition hover:text-sky-600"
             >
               Login
             </Link>
-
           </div>
-
         </div>
-
       </footer>
-
     </main>
   )
 }
