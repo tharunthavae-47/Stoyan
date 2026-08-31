@@ -6,12 +6,8 @@ const sections: NavSection[] = [
     items: [{ href: "/dashboard", label: "Dashboard", exact: true }],
   },
   {
-    label: "Bereiche",
-    items: [
-      { href: "/arbeitgeber", label: "Arbeitgeber" },
-      { href: "/arbeitnehmer", label: "Arbeitnehmer" },
-      { href: "/preise", label: "Preise & Abo" },
-    ],
+    label: "Konto",
+    items: [{ href: "/preise", label: "Preise & Abo" }],
   },
 ]
 
