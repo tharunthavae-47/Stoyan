@@ -230,6 +230,7 @@ export default function Home() {
 
               <div className="max-w-4xl">
 
+
                 <div className="flex items-center gap-3">
 
                   <span className="h-px w-10 bg-[#2563EB]" />
