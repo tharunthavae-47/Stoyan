@@ -179,7 +179,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-4">
 
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-950 text-lg font-black text-white">
-                      M
+                      TT
                     </div>
 
                     <div className="min-w-0 flex-1">
@@ -228,7 +228,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-4">
 
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-lg font-black text-white">
-                      A
+                      ST
                     </div>
 
                     <div className="min-w-0 flex-1">
