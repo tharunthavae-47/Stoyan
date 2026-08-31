@@ -43,42 +43,7 @@ const employerCriteria = [
 export default function Home() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-white text-slate-950">
-      <header className="sticky top-0 z-50 border-b border-slate-200/90 bg-white/95 backdrop-blur-xl">
-        <div className="mx-auto flex min-h-[82px] max-w-[1440px] items-center gap-6 px-5 sm:px-8 lg:px-10">
-          <Link href="/" className="group flex shrink-0 items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-base font-black text-white shadow-lg shadow-blue-600/20 transition duration-300 group-hover:scale-105">S</div>
-            <div className="hidden sm:block">
-              <div className="text-xl font-black tracking-[-0.07em] text-slate-950">STOYAN</div>
-              <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-400">Menschen verbinden</div>
-            </div>
-          </Link>
-
-          <nav className="ml-auto hidden items-center gap-3 xl:flex">
-            {navigation.map((item) => (
-              <a key={item.href} href={item.href} className="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-bold text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,.04)] transition duration-300 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50/60 hover:text-blue-600 hover:shadow-[0_10px_25px_rgba(37,99,235,.10)]">
-                <span className="flex h-6 min-w-6 items-center justify-center rounded-lg bg-slate-50 px-1.5 text-[9px] font-black text-slate-400 transition group-hover:bg-blue-100 group-hover:text-blue-600">{item.number}</span>
-                <span className="whitespace-nowrap">{item.label}</span>
-              </a>
-            ))}
-          </nav>
-
-          <div className="flex shrink-0 items-center gap-2">
-            <Link href="/login" className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:border-blue-200 hover:text-blue-600 sm:inline-flex">Login</Link>
-            <Link href="/registrieren" className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-700">Registrieren</Link>
-          </div>
-        </div>
-
-        <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 xl:hidden">
-          <div className="mx-auto flex max-w-[1440px] gap-2 overflow-x-auto pb-1">
-            {navigation.map((item) => (
-              <a key={item.href} href={item.href} className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:text-blue-600">
-                <span className="text-[9px] font-black text-slate-400">{item.number}</span>
-                {item.label}
-              </a>
-            ))}
-          </div>
-        </div>
-      </header>
+     <SiteHeader />
 
       <section className="border-b border-slate-200 bg-white px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-[1440px] items-center gap-16 lg:grid-cols-[1.05fr_.95fr]">
