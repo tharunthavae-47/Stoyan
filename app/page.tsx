@@ -1,4 +1,3 @@
-```tsx
 import Link from "next/link"
 import {
   ArrowRight,
@@ -760,4 +759,3 @@ export default function HomePage() {
     </main>
   )
 }
-```
