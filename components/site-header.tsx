@@ -38,6 +38,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
+          {/* Desktop Navigation */}
           <div className="ml-auto hidden items-center gap-1.5 lg:flex">
             {links.map((link) => (
               <Link
@@ -51,7 +52,7 @@ export function SiteHeader() {
             ))}
           </div>
 
-          {/* Login + Registrierung: auch im Handy-Hochformat immer sichtbar */}
+          {/* Login + Registrierung */}
           <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:ml-3 sm:gap-2">
             <Link
               href="/login"
@@ -68,17 +69,24 @@ export function SiteHeader() {
           </div>
         </nav>
 
+        {/* Mobile Navigation: horizontal per Finger wischbar */}
         <div className="mt-2 lg:hidden">
-          <div className="flex min-w-max gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div
+            className="flex w-full gap-2 overflow-x-auto overscroll-x-contain pb-2 pr-1 touch-pan-x snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-xl border border-slate-200/80 bg-white/95 px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm backdrop-blur transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                className="shrink-0 snap-start rounded-xl border border-slate-200/80 bg-white/95 px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm backdrop-blur transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 active:scale-[0.98]"
               >
                 {link.label}
               </Link>
             ))}
+          </div>
+          <div className="pointer-events-none -mt-1 flex justify-center">
+            <span className="h-1 w-10 rounded-full bg-slate-200" aria-hidden="true" />
           </div>
         </div>
       </div>
