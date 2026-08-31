@@ -1,3 +1,4 @@
+```tsx
 "use client"
 
 import Link from "next/link"
@@ -38,6 +39,18 @@ type SupabaseProfile = {
 
 type RequestStatus = "pending" | "accepted" | "rejected"
 
+type EmployeeRow = {
+  id: string
+  profession: string | null
+  education: string | null
+  years_experience: number | null
+  desired_employment_percent: number | null
+  desired_salary_min: number | null
+  skills: string[] | null
+  profile_visible: boolean | null
+  contact_visible: boolean | null
+}
+
 const weights = [25, 20, 20, 15, 10, 5, 5]
 
 const labels = [
@@ -50,40 +63,47 @@ const labels = [
   "Ort",
 ]
 
-function calculateMatch(c: Candidate, f: Filters) {
+function calculateMatch(candidate: Candidate, filters: Filters) {
   const values = [
-    f.profession,
-    f.experience,
-    f.skill,
-    f.education,
-    f.employment,
-    f.salary,
-    f.city,
+    filters.profession,
+    filters.experience,
+    filters.skill,
+    filters.education,
+    filters.employment,
+    filters.salary,
+    filters.city,
   ]
 
   const checks = [
-    !f.profession ||
-      c.profession.toLowerCase().includes(f.profession.toLowerCase()),
+    !filters.profession ||
+      candidate.profession
+        .toLowerCase()
+        .includes(filters.profession.toLowerCase()),
 
-    !f.experience || c.experience >= Number(f.experience),
+    !filters.experience ||
+      candidate.experience >= Number(filters.experience),
 
-    !f.skill ||
-      c.skills.some((s) =>
-        s.toLowerCase().includes(f.skill.toLowerCase())
+    !filters.skill ||
+      candidate.skills.some((skill) =>
+        skill.toLowerCase().includes(filters.skill.toLowerCase())
       ),
 
-    !f.education ||
-      c.education.toLowerCase().includes(f.education.toLowerCase()),
+    !filters.education ||
+      candidate.education
+        .toLowerCase()
+        .includes(filters.education.toLowerCase()),
 
-    !f.employment ||
-      c.employment >= Number(f.employment),
+    !filters.employment ||
+      candidate.employment >= Number(filters.employment),
 
-    !f.salary ||
-      !c.salary ||
-      c.salary <= Number(f.salary),
+    !filters.salary ||
+      !candidate.salary ||
+      candidate.salary <= Number(filters.salary),
 
-    !f.city ||
-      c.city.toLowerCase().includes(f.city.toLowerCase()),
+    !filters.city ||
+      candidate.city
+        .toLowerCase()
+        .includes(filters.city.toLowerCase()),
   ]
 
   let possible = 0
@@ -91,14 +111,14 @@ function calculateMatch(c: Candidate, f: Filters) {
 
   const reasons: string[] = []
 
-  checks.forEach((ok, i) => {
-    if (!values[i]) return
+  checks.forEach((ok, index) => {
+    if (!values[index]) return
 
-    possible += weights[i]
+    possible += weights[index]
 
     if (ok) {
-      score += weights[i]
-      reasons.push(`${labels[i]} passt`)
+      score += weights[index]
+      reasons.push(`${labels[index]} passt`)
     }
   })
 
@@ -120,68 +140,101 @@ export default function EmployerSearch() {
   })
 
   const [candidates, setCandidates] = useState<Candidate[]>([])
-
   const [loading, setLoading] = useState(true)
-
   const [error, setError] = useState("")
-
   const [searched, setSearched] = useState(false)
 
-  /*
-   * Gesendete Anfragen.
-   *
-   * Beispiel:
-   *
-   * {
-   *   "abc-user-id": "pending"
-   * }
-   */
   const [requestStatuses, setRequestStatuses] = useState<
     Record<string, RequestStatus>
   >({})
 
-  /*
-   * ID des Kandidaten, bei dem gerade
-   * die Anfrage gesendet wird.
-   */
   const [sendingRequestId, setSendingRequestId] = useState<string | null>(
     null
   )
 
-  /*
-   * Erfolgsmeldung
-   */
   const [successMessage, setSuccessMessage] = useState("")
 
   /*
    * =========================================================
-   * KANDIDATEN + BESTEHENDE ANFRAGEN LADEN
+   * KANDIDATEN UND ANFRAGEN LADEN
    * =========================================================
    */
 
   useEffect(() => {
-    ;(async () => {
+    let cancelled = false
+
+    const loadData = async () => {
       try {
         setLoading(true)
         setError("")
 
         const supabase = createClient()
 
-        /*
-         * Eingeloggten Arbeitgeber holen
-         */
         const {
           data: { user },
+          error: userError,
         } = await supabase.auth.getUser()
 
-        if (!user) {
+        if (userError || !user) {
           window.location.href = "/login"
           return
         }
 
         /*
-         * Arbeitnehmerprofile laden
+         * =====================================================
+         * ARBEITGEBER-PROFIL PRÜFEN
+         * =====================================================
+         *
+         * contact_requests.employer_id verweist auf
+         * profiles.id.
+         *
+         * Deshalb verwenden wir nicht irgendeine Company-ID,
+         * sondern die ID des profiles-Datensatzes.
          */
+
+        const { data: employerProfile, error: employerProfileError } =
+          await supabase
+            .from("profiles")
+            .select("id,role")
+            .eq("id", user.id)
+            .maybeSingle()
+
+        if (employerProfileError) {
+          console.error(
+            "Fehler beim Laden des Arbeitgeberprofils:",
+            employerProfileError
+          )
+
+          setError(
+            `Arbeitgeberprofil konnte nicht geladen werden: ${employerProfileError.message}`
+          )
+
+          setLoading(false)
+          return
+        }
+
+        if (!employerProfile) {
+          setError(
+            "Für dieses Benutzerkonto wurde kein Arbeitgeberprofil gefunden. Bitte öffnen Sie zuerst Ihr Unternehmensprofil und speichern Sie es."
+          )
+
+          setLoading(false)
+          return
+        }
+
+        /*
+         * Die ID muss mit profiles.id übereinstimmen.
+         */
+        const employerId = employerProfile.id
+
+        console.log("Arbeitgeber-Profil gefunden:", employerId)
+
+        /*
+         * =====================================================
+         * ARBEITNEHMERPROFILE LADEN
+         * =====================================================
+         */
+
         const {
           data: employeeData,
           error: employeeError,
@@ -206,41 +259,55 @@ export default function EmployerSearch() {
           setError(
             `Kandidaten konnten nicht geladen werden: ${employeeError.message}`
           )
+
           setLoading(false)
           return
         }
 
-        const employeeRows = employeeData || []
-
-        const ids = employeeRows.map((employee) => employee.id)
+        const employeeRows = (employeeData || []) as EmployeeRow[]
 
         /*
-         * Profile der Arbeitnehmer laden
+         * =====================================================
+         * PROFILE DER ARBEITNEHMER LADEN
+         * =====================================================
          */
-        const profiles: SupabaseProfile[] =
-          ids.length > 0
-            ? (
-                (
-                  await supabase
-                    .from("profiles")
-                    .select(
-                      "id,first_name,last_name,city,avatar_url"
-                    )
-                    .in("id", ids)
-                ).data || []
-              ) as SupabaseProfile[]
-            : []
 
-        const byId = new Map<string, SupabaseProfile>(
+        const employeeIds = employeeRows.map((employee) => employee.id)
+
+        let profiles: SupabaseProfile[] = []
+
+        if (employeeIds.length > 0) {
+          const { data: profileData, error: profileError } =
+            await supabase
+              .from("profiles")
+              .select(
+                "id,first_name,last_name,city,avatar_url"
+              )
+              .in("id", employeeIds)
+
+          if (profileError) {
+            console.error(
+              "Fehler beim Laden der Arbeitnehmerprofile:",
+              profileError
+            )
+          } else {
+            profiles = (profileData || []) as SupabaseProfile[]
+          }
+        }
+
+        const profileById = new Map<string, SupabaseProfile>(
           profiles.map((profile) => [profile.id, profile])
         )
 
         /*
-         * Kandidaten zusammenbauen
+         * =====================================================
+         * KANDIDATEN ZUSAMMENBAUEN
+         * =====================================================
          */
+
         const formattedCandidates: Candidate[] = employeeRows.map(
           (employee) => {
-            const profile = byId.get(employee.id)
+            const profile = profileById.get(employee.id)
 
             return {
               id: employee.id,
@@ -265,9 +332,11 @@ export default function EmployerSearch() {
                 employee.desired_employment_percent || 100
               ),
 
-              salary: employee.desired_salary_min
-                ? Number(employee.desired_salary_min)
-                : null,
+              salary:
+                employee.desired_salary_min !== null &&
+                employee.desired_salary_min !== undefined
+                  ? Number(employee.desired_salary_min)
+                  : null,
 
               skills: Array.isArray(employee.skills)
                 ? employee.skills
@@ -282,19 +351,14 @@ export default function EmployerSearch() {
           }
         )
 
+        if (cancelled) return
+
         setCandidates(formattedCandidates)
 
         /*
          * =====================================================
-         * BEREITS GESENDETE ANFRAGEN DES ARBEITGEBERS LADEN
+         * BEREITS GESENDETE ANFRAGEN LADEN
          * =====================================================
-         *
-         * Wichtig:
-         * Durch die RLS-Regel
-         *
-         * employer_id = auth.uid()
-         *
-         * sieht der Arbeitgeber nur seine eigenen Anfragen.
          */
 
         const {
@@ -303,18 +367,14 @@ export default function EmployerSearch() {
         } = await supabase
           .from("contact_requests")
           .select(
-            "id,employee_id,status,created_at"
+            "id,employer_id,employee_id,job_id,status,created_at"
           )
-          .eq("employer_id", user.id)
+          .eq("employer_id", employerId)
           .order("created_at", {
             ascending: false,
           })
 
         if (requestsError) {
-          /*
-           * Die Kandidaten können trotzdem angezeigt werden.
-           * Nur die Anfrage-Status können dann nicht geladen werden.
-           */
           console.error(
             "Fehler beim Laden der Kontaktanfragen:",
             requestsError
@@ -325,9 +385,6 @@ export default function EmployerSearch() {
             RequestStatus
           > = {}
 
-          /*
-           * Die neueste Anfrage pro Arbeitnehmer verwenden.
-           */
           for (const request of existingRequests || []) {
             if (
               request.employee_id &&
@@ -338,20 +395,35 @@ export default function EmployerSearch() {
             }
           }
 
-          setRequestStatuses(statuses)
+          if (!cancelled) {
+            setRequestStatuses(statuses)
+          }
         }
 
-        setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+        }
       } catch (err) {
-        console.error(err)
-
-        setError(
-          "Beim Laden der Kandidaten ist ein unerwarteter Fehler aufgetreten."
+        console.error(
+          "Fehler beim Laden der Arbeitgeber-Suche:",
+          err
         )
 
-        setLoading(false)
+        if (!cancelled) {
+          setError(
+            "Beim Laden der Kandidaten ist ein unerwarteter Fehler aufgetreten."
+          )
+
+          setLoading(false)
+        }
       }
-    })()
+    }
+
+    loadData()
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   /*
@@ -363,26 +435,23 @@ export default function EmployerSearch() {
   const sendContactRequest = async (
     employeeId: string
   ) => {
-    /*
-     * Verhindern, dass während des Sendens
-     * mehrfach geklickt wird.
-     */
     if (sendingRequestId) {
       return
     }
 
     setSendingRequestId(employeeId)
-
     setError("")
-
     setSuccessMessage("")
 
     try {
       const supabase = createClient()
 
       /*
-       * Eingeloggten Arbeitgeber holen
+       * =====================================================
+       * AUTH USER
+       * =====================================================
        */
+
       const {
         data: { user },
         error: userError,
@@ -395,75 +464,120 @@ export default function EmployerSearch() {
 
       /*
        * =====================================================
-       * PRÜFEN, OB BEREITS EINE ANFRAGE EXISTIERT
+       * ARBEITGEBER-PROFIL HOLEN
+       * =====================================================
+       *
+       * GANZ WICHTIG:
+       *
+       * contact_requests.employer_id
+       *        ↓
+       * profiles.id
+       *
+       * Deshalb prüfen wir zuerst, ob profiles.id existiert.
+       */
+
+      const {
+        data: employerProfile,
+        error: employerProfileError,
+      } = await supabase
+        .from("profiles")
+        .select("id,role")
+        .eq("id", user.id)
+        .maybeSingle()
+
+      if (employerProfileError) {
+        throw new Error(
+          `Arbeitgeberprofil konnte nicht geladen werden: ${employerProfileError.message}`
+        )
+      }
+
+      if (!employerProfile) {
+        throw new Error(
+          "Ihr Arbeitgeberprofil wurde nicht gefunden. Bitte gehen Sie zu „Unternehmen“ und speichern Sie Ihr Unternehmensprofil zuerst."
+        )
+      }
+
+      /*
+       * Diese ID wird für contact_requests.employer_id verwendet.
+       */
+      const employerId = employerProfile.id
+
+      console.log(
+        "Kontaktanfrage:",
+        {
+          authUserId: user.id,
+          employerProfileId: employerId,
+          employeeId,
+        }
+      )
+
+      /*
+       * =====================================================
+       * KANDIDAT EXISTIERT?
        * =====================================================
        */
 
       const {
-        data: existingRequest,
-        error: existingRequestError,
+        data: employeeProfile,
+        error: employeeProfileError,
       } = await supabase
-        .from("contact_requests")
-        .select("id,status")
-        .eq("employer_id", user.id)
-        .eq("employee_id", employeeId)
+        .from("employee_profiles")
+        .select("id,contact_visible")
+        .eq("id", employeeId)
         .maybeSingle()
 
-      /*
-       * Wenn die Abfrage selbst einen Fehler liefert,
-       * nicht einfach blind einen neuen Datensatz erzeugen.
-       */
-      if (existingRequestError) {
-        console.error(
-          "Fehler beim Prüfen der bestehenden Anfrage:",
-          existingRequestError
+      if (employeeProfileError) {
+        throw new Error(
+          `Kandidatenprofil konnte nicht geprüft werden: ${employeeProfileError.message}`
         )
+      }
 
-        /*
-         * Falls mehrere Datensätze existieren, kann maybeSingle()
-         * einen Fehler verursachen. Deshalb versuchen wir in
-         * diesem Fall noch einmal mit limit(1).
-         */
-        const {
-          data: fallbackRequest,
-          error: fallbackError,
-        } = await supabase
-          .from("contact_requests")
-          .select("id,status")
-          .eq("employer_id", user.id)
-          .eq("employee_id", employeeId)
-          .order("created_at", {
-            ascending: false,
-          })
-          .limit(1)
-
-        if (fallbackError) {
-          throw new Error(
-            `Bestehende Anfrage konnte nicht geprüft werden: ${fallbackError.message}`
-          )
-        }
-
-        if (fallbackRequest && fallbackRequest.length > 0) {
-          const existing =
-            fallbackRequest[0]
-
-          setRequestStatuses((current) => ({
-            ...current,
-            [employeeId]:
-              existing.status as RequestStatus,
-          }))
-
-          setSuccessMessage(
-            "Für diesen Kandidaten existiert bereits eine Anfrage."
-          )
-
-          return
-        }
+      if (!employeeProfile) {
+        throw new Error(
+          "Dieses Kandidatenprofil existiert nicht mehr."
+        )
       }
 
       /*
-       * Anfrage existiert bereits
+       * Arbeitnehmer darf kontaktiert werden?
        */
+
+      if (!employeeProfile.contact_visible) {
+        throw new Error(
+          "Dieser Kandidat möchte aktuell nicht kontaktiert werden."
+        )
+      }
+
+      /*
+       * =====================================================
+       * BEREITS VORHANDENE ANFRAGE PRÜFEN
+       * =====================================================
+       */
+
+      const {
+        data: existingRequests,
+        error: existingRequestError,
+      } = await supabase
+        .from("contact_requests")
+        .select("id,status,created_at")
+        .eq("employer_id", employerId)
+        .eq("employee_id", employeeId)
+        .order("created_at", {
+          ascending: false,
+        })
+        .limit(1)
+
+      if (existingRequestError) {
+        throw new Error(
+          `Bestehende Anfrage konnte nicht geprüft werden: ${existingRequestError.message}`
+        )
+      }
+
+      const existingRequest =
+        existingRequests && existingRequests.length > 0
+          ? existingRequests[0]
+          : null
+
       if (existingRequest) {
         setRequestStatuses((current) => ({
           ...current,
@@ -471,11 +585,19 @@ export default function EmployerSearch() {
             existingRequest.status as RequestStatus,
         }))
 
-        setSuccessMessage(
-          "Für diesen Kandidaten wurde bereits eine Anfrage gesendet."
-        )
+        if (existingRequest.status === "rejected") {
+          /*
+           * Bei rejected erlauben wir eine neue Anfrage.
+           */
+        } else {
+          setSuccessMessage(
+            existingRequest.status === "accepted"
+              ? "Diese Anfrage wurde bereits angenommen."
+              : "Für diesen Kandidaten wurde bereits eine Anfrage gesendet."
+          )
 
-        return
+          return
+        }
       }
 
       /*
@@ -483,22 +605,28 @@ export default function EmployerSearch() {
        * NEUE ANFRAGE ERSTELLEN
        * =====================================================
        *
-       * job_id bleibt NULL, weil aktuell keine konkrete
-       * Stellenanzeige ausgewählt wird.
+       * job_id bleibt NULL, weil die Anfrage aus der
+       * allgemeinen Kandidatensuche kommt.
        */
+
+      const insertData = {
+        employer_id: employerId,
+        employee_id: employeeId,
+        job_id: null,
+        status: "pending",
+      }
+
+      console.log(
+        "Sende contact_requests:",
+        insertData
+      )
 
       const {
         data: insertedRequest,
         error: insertError,
       } = await supabase
         .from("contact_requests")
-        .insert({
-          employer_id: user.id,
-          employee_id: employeeId,
-          job_id: null,
-          status: "pending",
-          created_at: new Date().toISOString(),
-        })
+        .insert(insertData)
         .select(
           "id,employer_id,employee_id,job_id,status,created_at"
         )
@@ -506,18 +634,14 @@ export default function EmployerSearch() {
 
       if (insertError) {
         console.error(
-          "Fehler beim Erstellen der Kontaktanfrage:",
+          "Supabase contact_requests INSERT Fehler:",
           insertError
         )
 
         /*
-         * Wenn zwischen Prüfung und INSERT bereits eine
-         * Anfrage erstellt wurde, zeigen wir trotzdem
-         * "bereits gesendet".
+         * 23505 = Unique Constraint
          */
-        if (
-          insertError.code === "23505"
-        ) {
+        if (insertError.code === "23505") {
           setRequestStatuses((current) => ({
             ...current,
             [employeeId]: "pending",
@@ -530,23 +654,35 @@ export default function EmployerSearch() {
           return
         }
 
+        /*
+         * 23503 = Foreign Key
+         */
+        if (insertError.code === "23503") {
+          throw new Error(
+            "Die Anfrage konnte nicht gespeichert werden, weil das Arbeitgeberprofil nicht korrekt mit Ihrem Konto verknüpft ist. Bitte öffnen Sie „Unternehmen“, speichern Sie Ihr Profil erneut und versuchen Sie es danach nochmals."
+          )
+        }
+
         throw new Error(
           `Anfrage konnte nicht gesendet werden: ${insertError.message}`
         )
       }
 
-      /*
-       * Status lokal aktualisieren
-       */
-      setRequestStatuses((current) => ({
-        ...current,
-        [employeeId]: "pending",
-      }))
-
       console.log(
         "Kontaktanfrage erfolgreich erstellt:",
         insertedRequest
       )
+
+      /*
+       * =====================================================
+       * STATUS LOKAL AKTUALISIEREN
+       * =====================================================
+       */
+
+      setRequestStatuses((current) => ({
+        ...current,
+        [employeeId]: "pending",
+      }))
 
       setSuccessMessage(
         "Anfrage erfolgreich gesendet."
@@ -574,22 +710,16 @@ export default function EmployerSearch() {
    */
 
   const results = useMemo(() => {
-    const active = Object.values(filters).some(
-      Boolean
-    )
+    const active = Object.values(filters).some(Boolean)
 
     return candidates
       .map((candidate) => ({
         ...candidate,
-        ...calculateMatch(
-          candidate,
-          filters
-        ),
+        ...calculateMatch(candidate, filters),
       }))
       .filter(
         (candidate) =>
-          !active ||
-          candidate.score >= 40
+          !active || candidate.score >= 40
       )
       .sort(
         (a, b) =>
@@ -599,7 +729,7 @@ export default function EmployerSearch() {
 
   /*
    * =========================================================
-   * FILTER ZURÜCKSETZEN
+   * RESET
    * =========================================================
    */
 
@@ -615,15 +745,13 @@ export default function EmployerSearch() {
     })
 
     setSearched(false)
-
     setError("")
-
     setSuccessMessage("")
   }
 
   /*
    * =========================================================
-   * BUTTON-TEXT
+   * BUTTON TEXT
    * =========================================================
    */
 
@@ -632,6 +760,10 @@ export default function EmployerSearch() {
   ) => {
     const status =
       requestStatuses[candidate.id]
+
+    if (sendingRequestId === candidate.id) {
+      return "Wird gesendet..."
+    }
 
     if (status === "pending") {
       return "Anfrage gesendet ✓"
@@ -643,12 +775,6 @@ export default function EmployerSearch() {
 
     if (status === "rejected") {
       return "Erneut anfragen"
-    }
-
-    if (
-      sendingRequestId === candidate.id
-    ) {
-      return "Wird gesendet..."
     }
 
     return "Anfrage senden"
@@ -663,9 +789,7 @@ export default function EmployerSearch() {
   const isRequestDisabled = (
     candidate: Candidate
   ) => {
-    if (
-      sendingRequestId === candidate.id
-    ) {
+    if (sendingRequestId === candidate.id) {
       return true
     }
 
@@ -683,9 +807,6 @@ export default function EmployerSearch() {
       return true
     }
 
-    /*
-     * Arbeitnehmer möchte nicht kontaktiert werden.
-     */
     if (!candidate.contactVisible) {
       return true
     }
@@ -702,12 +823,7 @@ export default function EmployerSearch() {
   return (
     <main className="min-h-screen bg-[#f7f8fa] text-slate-950">
 
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
       <header className="border-b border-slate-200 bg-white">
-
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
 
           <Link
@@ -715,9 +831,7 @@ export default function EmployerSearch() {
             className="text-2xl font-black"
           >
             Stoyan
-            <span className="text-blue-600">
-              .
-            </span>
+            <span className="text-blue-600">.</span>
           </Link>
 
           <div className="flex gap-6 text-sm font-semibold">
@@ -746,12 +860,7 @@ export default function EmployerSearch() {
           </Link>
 
         </div>
-
       </header>
-
-      {/* =====================================================
-          HAUPTINHALT
-      ===================================================== */}
 
       <div className="mx-auto max-w-7xl px-6 py-10">
 
@@ -770,10 +879,6 @@ export default function EmployerSearch() {
           passt.
         </p>
 
-        {/* ===================================================
-            SUCHFILTER
-        =================================================== */}
-
         <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -783,8 +888,7 @@ export default function EmployerSearch() {
               onChange={(e) =>
                 setFilters((f) => ({
                   ...f,
-                  profession:
-                    e.target.value,
+                  profession: e.target.value,
                 }))
               }
               placeholder="Beruf / Position"
@@ -808,36 +912,17 @@ export default function EmployerSearch() {
               onChange={(e) =>
                 setFilters((f) => ({
                   ...f,
-                  education:
-                    e.target.value,
+                  education: e.target.value,
                 }))
               }
               className="rounded-xl border border-slate-200 px-4 py-3 outline-none"
             >
-              <option value="">
-                Ausbildung
-              </option>
-
-              <option>
-                EFZ
-              </option>
-
-              <option>
-                EBA
-              </option>
-
-              <option>
-                Fachschule
-              </option>
-
-              <option>
-                FH
-              </option>
-
-              <option>
-                Universität
-              </option>
-
+              <option value="">Ausbildung</option>
+              <option>EFZ</option>
+              <option>EBA</option>
+              <option>Fachschule</option>
+              <option>FH</option>
+              <option>Universität</option>
             </select>
 
             <select
@@ -845,32 +930,16 @@ export default function EmployerSearch() {
               onChange={(e) =>
                 setFilters((f) => ({
                   ...f,
-                  experience:
-                    e.target.value,
+                  experience: e.target.value,
                 }))
               }
               className="rounded-xl border border-slate-200 px-4 py-3 outline-none"
             >
-              <option value="">
-                Erfahrung
-              </option>
-
-              <option value="1">
-                1+ Jahre
-              </option>
-
-              <option value="3">
-                3+ Jahre
-              </option>
-
-              <option value="5">
-                5+ Jahre
-              </option>
-
-              <option value="10">
-                10+ Jahre
-              </option>
-
+              <option value="">Erfahrung</option>
+              <option value="1">1+ Jahre</option>
+              <option value="3">3+ Jahre</option>
+              <option value="5">5+ Jahre</option>
+              <option value="10">10+ Jahre</option>
             </select>
 
             <select
@@ -878,28 +947,15 @@ export default function EmployerSearch() {
               onChange={(e) =>
                 setFilters((f) => ({
                   ...f,
-                  employment:
-                    e.target.value,
+                  employment: e.target.value,
                 }))
               }
               className="rounded-xl border border-slate-200 px-4 py-3 outline-none"
             >
-              <option value="">
-                Pensum
-              </option>
-
-              <option value="50">
-                50 %+
-              </option>
-
-              <option value="80">
-                80 %+
-              </option>
-
-              <option value="100">
-                100 %
-              </option>
-
+              <option value="">Pensum</option>
+              <option value="50">50 %+ </option>
+              <option value="80">80 %+ </option>
+              <option value="100">100 %</option>
             </select>
 
             <input
@@ -908,8 +964,7 @@ export default function EmployerSearch() {
               onChange={(e) =>
                 setFilters((f) => ({
                   ...f,
-                  salary:
-                    e.target.value,
+                  salary: e.target.value,
                 }))
               }
               placeholder="Max. Wunschlohn CHF"
@@ -934,9 +989,7 @@ export default function EmployerSearch() {
 
             <button
               type="button"
-              onClick={() =>
-                setSearched(true)
-              }
+              onClick={() => setSearched(true)}
               className="rounded-xl bg-blue-600 px-7 py-3.5 font-bold text-white transition hover:bg-blue-700"
             >
               Kandidaten finden
@@ -951,22 +1004,16 @@ export default function EmployerSearch() {
             </button>
 
             <span className="ml-auto self-center text-sm font-semibold text-slate-500">
-
               {loading
                 ? "Kandidaten werden geladen…"
                 : searched
                 ? `${results.length} passende Profile`
                 : `${results.length} sichtbare Profile`}
-
             </span>
 
           </div>
 
         </section>
-
-        {/* ===================================================
-            ERFOLG
-        =================================================== */}
 
         {successMessage && (
           <div className="mt-5 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-700">
@@ -974,33 +1021,21 @@ export default function EmployerSearch() {
           </div>
         )}
 
-        {/* ===================================================
-            FEHLER
-        =================================================== */}
-
         {error && (
           <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
             {error}
           </div>
         )}
 
-        {/* ===================================================
-            KANDIDATEN
-        =================================================== */}
-
         <section className="mt-10 space-y-4">
 
           {results.map((candidate) => {
 
             const requestStatus =
-              requestStatuses[
-                candidate.id
-              ]
+              requestStatuses[candidate.id]
 
             const requestDisabled =
-              isRequestDisabled(
-                candidate
-              )
+              isRequestDisabled(candidate)
 
             return (
               <article
@@ -1009,10 +1044,6 @@ export default function EmployerSearch() {
               >
 
                 <div className="grid gap-6 lg:grid-cols-[300px_1fr_auto] lg:items-center">
-
-                  {/* =================================================
-                      KANDIDAT
-                  ================================================= */}
 
                   <div className="flex items-center gap-4">
 
@@ -1043,21 +1074,14 @@ export default function EmployerSearch() {
                       </p>
 
                       <p className="text-sm text-slate-500">
-                        {candidate.city ||
-                          "Ort offen"}{" "}
-                        ·{" "}
-                        {candidate.experience}{" "}
-                        Jahre ·{" "}
+                        {candidate.city || "Ort offen"}{" "}
+                        · {candidate.experience} Jahre ·{" "}
                         {candidate.employment}%
                       </p>
 
                     </div>
 
                   </div>
-
-                  {/* =================================================
-                      SKILLS
-                  ================================================= */}
 
                   <div>
 
@@ -1077,14 +1101,9 @@ export default function EmployerSearch() {
                     </div>
 
                     <p className="mt-4 text-sm text-slate-500">
-
-                      {candidate.reasons
-                        .length
-                        ? candidate.reasons.join(
-                            " · "
-                          )
+                      {candidate.reasons.length
+                        ? candidate.reasons.join(" · ")
                         : "Noch keine Suchkriterien ausgewählt."}
-
                     </p>
 
                     {!candidate.contactVisible && (
@@ -1095,10 +1114,6 @@ export default function EmployerSearch() {
 
                   </div>
 
-                  {/* =================================================
-                      MATCH + BUTTONS
-                  ================================================= */}
-
                   <div className="min-w-[190px] text-right">
 
                     <div className="text-4xl font-black text-blue-600">
@@ -1108,9 +1123,7 @@ export default function EmployerSearch() {
                     </div>
 
                     <p className="text-xs font-black uppercase tracking-wider text-slate-400">
-                      {searched
-                        ? "Match"
-                        : "Profil"}
+                      {searched ? "Match" : "Profil"}
                     </p>
 
                     <div className="mt-4 flex flex-col gap-2">
@@ -1122,27 +1135,18 @@ export default function EmployerSearch() {
                         Profil ansehen
                       </Link>
 
-                      {/* =============================================
-                          ANFRAGE SENDEN
-                      ============================================= */}
-
-                      {requestStatus ===
-                      "rejected" ? (
+                      {requestStatus === "rejected" ? (
                         <button
                           type="button"
                           onClick={() =>
-                            sendContactRequest(
-                              candidate.id
-                            )
+                            sendContactRequest(candidate.id)
                           }
                           disabled={
-                            sendingRequestId ===
-                            candidate.id
+                            sendingRequestId === candidate.id
                           }
                           className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {sendingRequestId ===
-                          candidate.id
+                          {sendingRequestId === candidate.id
                             ? "Wird gesendet..."
                             : "Erneut anfragen"}
                         </button>
@@ -1150,28 +1154,20 @@ export default function EmployerSearch() {
                         <button
                           type="button"
                           onClick={() =>
-                            sendContactRequest(
-                              candidate.id
-                            )
+                            sendContactRequest(candidate.id)
                           }
-                          disabled={
-                            requestDisabled
-                          }
+                          disabled={requestDisabled}
                           className={`rounded-lg px-4 py-2.5 text-sm font-bold transition ${
-                            requestStatus ===
-                            "pending"
+                            requestStatus === "pending"
                               ? "cursor-default bg-green-100 text-green-700"
-                              : requestStatus ===
-                                "accepted"
+                              : requestStatus === "accepted"
                               ? "cursor-default bg-green-100 text-green-700"
                               : !candidate.contactVisible
                               ? "cursor-not-allowed bg-slate-100 text-slate-400"
                               : "bg-blue-600 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                           }`}
                         >
-                          {getRequestButton(
-                            candidate
-                          )}
+                          {getRequestButton(candidate)}
                         </button>
                       )}
 
@@ -1185,25 +1181,20 @@ export default function EmployerSearch() {
             )
           })}
 
-          {/* =================================================
-              KEINE ERGEBNISSE
-          ================================================= */}
+          {!loading && !results.length && (
+            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
 
-          {!loading &&
-            !results.length && (
-              <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
+              <h3 className="text-xl font-black">
+                Keine passenden Profile gefunden
+              </h3>
 
-                <h3 className="text-xl font-black">
-                  Keine passenden Profile gefunden
-                </h3>
+              <p className="mt-2 text-slate-500">
+                Reduzieren Sie einige Kriterien
+                und versuchen Sie es erneut.
+              </p>
 
-                <p className="mt-2 text-slate-500">
-                  Reduzieren Sie einige Kriterien
-                  und versuchen Sie es erneut.
-                </p>
-
-              </div>
-            )}
+            </div>
+          )}
 
         </section>
 
@@ -1212,3 +1203,4 @@ export default function EmployerSearch() {
     </main>
   )
 }
+```
