@@ -1,3 +1,4 @@
+```tsx
 "use client"
 
 import Link from "next/link"
@@ -34,59 +35,45 @@ type Props = {
   }>
 }
 
-export default function ContactRequestPage({
-  params,
-}: Props) {
-  const [requestId, setRequestId] = useState<string | null>(
-    null
-  )
+export default function ContactRequestPage({ params }: Props) {
+  const [requestId, setRequestId] = useState<string | null>(null)
+  const [request, setRequest] = useState<RequestData | null>(null)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [userId, setUserId] = useState<string | null>(null)
 
-  const [request, setRequest] =
-    useState<RequestData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [loadingMessages, setLoadingMessages] = useState(false)
+  const [actionLoading, setActionLoading] = useState(false)
+  const [sending, setSending] = useState(false)
 
-  const [messages, setMessages] =
-    useState<Message[]>([])
-
-  const [userId, setUserId] =
-    useState<string | null>(null)
-
-  const [loading, setLoading] =
-    useState(true)
-
-  const [loadingMessages, setLoadingMessages] =
-    useState(false)
-
-  const [actionLoading, setActionLoading] =
-    useState(false)
-
-  const [messageText, setMessageText] =
-    useState("")
-
-  const [sending, setSending] =
-    useState(false)
-
-  const [error, setError] =
-    useState("")
-
-  const [success, setSuccess] =
-    useState("")
+  const [messageText, setMessageText] = useState("")
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
 
   /*
-   * =====================================================
+   * =========================================================
    * REQUEST-ID AUS URL
-   * =====================================================
+   * =========================================================
    */
 
   useEffect(() => {
+    let active = true
+
     params.then((value) => {
-      setRequestId(value.id)
+      if (active && value?.id) {
+        setRequestId(value.id)
+      }
     })
+
+    return () => {
+      active = false
+    }
   }, [params])
 
   /*
-   * =====================================================
+   * =========================================================
    * ANFRAGE LADEN
-   * =====================================================
+   * =========================================================
    */
 
   useEffect(() => {
@@ -97,15 +84,21 @@ export default function ContactRequestPage({
     async function loadRequest() {
       setLoading(true)
       setError("")
+      setSuccess("")
 
       try {
         const supabase = createClient()
 
         const {
-          data: {
-            user,
-          },
+          data: { user },
+          error: authError,
         } = await supabase.auth.getUser()
+
+        if (authError) {
+          throw new Error(
+            `Authentifizierung fehlgeschlagen: ${authError.message}`
+          )
+        }
 
         if (!user) {
           window.location.href = "/login"
@@ -140,6 +133,25 @@ export default function ContactRequestPage({
           )
         }
 
+        /*
+         * WICHTIG:
+         * Foreign-Key-IDs müssen vorhanden sein.
+         */
+        if (!requestData.employer_id) {
+          throw new Error(
+            "Die Arbeitgeber-ID dieser Anfrage fehlt."
+          )
+        }
+
+        if (!requestData.employee_id) {
+          throw new Error(
+            "Die Arbeitnehmer-ID dieser Anfrage fehlt."
+          )
+        }
+
+        /*
+         * Firma laden
+         */
         const {
           data: company,
           error: companyError,
@@ -158,24 +170,31 @@ export default function ContactRequestPage({
 
         if (!active) return
 
-        setRequest({
-          ...requestData,
+        const formattedRequest: RequestData = {
+          id: requestData.id,
+          status: requestData.status,
+          created_at: requestData.created_at,
+          employer_id: requestData.employer_id,
+          employee_id: requestData.employee_id,
           company: company || null,
-        })
+        }
+
+        setRequest(formattedRequest)
 
         /*
-         * Nur bei angenommener Anfrage
-         * Nachrichten laden.
+         * Chat nur laden, wenn Anfrage angenommen wurde.
          */
-
-        if (requestData.status === "accepted") {
+        if (formattedRequest.status === "accepted") {
           await loadMessages(
             supabase,
-            requestId
+            formattedRequest.id
           )
         }
       } catch (err) {
-        console.error(err)
+        console.error(
+          "Fehler beim Laden der Anfrage:",
+          err
+        )
 
         if (active) {
           setError(
@@ -199,9 +218,9 @@ export default function ContactRequestPage({
   }, [requestId])
 
   /*
-   * =====================================================
+   * =========================================================
    * NACHRICHTEN LADEN
-   * =====================================================
+   * =========================================================
    */
 
   async function loadMessages(
@@ -210,49 +229,60 @@ export default function ContactRequestPage({
   ) {
     setLoadingMessages(true)
 
-    const {
-      data,
-      error: messagesError,
-    } = await supabase
-      .from("contact_messages")
-      .select(
-        "id,contact_request_id,sender_id,message,created_at,read_at"
-      )
-      .eq(
-        "contact_request_id",
-        contactRequestId
-      )
-      .order("created_at", {
-        ascending: true,
-      })
+    try {
+      const {
+        data,
+        error: messagesError,
+      } = await supabase
+        .from("contact_messages")
+        .select(
+          "id,contact_request_id,sender_id,message,created_at,read_at"
+        )
+        .eq(
+          "contact_request_id",
+          contactRequestId
+        )
+        .order("created_at", {
+          ascending: true,
+        })
 
-    if (messagesError) {
+      if (messagesError) {
+        throw new Error(
+          messagesError.message
+        )
+      }
+
+      setMessages(
+        (data || []) as Message[]
+      )
+    } catch (err) {
       console.error(
         "Nachrichten konnten nicht geladen werden:",
-        messagesError
+        err
       )
 
       setError(
-        `Nachrichten konnten nicht geladen werden: ${messagesError.message}`
+        err instanceof Error
+          ? `Nachrichten konnten nicht geladen werden: ${err.message}`
+          : "Nachrichten konnten nicht geladen werden."
       )
-    } else {
-      setMessages(data || [])
+    } finally {
+      setLoadingMessages(false)
     }
-
-    setLoadingMessages(false)
   }
 
   /*
-   * =====================================================
+   * =========================================================
    * REALTIME CHAT
-   * =====================================================
+   * =========================================================
    */
 
   useEffect(() => {
     if (
       !requestId ||
       !userId ||
-      request?.status !== "accepted"
+      !request ||
+      request.status !== "accepted"
     ) {
       return
     }
@@ -296,7 +326,7 @@ export default function ContactRequestPage({
       .subscribe()
 
     return () => {
-      supabase.removeChannel(channel)
+      void supabase.removeChannel(channel)
     }
   }, [
     requestId,
@@ -305,13 +335,15 @@ export default function ContactRequestPage({
   ])
 
   /*
-   * =====================================================
+   * =========================================================
    * ANFRAGE ANNEHMEN
-   * =====================================================
+   * =========================================================
    */
 
   async function acceptRequest() {
-    if (!request || !userId) return
+    if (!request || !userId) {
+      return
+    }
 
     setActionLoading(true)
     setError("")
@@ -321,6 +353,7 @@ export default function ContactRequestPage({
       const supabase = createClient()
 
       const {
+        data: updatedRequest,
         error: updateError,
       } = await supabase
         .from("contact_requests")
@@ -329,6 +362,10 @@ export default function ContactRequestPage({
         })
         .eq("id", request.id)
         .eq("employee_id", userId)
+        .select(
+          "id,status,created_at,employer_id,employee_id"
+        )
+        .maybeSingle()
 
       if (updateError) {
         throw new Error(
@@ -336,10 +373,39 @@ export default function ContactRequestPage({
         )
       }
 
-      setRequest({
-        ...request,
-        status: "accepted",
-      })
+      if (!updatedRequest) {
+        throw new Error(
+          "Die Anfrage konnte nicht aktualisiert werden. Prüfe die RLS-Regeln für contact_requests."
+        )
+      }
+
+      /*
+       * IDs nach Update nochmals prüfen.
+       */
+      if (!updatedRequest.employer_id) {
+        throw new Error(
+          "Die Arbeitgeber-ID der Anfrage fehlt."
+        )
+      }
+
+      if (!updatedRequest.employee_id) {
+        throw new Error(
+          "Die Arbeitnehmer-ID der Anfrage fehlt."
+        )
+      }
+
+      setRequest((current) =>
+        current
+          ? {
+              ...current,
+              status: "accepted",
+              employer_id:
+                updatedRequest.employer_id,
+              employee_id:
+                updatedRequest.employee_id,
+            }
+          : null
+      )
 
       await loadMessages(
         supabase,
@@ -350,7 +416,10 @@ export default function ContactRequestPage({
         "Anfrage angenommen. Du kannst jetzt privat mit dem Arbeitgeber chatten."
       )
     } catch (err) {
-      console.error(err)
+      console.error(
+        "Anfrage annehmen:",
+        err
+      )
 
       setError(
         err instanceof Error
@@ -363,19 +432,23 @@ export default function ContactRequestPage({
   }
 
   /*
-   * =====================================================
+   * =========================================================
    * ANFRAGE ABLEHNEN
-   * =====================================================
+   * =========================================================
    */
 
   async function rejectRequest() {
-    if (!request || !userId) return
+    if (!request || !userId) {
+      return
+    }
 
     const confirmed = window.confirm(
       "Möchtest du diese Anfrage wirklich ablehnen?"
     )
 
-    if (!confirmed) return
+    if (!confirmed) {
+      return
+    }
 
     setActionLoading(true)
     setError("")
@@ -385,6 +458,7 @@ export default function ContactRequestPage({
       const supabase = createClient()
 
       const {
+        data: updatedRequest,
         error: updateError,
       } = await supabase
         .from("contact_requests")
@@ -393,6 +467,10 @@ export default function ContactRequestPage({
         })
         .eq("id", request.id)
         .eq("employee_id", userId)
+        .select(
+          "id,status,created_at,employer_id,employee_id"
+        )
+        .maybeSingle()
 
       if (updateError) {
         throw new Error(
@@ -400,16 +478,29 @@ export default function ContactRequestPage({
         )
       }
 
-      setRequest({
-        ...request,
-        status: "rejected",
-      })
+      if (!updatedRequest) {
+        throw new Error(
+          "Die Anfrage konnte nicht aktualisiert werden. Prüfe die RLS-Regeln für contact_requests."
+        )
+      }
+
+      setRequest((current) =>
+        current
+          ? {
+              ...current,
+              status: "rejected",
+            }
+          : null
+      )
 
       setSuccess(
         "Die Anfrage wurde abgelehnt."
       )
     } catch (err) {
-      console.error(err)
+      console.error(
+        "Anfrage ablehnen:",
+        err
+      )
 
       setError(
         err instanceof Error
@@ -422,9 +513,9 @@ export default function ContactRequestPage({
   }
 
   /*
-   * =====================================================
+   * =========================================================
    * NACHRICHT SENDEN
-   * =====================================================
+   * =========================================================
    */
 
   async function sendMessage(
@@ -435,21 +526,26 @@ export default function ContactRequestPage({
     if (
       !request ||
       !userId ||
-      !messageText.trim() ||
       request.status !== "accepted"
     ) {
       return
     }
 
+    const text = messageText.trim()
+
+    if (!text) {
+      return
+    }
+
     setSending(true)
     setError("")
-
-    const text = messageText.trim()
+    setSuccess("")
 
     try {
       const supabase = createClient()
 
       const {
+        data: insertedMessage,
         error: sendError,
       } = await supabase
         .from("contact_messages")
@@ -458,6 +554,10 @@ export default function ContactRequestPage({
           sender_id: userId,
           message: text,
         })
+        .select(
+          "id,contact_request_id,sender_id,message,created_at,read_at"
+        )
+        .maybeSingle()
 
       if (sendError) {
         throw new Error(
@@ -465,9 +565,38 @@ export default function ContactRequestPage({
         )
       }
 
+      /*
+       * Falls Realtime verzögert ist,
+       * Nachricht sofort lokal anzeigen.
+       */
+      if (insertedMessage) {
+        const newMessage =
+          insertedMessage as Message
+
+        setMessages((current) => {
+          if (
+            current.some(
+              (message) =>
+                message.id ===
+                newMessage.id
+            )
+          ) {
+            return current
+          }
+
+          return [
+            ...current,
+            newMessage,
+          ]
+        })
+      }
+
       setMessageText("")
     } catch (err) {
-      console.error(err)
+      console.error(
+        "Nachricht senden:",
+        err
+      )
 
       setError(
         err instanceof Error
@@ -480,41 +609,35 @@ export default function ContactRequestPage({
   }
 
   /*
-   * =====================================================
+   * =========================================================
    * LOADING
-   * =====================================================
+   * =========================================================
    */
 
   if (loading) {
     return (
       <main className="min-h-screen bg-[#f7f8fa] p-10">
-
         <div className="mx-auto max-w-4xl rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-
           <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
 
           <p className="mt-5 font-semibold text-slate-500">
             Anfrage wird geladen…
           </p>
-
         </div>
-
       </main>
     )
   }
 
   /*
-   * =====================================================
-   * FEHLER / NICHT GEFUNDEN
-   * =====================================================
+   * =========================================================
+   * NICHT GEFUNDEN
+   * =========================================================
    */
 
   if (!request) {
     return (
       <main className="min-h-screen bg-[#f7f8fa] p-10">
-
         <div className="mx-auto max-w-3xl rounded-3xl border border-red-200 bg-white p-10 shadow-sm">
-
           <h1 className="text-2xl font-black">
             Anfrage nicht gefunden
           </h1>
@@ -530,9 +653,7 @@ export default function ContactRequestPage({
           >
             Zurück zum Dashboard
           </Link>
-
         </div>
-
       </main>
     )
   }
@@ -542,9 +663,9 @@ export default function ContactRequestPage({
     "Unternehmen"
 
   /*
-   * =====================================================
+   * =========================================================
    * HAUPTANSICHT
-   * =====================================================
+   * =========================================================
    */
 
   return (
@@ -553,7 +674,6 @@ export default function ContactRequestPage({
       {/* HEADER */}
 
       <header className="border-b border-slate-200 bg-white">
-
         <div className="mx-auto flex h-20 max-w-5xl items-center justify-between px-6">
 
           <Link
@@ -574,7 +694,6 @@ export default function ContactRequestPage({
           </Link>
 
         </div>
-
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-10">
@@ -595,9 +714,7 @@ export default function ContactRequestPage({
           </div>
         )}
 
-        {/* =================================================
-            FIRMA
-        ================================================= */}
+        {/* FIRMA */}
 
         <section className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
 
@@ -608,7 +725,9 @@ export default function ContactRequestPage({
           <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
 
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-3xl font-black text-white">
-              {companyName.charAt(0).toUpperCase()}
+              {companyName
+                .charAt(0)
+                .toUpperCase()}
             </div>
 
             <div>
@@ -630,7 +749,9 @@ export default function ContactRequestPage({
                 Anfrage vom{" "}
                 {new Date(
                   request.created_at
-                ).toLocaleDateString("de-CH")}
+                ).toLocaleDateString(
+                  "de-CH"
+                )}
               </p>
 
             </div>
@@ -673,7 +794,7 @@ export default function ContactRequestPage({
                 type="button"
                 onClick={acceptRequest}
                 disabled={actionLoading}
-                className="rounded-xl bg-blue-600 px-6 py-3 font-bold text-white hover:bg-blue-700 disabled:opacity-50"
+                className="rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {actionLoading
                   ? "Wird gespeichert…"
@@ -684,7 +805,7 @@ export default function ContactRequestPage({
                 type="button"
                 onClick={rejectRequest}
                 disabled={actionLoading}
-                className="rounded-xl border border-slate-200 px-6 py-3 font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-xl border border-slate-200 px-6 py-3 font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Anfrage ablehnen
               </button>
@@ -694,9 +815,7 @@ export default function ContactRequestPage({
 
         </section>
 
-        {/* =================================================
-            PRIVATER CHAT
-        ================================================= */}
+        {/* PRIVATER CHAT */}
 
         {request.status ===
           "accepted" && (
@@ -713,8 +832,8 @@ export default function ContactRequestPage({
               </h2>
 
               <p className="mt-1 text-sm text-slate-400">
-                Nur du und dieser Arbeitgeber können
-                diesen Chat sehen.
+                Nur du und dieser Arbeitgeber
+                können diesen Chat sehen.
               </p>
 
             </div>
@@ -826,6 +945,7 @@ export default function ContactRequestPage({
                     )
                   }
                   onKeyDown={(e) => {
+
                     if (
                       e.key ===
                         "Enter" &&
@@ -840,6 +960,7 @@ export default function ContactRequestPage({
                         e.currentTarget.form?.requestSubmit()
                       }
                     }
+
                   }}
                   rows={2}
                   maxLength={5000}
@@ -853,7 +974,7 @@ export default function ContactRequestPage({
                     sending ||
                     !messageText.trim()
                   }
-                  className="self-end rounded-xl bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="self-end rounded-xl bg-blue-600 px-5 py-3 font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {sending
                     ? "…"
@@ -876,3 +997,4 @@ export default function ContactRequestPage({
     </main>
   )
 }
+```
