@@ -332,22 +332,31 @@ export default function EmployerChat({ requestId }: Props) {
           ) : (
             <div className="space-y-4">
               {messages.map((message) => {
-                const own = message.sender_id === userId
+                // Arbeitgeber immer links, Arbeitnehmer immer rechts.
+                const employerMessage = message.sender_id === request?.employer_id
+
                 return (
-                  <div key={message.id} className={`flex ${own ? "justify-end" : "justify-start"}`}>
+                  <div
+                    key={message.id}
+                    className={`flex ${employerMessage ? "justify-start" : "justify-end"}`}
+                  >
                     <div className="max-w-[85%] sm:max-w-[70%]">
                       <div
                         className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
-                          own
-                            ? "rounded-br-md bg-[var(--brand)] text-white"
-                            : "rounded-bl-md bg-white text-[var(--navy)] shadow-sm"
+                          employerMessage
+                            ? "rounded-bl-md bg-white text-[var(--navy)] shadow-sm"
+                            : "rounded-br-md bg-[var(--brand)] text-white"
                         }`}
                       >
                         {message.message}
                       </div>
-                      <div className={`mt-1 flex items-center gap-1 px-1 text-[10px] text-[var(--muted-light)] ${own ? "justify-end" : "justify-start"}`}>
+                      <div
+                        className={`mt-1 flex items-center gap-1 px-1 text-[10px] text-[var(--muted-light)] ${
+                          employerMessage ? "justify-start" : "justify-end"
+                        }`}
+                      >
                         <span>{formatDate(message.created_at)}</span>
-                        {own && <CheckCheck className="h-3 w-3" />}
+                        {employerMessage && <CheckCheck className="h-3 w-3" />}
                       </div>
                     </div>
                   </div>
