@@ -23,11 +23,11 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 px-4 pt-4 sm:px-6">
+    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4">
       <div className="mx-auto max-w-[1440px]">
-        <nav className="flex min-h-[74px] items-center rounded-2xl border border-slate-200/80 bg-white/95 px-4 shadow-[0_8px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl sm:px-5">
-          <Link href="/" className="group flex shrink-0 items-center gap-3">
-            <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-slate-950 text-lg font-black text-white shadow-lg shadow-slate-950/10 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-xl">
+        <nav className="flex min-h-[68px] items-center rounded-2xl border border-slate-200/80 bg-white/95 px-3 shadow-[0_8px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl sm:min-h-[74px] sm:px-5">
+          <Link href="/" className="group flex shrink-0 items-center gap-2.5 sm:gap-3">
+            <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-slate-950 text-base font-black text-white shadow-lg shadow-slate-950/10 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-xl sm:h-11 sm:w-11 sm:text-lg">
               <span className="relative z-10">S</span>
               <div className="absolute -right-4 -top-4 h-10 w-10 rounded-full bg-blue-600/80 blur-xl" />
             </div>
@@ -51,11 +51,18 @@ export function SiteHeader() {
             ))}
           </div>
 
-          <div className="ml-3 flex items-center gap-2">
-            <Link href="/login" className="hidden items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 sm:inline-flex">
+          {/* Login + Registrierung: auch im Handy-Hochformat immer sichtbar */}
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:ml-3 sm:gap-2">
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 sm:px-4 sm:text-sm"
+            >
               Einloggen
             </Link>
-            <Link href="/registrieren" className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-950/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-blue-600/20">
+            <Link
+              href="/registrieren"
+              className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-3 py-2.5 text-xs font-bold text-white shadow-lg shadow-slate-950/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-blue-600/20 sm:px-5 sm:text-sm"
+            >
               Registrieren
             </Link>
           </div>
