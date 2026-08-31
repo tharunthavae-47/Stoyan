@@ -56,6 +56,32 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  const role = user.user_metadata?.role
+
+  if (role !== "employee" && role !== "employer") {
+    const url = request.nextUrl.clone()
+    url.pathname = "/registrieren"
+    return NextResponse.redirect(url)
+  }
+
+  if (pathname.startsWith("/arbeitnehmer") && role !== "employee") {
+    const url = request.nextUrl.clone()
+    url.pathname = "/arbeitgeber"
+    return NextResponse.redirect(url)
+  }
+
+  if (pathname.startsWith("/arbeitgeber") && role !== "employer") {
+    const url = request.nextUrl.clone()
+    url.pathname = "/arbeitnehmer"
+    return NextResponse.redirect(url)
+  }
+
+  if (pathname.startsWith("/dashboard")) {
+    const url = request.nextUrl.clone()
+    url.pathname = role === "employer" ? "/arbeitgeber" : "/arbeitnehmer"
+    return NextResponse.redirect(url)
+  }
+
   return response
 }
 
