@@ -1,4 +1,3 @@
-```tsx
 import Link from "next/link"
 
 const links = [
@@ -136,4 +135,3 @@ export function SiteHeader() {
     </header>
   )
 }
-```
