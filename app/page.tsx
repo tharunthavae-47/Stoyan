@@ -184,11 +184,11 @@ export default function HomePage() {
 
                     <div className="min-w-0 flex-1">
                       <p className="font-black">
-                        Michael Keller
+                        Tharun Thava
                       </p>
 
                       <p className="text-sm text-slate-500">
-                        Automobil-Mechatroniker
+                        Prozesstechniker
                       </p>
                     </div>
 
@@ -234,11 +234,11 @@ export default function HomePage() {
                     <div className="min-w-0 flex-1">
 
                       <p className="font-black">
-                        Anna Meier
+                        Stoyan Tanovski
                       </p>
 
                       <p className="text-sm text-slate-500">
-                        Automobil-Fachfrau
+                        Automobil-Fachmann
                       </p>
 
                     </div>
