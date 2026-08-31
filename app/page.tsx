@@ -102,29 +102,64 @@ export default function Home() {
 
           {/* NAVIGATION */}
 
-          <nav className="ml-auto hidden items-center gap-2 xl:flex">
+         <nav className="ml-auto hidden items-center gap-3 xl:flex">
+  {navigation.map((item, index) => (
+    <a
+      key={item.href}
+      href={item.href}
+      className="
+        group
+        flex
+        items-center
+        gap-3
+        rounded-2xl
+        border
+        border-slate-200
+        bg-white
+        px-5
+        py-3
+        text-sm
+        font-semibold
+        text-slate-600
+        shadow-[0_4px_14px_rgba(15,23,42,0.04)]
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:border-blue-200
+        hover:bg-blue-50/40
+        hover:text-blue-600
+        hover:shadow-[0_10px_25px_rgba(37,99,235,0.10)]
+      "
+    >
+      <span
+        className="
+          flex
+          h-6
+          min-w-6
+          items-center
+          justify-center
+          rounded-lg
+          bg-slate-50
+          px-1.5
+          text-[9px]
+          font-black
+          tracking-wider
+          text-slate-400
+          transition-all
+          duration-300
+          group-hover:bg-blue-100
+          group-hover:text-blue-600
+        "
+      >
+        {String(index + 1).padStart(2, "0")}
+      </span>
 
-            {navigation.map((item, index) => (
-
-              <a
-                key={item.href}
-                href={item.href}
-                className="group flex items-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-semibold text-[#475569] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#BFDBFE] hover:bg-[#F8FBFF] hover:text-[#2563EB] hover:shadow-md"
-              >
-
-                <span className="text-[9px] font-black tracking-wider text-[#94A3B8] transition-colors group-hover:text-[#2563EB]">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-
-                <span>
-                  {item.label}
-                </span>
-
-              </a>
-
-            ))}
-
-          </nav>
+      <span className="whitespace-nowrap">
+        {item.label}
+      </span>
+    </a>
+  ))}
+</nav>
 
           {/* ACTIONS */}
 
