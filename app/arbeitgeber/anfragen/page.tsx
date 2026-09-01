@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 type RequestRow = { id: string; status: string; created_at: string; employer_id: string; employee_id: string; job_id: string | null }
-type EmployeeProfile = { id: string; profession: string | null; beruf: string | null; education: string | null }
+type EmployeeProfile = { id: string; profession: string | null; education: string | null }
 type Profile = { id: string; first_name: string | null; last_name: string | null; city: string | null }
 
 export default async function ArbeitgeberAnfragenPage() {
@@ -19,11 +19,9 @@ export default async function ArbeitgeberAnfragenPage() {
 
   const rows = (requests ?? []) as RequestRow[]
   const ids = Array.from(new Set(rows.map((r) => r.employee_id).filter(Boolean)))
-
   const [{ data: employeeRows }, { data: profileRows }] = ids.length
     ? await Promise.all([
-        // Neue Datenbankstruktur: profession. Beruf bleibt als Fallback erhalten.
-        supabase.from("employee_profiles").select("id,profession,beruf,education").in("id", ids),
+        supabase.from("employee_profiles").select("id,profession,education").in("id", ids),
         supabase.from("profiles").select("id,first_name,last_name,city").in("id", ids),
       ])
     : [{ data: [] as EmployeeProfile[] }, { data: [] as Profile[] }]
@@ -35,12 +33,11 @@ export default async function ArbeitgeberAnfragenPage() {
     <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--brand)]">Kommunikation</p>
     <h1 className="mt-2 text-4xl font-black tracking-[-0.04em] text-[var(--navy)]">Kontaktanfragen & Chats</h1>
     <p className="mt-3 max-w-2xl text-[var(--muted)]">Hier findest du alle deine Kontaktanfragen. Bei angenommenen Anfragen kannst du direkt den privaten Chat auswählen.</p>
-
     {rows.length === 0 ? <section className="card card-pad mt-8 text-center"><MessageCircle className="mx-auto h-10 w-10 text-[var(--brand)]" /><h2 className="mt-4 text-xl font-black">Noch keine Kontaktanfragen</h2><p className="mt-2 text-sm text-[var(--muted)]">Sobald du einen Arbeitnehmer kontaktierst, erscheint die Anfrage hier.</p><Link href="/arbeitgeber/suche" className="btn-primary mt-6 inline-flex">Kandidaten suchen<ArrowRight className="h-4 w-4" /></Link></section> : <div className="mt-8 space-y-4">{rows.map((r) => {
       const employee = employeeMap.get(r.employee_id)
       const profile = profileMap.get(r.employee_id)
       const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Arbeitnehmer"
-      const profession = employee?.profession || employee?.beruf || "Beruf nicht angegeben"
+      const profession = employee?.profession || "Beruf nicht angegeben"
       const accepted = r.status === "accepted"
       return <section key={r.id} className={`rounded-3xl border bg-white p-6 shadow-sm ${accepted ? "border-emerald-200" : "border-[var(--line)]"}`}>
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
