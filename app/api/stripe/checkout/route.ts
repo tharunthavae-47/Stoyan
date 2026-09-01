@@ -17,16 +17,30 @@ export async function POST(request: Request) {
 
     const body = await request.json().catch(() => ({}))
     const plan = body?.plan as PaidPlan
-    const requestedRole = body?.role === "employee" ? "employee" : body?.role === "employer" ? "employer" : null
+    const requestedRole =
+      body?.role === "employee"
+        ? "employee"
+        : body?.role === "employer"
+          ? "employer"
+          : null
 
     if (!plan || !(plan in STRIPE_PRICE_IDS)) {
       return NextResponse.json({ error: "Ungültiger kostenpflichtiger Plan." }, { status: 400 })
     }
 
     // Premium ist für Arbeitnehmer, Professional für Arbeitgeber.
-    const planRole = plan === "premium" ? "employee" : plan === "professional" ? "employer" : null
+    const planRole =
+      plan === "premium"
+        ? "employee"
+        : plan === "professional"
+          ? "employer"
+          : null
+
     if (!planRole) {
-      return NextResponse.json({ error: "Dieser Plan kann nicht über den Checkout gekauft werden." }, { status: 400 })
+      return NextResponse.json(
+        { error: "Dieser Plan kann nicht über den Checkout gekauft werden." },
+        { status: 400 },
+      )
     }
 
     const role = user
@@ -36,12 +50,18 @@ export async function POST(request: Request) {
       : requestedRole || planRole
 
     if (role !== planRole) {
-      return NextResponse.json({ error: "Dieser Plan passt nicht zu deiner Rolle." }, { status: 403 })
+      return NextResponse.json(
+        { error: "Dieser Plan passt nicht zu deiner Rolle." },
+        { status: 403 },
+      )
     }
 
     const stripeKey = process.env.STRIPE_SECRET_KEY
     if (!stripeKey) {
-      return NextResponse.json({ error: "STRIPE_SECRET_KEY fehlt in den Vercel-Umgebungsvariablen." }, { status: 500 })
+      return NextResponse.json(
+        { error: "STRIPE_SECRET_KEY fehlt in den Vercel-Umgebungsvariablen." },
+        { status: 500 },
+      )
     }
 
     let customerId = ""
@@ -85,7 +105,7 @@ export async function POST(request: Request) {
 
     const params = new URLSearchParams()
     params.set("mode", "subscription")
-    params.set("customer_creation", "always")
+    // Ohne customer-ID erstellt Stripe im Subscription-Checkout automatisch einen Kunden.
     if (customerId) params.set("customer", customerId)
     params.set("line_items[0][price]", STRIPE_PRICE_IDS[plan])
     params.set("line_items[0][quantity]", "1")
