@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 
 type RequestData = { id: string; status: "pending" | "accepted" | "rejected" | string; created_at: string; employer_id: string; employee_id: string }
 type Company = { name: string | null; industry: string | null; city: string | null }
-type Employee = { vorname: string | null; nachname: string | null; beruf: string | null; city: string | null; stadt: string | null }
+type Employee = { first_name: string | null; last_name: string | null; beruf: string | null; city: string | null }
 type Message = { id: string; contact_request_id: string; sender_id: string; message: string; created_at: string; read_at: string | null }
 type Props = { requestId: string }
 
@@ -24,7 +24,7 @@ export default function EmployerChat({ requestId }: Props) {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState("")
 
-  const employeeName = [employee?.vorname, employee?.nachname].filter(Boolean).join(" ") || "Arbeitnehmer"
+  const employeeName = [employee?.first_name, employee?.last_name].filter(Boolean).join(" ") || "Arbeitnehmer"
   const initials = employeeName.split(" ").map((part) => part.charAt(0)).join("").slice(0, 2).toUpperCase()
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }) }, [messages])
@@ -46,17 +46,23 @@ export default function EmployerChat({ requestId }: Props) {
         const typedRequest = requestData as RequestData
         if (typedRequest.status !== "accepted") throw new Error("Der Chat ist erst verfügbar, wenn der Arbeitnehmer die Anfrage angenommen hat.")
 
-        const [{ data: companyData }, { data: employeeData, error: employeeError }] = await Promise.all([
+        const [{ data: companyData }, { data: profileData, error: profileError }, { data: employeeData, error: employeeError }] = await Promise.all([
           supabase.from("companies").select("name,industry,city").eq("owner_id", typedRequest.employer_id).maybeSingle(),
-          supabase.from("employee_profiles").select("vorname,nachname,beruf,city,stadt").eq("id", typedRequest.employee_id).maybeSingle(),
+          supabase.from("profiles").select("id,first_name,last_name,city").eq("id", typedRequest.employee_id).maybeSingle(),
+          supabase.from("employee_profiles").select("id,beruf").eq("id", typedRequest.employee_id).maybeSingle(),
         ])
 
-        let resolvedEmployee = employeeData as Employee | null
-        if (!resolvedEmployee || (!resolvedEmployee.vorname && !resolvedEmployee.nachname)) {
-          const { data: contactData } = await supabase.from("employee_contact_details").select("vorname,nachname,beruf,city,stadt").eq("employee_id", typedRequest.employee_id).maybeSingle()
-          if (contactData) resolvedEmployee = contactData as Employee
+        if (profileError) console.warn("Arbeitnehmer-Profil konnte nicht geladen werden:", profileError.message)
+        if (employeeError) console.warn("Arbeitnehmerdaten konnten nicht geladen werden:", employeeError.message)
+
+        const profile = profileData as { id: string; first_name: string | null; last_name: string | null; city: string | null } | null
+        const profileName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ")
+        let resolvedEmployee: Employee | null = profile ? { first_name: profile.first_name, last_name: profile.last_name, beruf: (employeeData as { beruf: string | null } | null)?.beruf || null, city: profile.city } : null
+
+        if (!profileName) {
+          const { data: contactData } = await supabase.from("employee_contact_details").select("vorname,nachname,beruf,city,stadt").eq("id", typedRequest.employee_id).maybeSingle()
+          if (contactData) resolvedEmployee = { first_name: contactData.vorname, last_name: contactData.nachname, beruf: contactData.beruf, city: contactData.city || contactData.stadt || null }
         }
-        if (employeeError) console.warn("Arbeitnehmerprofil konnte nicht geladen werden:", employeeError.message)
 
         const { data: messageData, error: messageError } = await supabase.from("contact_messages").select("id,contact_request_id,sender_id,message,created_at,read_at").eq("contact_request_id", requestId).order("created_at", { ascending: true })
         if (messageError) throw new Error(`Nachrichten konnten nicht geladen werden: ${messageError.message}`)
@@ -102,9 +108,9 @@ export default function EmployerChat({ requestId }: Props) {
     <div className="mb-6 flex items-center justify-between gap-4"><Link href="/arbeitgeber" className="btn-ghost"><ArrowLeft className="h-4 w-4" />Zurück</Link><span className="hidden items-center gap-2 text-sm font-bold text-emerald-600 sm:flex"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />Privater Chat</span></div>
     {error && <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</div>}
     <section className="overflow-hidden rounded-[28px] border border-[var(--line)] bg-white shadow-sm">
-      <header className="bg-[var(--navy)] px-6 py-5 text-white sm:px-8"><div className="flex items-center gap-4"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-lg font-black ring-1 ring-white/10">{initials || "A"}</div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><MessageCircle className="h-4 w-4 text-blue-300" /><p className="text-xs font-black uppercase tracking-[0.16em] text-blue-300">Direkter Kontakt</p></div><h1 className="mt-1 truncate text-2xl font-black">{employeeName}</h1><p className="mt-1 text-sm text-blue-100/80">{employee?.beruf || "Beruf nicht angegeben"}{employee?.city || employee?.stadt ? ` · ${employee.city || employee.stadt}` : ""}</p></div><div className="hidden text-right sm:block"><p className="text-xs text-blue-200/70">Unternehmen</p><p className="mt-1 flex items-center gap-1 font-bold"><Building2 className="h-4 w-4" />{company?.name || "Ihr Unternehmen"}</p></div></div></header>
-      <div className="h-[min(62vh,600px)] min-h-[420px] overflow-y-auto bg-slate-50 p-5 sm:p-7">{messages.length === 0 ? <div className="flex h-full items-center justify-center text-center"><div><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-sm"><MessageCircle className="h-7 w-7" /></div><h2 className="mt-5 text-xl font-black text-[var(--navy)]">Noch keine Nachrichten</h2><p className="mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">Schreiben Sie dem Arbeitnehmer die erste Nachricht und starten Sie das Gespräch.</p></div></div> : <div className="space-y-4">{messages.map((message) => { const employerMessage = message.sender_id === request?.employer_id; return <div key={message.id} className={`flex ${employerMessage ? "justify-start" : "justify-end"}`}><div className="max-w-[85%] sm:max-w-[70%]"><div className={`rounded-2xl px-4 py-3 text-sm leading-6 ${employerMessage ? "rounded-bl-md bg-white text-[var(--navy)] shadow-sm" : "rounded-br-md bg-[var(--brand)] text-white"}`}>{message.message}</div><div className={`mt-1 flex items-center gap-1 px-1 text-[10px] text-[var(--muted-light)] ${employerMessage ? "justify-start" : "justify-end"}`}><span>{formatDate(message.created_at)}</span>{employerMessage && <CheckCheck className="h-3 w-3" />}</div></div></div> })}<div ref={bottomRef} /></div>}</div>
-      <form onSubmit={sendMessage} className="border-t border-[var(--line)] bg-white p-4 sm:p-5"><div className="flex gap-3"><textarea value={text} onChange={(event) => setText(event.target.value)} onKeyDown={handleKeyDown} placeholder="Nachricht an den Arbeitnehmer schreiben…" rows={2} maxLength={5000} disabled={sending} className="min-h-[54px] flex-1 resize-none rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm text-[var(--navy)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand)]/10 disabled:bg-slate-50" /><button type="submit" disabled={sending || !text.trim()} className="self-end inline-flex h-[54px] items-center gap-2 rounded-2xl bg-[var(--brand)] px-5 font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">{sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}<span className="hidden sm:inline">Senden</span></button></div><p className="mt-2 text-xs text-[var(--muted-light)]">Enter = Senden · Shift + Enter = neue Zeile</p></form>
+      <header className="bg-[var(--navy)] px-6 py-5 text-white sm:px-8"><div className="flex items-center gap-4"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-lg font-black ring-1 ring-white/10">{initials || "A"}</div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><MessageCircle className="h-4 w-4 text-blue-300" /><p className="text-xs font-black uppercase tracking-[0.16em] text-blue-300">Direkter Kontakt</p></div><h1 className="mt-1 truncate text-2xl font-black">{employeeName}</h1><p className="mt-1 text-sm text-blue-100/80">{employee?.beruf || "Beruf nicht angegeben"}{employee?.city ? ` · ${employee.city}` : ""}</p></div><div className="hidden text-right sm:block"><p className="text-xs text-blue-200/70">Unternehmen</p><p className="mt-1 flex items-center gap-1 font-bold"><Building2 className="h-4 w-4" />{company?.name || "Ihr Unternehmen"}</p></div></div></header>
+      <div className="h-[min(62vh,600px)] min-h-[420px] overflow-y-auto bg-slate-50 p-5 sm:p-7">{messages.length === 0 ? <div className="flex h-full items-center justify-center text-center"><div><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-sm"><MessageCircle className="h-7 w-7" /></div><h2 className="mt-5 text-xl font-black text-[var(--navy)]">Noch keine Nachrichten</h2><p className="mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">Schreiben Sie {employeeName} die erste Nachricht und starten Sie das Gespräch.</p></div></div> : <div className="space-y-4">{messages.map((message) => { const employerMessage = message.sender_id === request?.employer_id; return <div key={message.id} className={`flex ${employerMessage ? "justify-start" : "justify-end"}`}><div className="max-w-[85%] sm:max-w-[70%]"><div className={`rounded-2xl px-4 py-3 text-sm leading-6 ${employerMessage ? "rounded-bl-md bg-white text-[var(--navy)] shadow-sm" : "rounded-br-md bg-[var(--brand)] text-white"}`}>{message.message}</div><div className={`mt-1 flex items-center gap-1 px-1 text-[10px] text-[var(--muted-light)] ${employerMessage ? "justify-start" : "justify-end"}`}><span>{formatDate(message.created_at)}</span>{employerMessage && <CheckCheck className="h-3 w-3" />}</div></div></div> })}<div ref={bottomRef} /></div>}</div>
+      <form onSubmit={sendMessage} className="border-t border-[var(--line)] bg-white p-4 sm:p-5"><div className="flex gap-3"><textarea value={text} onChange={(event) => setText(event.target.value)} onKeyDown={handleKeyDown} placeholder={`Nachricht an ${employeeName} schreiben…`} rows={2} maxLength={5000} disabled={sending} className="min-h-[54px] flex-1 resize-none rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm text-[var(--navy)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand)]/10 disabled:bg-slate-50" /><button type="submit" disabled={sending || !text.trim()} className="self-end inline-flex h-[54px] items-center gap-2 rounded-2xl bg-[var(--brand)] px-5 font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">{sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}<span className="hidden sm:inline">Senden</span></button></div><p className="mt-2 text-xs text-[var(--muted-light)]">Enter = Senden · Shift + Enter = neue Zeile</p></form>
     </section>
   </div>
 }
