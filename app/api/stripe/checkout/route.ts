@@ -28,7 +28,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Ungültiger kostenpflichtiger Plan." }, { status: 400 })
     }
 
-    // Premium ist für Arbeitnehmer, Professional für Arbeitgeber.
     const planRole =
       plan === "premium"
         ? "employee"
@@ -91,7 +90,6 @@ export async function POST(request: Request) {
 
     let customerId = ""
 
-    // Bestehende eingeloggte Benutzer verwenden ihren vorhandenen Stripe-Kunden.
     if (user) {
       const { data: existing } = await supabase
         .from("subscriptions")
@@ -130,7 +128,6 @@ export async function POST(request: Request) {
 
     const params = new URLSearchParams()
     params.set("mode", "subscription")
-    // Ohne customer-ID erstellt Stripe im Subscription-Checkout automatisch einen Kunden.
     if (customerId) params.set("customer", customerId)
     params.set("line_items[0][price]", STRIPE_PRICE_IDS[plan])
     params.set("line_items[0][quantity]", "1")
@@ -143,8 +140,6 @@ export async function POST(request: Request) {
     params.set("subscription_data[metadata][role]", role)
     params.set("subscription_data[metadata][plan_id]", plan)
     if (user) params.set("subscription_data[metadata][user_id]", user.id)
-
-    // Bei einem Gast holt Stripe die E-Mail-Adresse direkt im Checkout ein.
     params.set("billing_address_collection", "auto")
 
     const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
@@ -164,17 +159,7 @@ export async function POST(request: Request) {
       )
     }
 
-    if (user && customerId) {
-      await supabase
-        .from("subscriptions")
-        .update({
-          provider: "stripe",
-          provider_customer_id: customerId,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("user_id", user.id)
-    }
-
+    // Die endgültige Speicherung in subscriptions übernimmt ausschließlich der signierte Stripe-Webhook.
     return NextResponse.json({ url: session.url })
   } catch (error) {
     console.error("Stripe checkout error", error)
