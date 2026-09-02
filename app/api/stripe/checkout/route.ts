@@ -43,11 +43,36 @@ export async function POST(request: Request) {
       )
     }
 
-    const role = user
-      ? user.user_metadata?.role === "employee"
-        ? "employee"
-        : "employer"
-      : requestedRole || planRole
+    let role: "employee" | "employer"
+
+    if (user) {
+      // Bei eingeloggten Nutzern niemals user_metadata für Berechtigungen verwenden.
+      // Die autoritative Rolle kommt aus der geschützten profiles-Tabelle.
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle()
+
+      if (profileError) {
+        return NextResponse.json(
+          { error: "Deine Kontorolle konnte nicht überprüft werden." },
+          { status: 500 },
+        )
+      }
+
+      if (profile?.role !== "employee" && profile?.role !== "employer") {
+        return NextResponse.json(
+          { error: "Deinem Konto ist noch keine gültige Rolle zugewiesen." },
+          { status: 403 },
+        )
+      }
+
+      role = profile.role
+    } else {
+      // Gast-Checkout: die UI darf die gewünschte Rolle für den Kauf angeben.
+      role = requestedRole || planRole
+    }
 
     if (role !== planRole) {
       return NextResponse.json(
