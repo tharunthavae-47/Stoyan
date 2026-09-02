@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useState, type ComponentType } from "react"
 import { ArrowRight, Building2, Check, Clock3, MessageCircle, RefreshCw, Search, Send, Users, X, type LucideProps } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+import { SubscriptionCard } from "@/components/subscription-card"
 
 type Company = { name: string | null; industry: string | null; city: string | null }
 type ContactRequest = { id: string; employer_id: string; employee_id: string; job_id: string | null; status: string; created_at: string }
@@ -94,6 +95,8 @@ export default function ArbeitgeberPage() {
     </div>
 
     {error && <div className="mt-6 rounded-2xl border border-[var(--danger)]/30 bg-[var(--danger)]/8 p-4 text-sm font-semibold text-[var(--danger)]">{error}</div>}
+
+    <SubscriptionCard />
 
     <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{stats.map(({ label, count, Icon, style }) => <div key={label} className="card card-pad"><div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-[var(--muted)]">{label}</p><p className="mt-2 text-3xl font-black text-[var(--navy)]">{count}</p></div><div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${style}`}><Icon className="h-5 w-5" /></div></div></div>)}</section>
 
