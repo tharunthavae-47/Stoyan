@@ -30,12 +30,6 @@ function RegisterForm() {
     try {
       const supabase = createClient()
 
-      /*
-       * =====================================================
-       * BENUTZER ERSTELLEN
-       * =====================================================
-       */
-
       const {
         data,
         error: signUpError,
@@ -65,20 +59,6 @@ function RegisterForm() {
 
       const userId = data.user.id
 
-      /*
-       * =====================================================
-       * PROFIL ERSTELLEN
-       * =====================================================
-       *
-       * Wichtig:
-       *
-       * contact_requests.employer_id
-       * verweist auf profiles.id.
-       *
-       * Deshalb muss für jeden Benutzer ein
-       * profiles-Datensatz mit derselben ID existieren.
-       */
-
       const {
         error: profileError,
       } = await supabase
@@ -86,6 +66,7 @@ function RegisterForm() {
         .upsert(
           {
             id: userId,
+            role,
           },
           {
             onConflict: "id",
@@ -105,16 +86,6 @@ function RegisterForm() {
         setLoading(false)
         return
       }
-
-      /*
-       * =====================================================
-       * ARBEITNEHMER
-       * =====================================================
-       *
-       * Falls ein Arbeitnehmer registriert wird,
-       * wird zusätzlich das employee_profiles-Profil
-       * erstellt.
-       */
 
       if (role === "employee") {
         const {
@@ -147,12 +118,6 @@ function RegisterForm() {
         }
       }
 
-      /*
-       * =====================================================
-       * SESSION VORHANDEN
-       * =====================================================
-       */
-
       if (data.session) {
         window.location.href =
           role === "employer"
@@ -161,12 +126,6 @@ function RegisterForm() {
 
         return
       }
-
-      /*
-       * =====================================================
-       * E-MAIL-BESTÄTIGUNG
-       * =====================================================
-       */
 
       setMessage(
         "Konto erfolgreich erstellt. Bitte bestätige deine E-Mail-Adresse und melde dich danach an."
@@ -191,7 +150,6 @@ function RegisterForm() {
 
   return (
     <div className="w-full max-w-lg rounded-3xl border border-slate-800 bg-slate-950 p-8 text-white shadow-2xl">
-
       <Link
         href="/"
         className="text-sm font-semibold text-blue-400"
@@ -207,17 +165,11 @@ function RegisterForm() {
         Wähle zuerst aus, wie du Stoyan nutzen möchtest.
       </p>
 
-      {/* =====================================================
-          ROLLE
-      ===================================================== */}
-
       <div className="mt-7 grid grid-cols-2 gap-3">
-
         {[
           ["employee", "Arbeitnehmer"],
           ["employer", "Arbeitgeber"],
         ].map(([value, label]) => (
-
           <button
             key={value}
             type="button"
@@ -230,20 +182,13 @@ function RegisterForm() {
           >
             {label}
           </button>
-
         ))}
-
       </div>
-
-      {/* =====================================================
-          FORMULAR
-      ===================================================== */}
 
       <form
         onSubmit={submit}
         className="mt-7 space-y-4"
       >
-
         <input
           required
           type="email"
@@ -278,12 +223,7 @@ function RegisterForm() {
             ? "Firmenkonto erstellen"
             : "Arbeitnehmerkonto erstellen"}
         </button>
-
       </form>
-
-      {/* =====================================================
-          FEHLER
-      ===================================================== */}
 
       {error && (
         <p className="mt-4 rounded-xl border border-red-900 bg-red-950/40 p-3 text-sm text-red-300">
@@ -291,33 +231,21 @@ function RegisterForm() {
         </p>
       )}
 
-      {/* =====================================================
-          ERFOLG
-      ===================================================== */}
-
       {message && (
         <p className="mt-4 rounded-xl border border-emerald-900 bg-emerald-950/40 p-3 text-sm text-emerald-300">
           {message}
         </p>
       )}
 
-      {/* =====================================================
-          LOGIN
-      ===================================================== */}
-
       <p className="mt-6 text-center text-sm text-slate-500">
-
         Bereits registriert?{" "}
-
         <Link
           href="/login"
           className="font-bold text-blue-400"
         >
           Anmelden
         </Link>
-
       </p>
-
     </div>
   )
 }
@@ -325,7 +253,6 @@ function RegisterForm() {
 export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#05070b] px-6 py-12">
-
       <Suspense
         fallback={
           <div className="rounded-3xl border border-slate-800 bg-slate-950 p-8 text-white">
@@ -335,7 +262,6 @@ export default function RegisterPage() {
       >
         <RegisterForm />
       </Suspense>
-
     </main>
   )
 }
