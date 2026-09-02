@@ -9,7 +9,7 @@ export function SiteFooter() {
           href="/"
           className="text-xl font-black tracking-[-0.05em] text-slate-950"
         >
-          jobmacht24<span className="text-sky-500">.</span>
+          jobmatch24<span className="text-sky-500">.</span>
         </Link>
 
         <div className="flex items-center gap-5">
