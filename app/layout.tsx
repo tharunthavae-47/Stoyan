@@ -10,9 +10,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "STOYAN – Menschen verbinden",
+  title: "jobmatch24 – Menschen verbinden",
   description:
-    "STOYAN verbindet qualifizierte Arbeitnehmer mit passenden Arbeitgebern.",
+    "jobmatch24 verbindet qualifizierte Arbeitnehmer mit passenden Arbeitgebern.",
 }
 
 export default function RootLayout({
