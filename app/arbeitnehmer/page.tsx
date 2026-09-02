@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { MessageCircle, Check, Clock3, ArrowRight } from "lucide-react"
+import { SubscriptionCard } from "@/components/subscription-card"
 
 export default async function EmployeeDashboard() {
   const supabase = await createClient()
@@ -66,6 +67,8 @@ export default async function EmployeeDashboard() {
           </div>
           <Link href="/arbeitnehmer/profil" className="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white transition hover:bg-blue-700">Profil bearbeiten</Link>
         </div>
+
+        <SubscriptionCard />
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[340px_1fr]">
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
