@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client"
 const APP_ROUTE_PREFIXES = ["/arbeitgeber", "/arbeitnehmer", "/dashboard"]
 
 const links = [
-  { href: "/#ueber-stoyan", label: "Über STOYAN" },
+  { href: "/#ueber-stoyan", label: "Über jobmacht24" },
   { href: "/#so-funktioniert", label: "So funktioniert's" },
   { href: "/#arbeitnehmer", label: "Arbeitnehmer" },
   { href: "/#arbeitgeber", label: "Arbeitgeber" },
@@ -50,11 +50,11 @@ export function SiteHeader() {
         <nav className="flex min-h-[68px] items-center rounded-2xl border border-slate-200/80 bg-white/95 px-3 shadow-[0_8px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl sm:min-h-[74px] sm:px-5">
           <Link href="/" className="group flex shrink-0 items-center gap-2.5 sm:gap-3">
             <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-slate-950 text-base font-black text-white shadow-lg shadow-slate-950/10 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-xl sm:h-11 sm:w-11 sm:text-lg">
-              <span className="relative z-10">S</span>
+              <span className="relative z-10">J</span>
               <div className="absolute -right-4 -top-4 h-10 w-10 rounded-full bg-blue-600/80 blur-xl" />
             </div>
             <div className="hidden sm:block">
-              <div className="text-[19px] font-black tracking-[-0.055em] text-slate-950">STOYAN</div>
+              <div className="text-[19px] font-black tracking-[-0.055em] text-slate-950">jobmacht24</div>
               <div className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.22em] text-slate-400">Menschen verbinden</div>
             </div>
           </Link>
