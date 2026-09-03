@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState, type ComponentType } from "react"
-import { ArrowRight, Building2, Check, Clock3, FileSpreadsheet, MessageCircle, RefreshCw, Search, Send, Users, X, type LucideProps } from "lucide-react"
+import { ArrowRight, Building2, Check, Clock3, MessageCircle, RefreshCw, Search, Send, Users, X, type LucideProps } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { SubscriptionCard } from "@/components/subscription-card"
 
@@ -91,7 +91,7 @@ export default function ArbeitgeberPage() {
   return <div className="animate-fade-up">
     <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
       <div><div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand)]/20 bg-[var(--brand)]/8 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--brand)]"><Building2 className="h-4 w-4" />Arbeitgeber</div><h1 className="mt-5 text-4xl font-black tracking-[-0.045em] text-[var(--navy)] sm:text-5xl">Mitarbeiter finden.</h1><p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--muted)]">Suchen Sie nach Ihren Kriterien und entdecken Sie passende Arbeitnehmerprofile.</p></div>
-      <div className="flex flex-wrap gap-2"><button type="button" onClick={() => void loadDashboard(false)} disabled={refreshing} className="btn-ghost shrink-0"><RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />Aktualisieren</button><Link href="/arbeitgeber/arbeitnehmer-import" className="btn-ghost shrink-0"><FileSpreadsheet className="h-4 w-4" />Arbeitnehmer importieren</Link><Link href="/arbeitgeber/suche" className="btn-primary shrink-0"><Search className="h-4 w-4" />Kandidaten suchen<ArrowRight className="h-4 w-4" /></Link></div>
+      <div className="flex flex-wrap gap-2"><button type="button" onClick={() => void loadDashboard(false)} disabled={refreshing} className="btn-ghost shrink-0"><RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />Aktualisieren</button><Link href="/arbeitgeber/suche" className="btn-primary shrink-0"><Search className="h-4 w-4" />Kandidaten suchen<ArrowRight className="h-4 w-4" /></Link></div>
     </div>
 
     {error && <div className="mt-6 rounded-2xl border border-[var(--danger)]/30 bg-[var(--danger)]/8 p-4 text-sm font-semibold text-[var(--danger)]">{error}</div>}
