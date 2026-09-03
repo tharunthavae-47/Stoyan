@@ -1,6 +1,7 @@
 export const STRIPE_PRICE_IDS = {
-  premium: "price_1UAr8GR6nscSb26oLbvq6bop",
-  professional: "price_1UAr7kR6nscSb26o6zMxmsEM",
+  basic: "price_1UBUe7R6nscSb26ogiAK7PoI",
+  professional: "price_1UBUegR6nscSb26odgrCvfAC",
+  business: "price_1UBUeuR6nscSb26ouYPo6Y8Z",
 } as const
 
 export type PaidPlan = keyof typeof STRIPE_PRICE_IDS
