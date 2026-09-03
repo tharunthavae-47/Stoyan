@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 
 export default function TwoFactorSetupPage() {
   const router = useRouter()
+  const setupStarted = useRef(false)
   const [qrCode, setQrCode] = useState("")
   const [secret, setSecret] = useState("")
   const [factorId, setFactorId] = useState("")
@@ -15,6 +16,10 @@ export default function TwoFactorSetupPage() {
   const [verifying, setVerifying] = useState(false)
 
   useEffect(() => {
+    // Prevent duplicate enroll calls when React re-runs effects in development.
+    if (setupStarted.current) return
+    setupStarted.current = true
+
     let active = true
 
     async function setup() {
@@ -28,18 +33,38 @@ export default function TwoFactorSetupPage() {
 
       const { data: factors, error: listError } = await supabase.auth.mfa.listFactors()
 
-      if (listError) {
+      if (listError || !factors) {
         if (active) {
-          setError(listError.message)
+          setError(listError?.message ?? "2FA-Faktoren konnten nicht geladen werden.")
           setLoading(false)
         }
         return
       }
 
-      const existing = factors.totp?.find((factor) => factor.status === "verified")
-      if (existing) {
-        router.replace("/login")
+      // A verified factor is already active. Do not create another one.
+      const verified = factors.totp?.find((factor) => factor.status === "verified")
+      if (verified) {
+        router.replace("/dashboard")
         return
+      }
+
+      // A previous setup may have been started but not completed. Remove stale
+      // unverified TOTP factors before creating a fresh QR code. This also
+      // prevents Supabase's duplicate friendly-name error.
+      const unverifiedTotp = factors.totp?.filter((factor) => factor.status !== "verified") ?? []
+
+      for (const factor of unverifiedTotp) {
+        const { error: unenrollError } = await supabase.auth.mfa.unenroll({
+          factorId: factor.id,
+        })
+
+        if (unenrollError) {
+          if (active) {
+            setError("Die alte 2FA-Einrichtung konnte nicht zurückgesetzt werden. Bitte erneut versuchen.")
+            setLoading(false)
+          }
+          return
+        }
       }
 
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
@@ -65,6 +90,7 @@ export default function TwoFactorSetupPage() {
     }
 
     setup()
+
     return () => {
       active = false
     }
