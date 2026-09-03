@@ -68,7 +68,7 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-12 text-white">
       <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur">
-        <Link href="/" className="text-sm font-semibold text-blue-300">← Stoyan</Link>
+        <Link href="/" className="text-sm font-semibold text-blue-300">← JobMatch24</Link>
         {step === "login" ? (
           <>
             <h1 className="mt-6 text-3xl font-black">Willkommen zurück</h1>
