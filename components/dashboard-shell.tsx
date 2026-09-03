@@ -27,7 +27,7 @@ export function DashboardShell({
       ============================================================ */}
       <aside className="sidebar">
         <Link href="/" className="block">
-          <div className="sidebar-brand">STOYAN</div>
+          <div className="sidebar-brand">JOBMATCH24</div>
           <div className="sidebar-tag">Menschen verbinden</div>
         </Link>
 
@@ -61,7 +61,7 @@ export function DashboardShell({
       <div className="shell-content">
         <div className="shell-topbar">
           <div className="text-[13px] font-semibold text-[var(--muted)]">
-            {eyebrow ?? "STOYAN Plattform"}
+            {eyebrow ?? "JobMatch24 Plattform"}
           </div>
           <form action="/api/auth/signout" method="post">
             <button type="submit" className="btn-secondary h-10 px-4 text-sm">
