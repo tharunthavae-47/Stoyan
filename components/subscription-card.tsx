@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useEffect, useState } from "react"
 import { ArrowRight, CreditCard, Settings2, X } from "lucide-react"
 
@@ -19,7 +18,7 @@ const PLAN_NAMES: Record<string, string> = { basic: "Basic", professional: "Prof
 const STATUS_NAMES: Record<string, string> = { active: "Aktiv", trialing: "Testphase", past_due: "Zahlung ausstehend", canceled: "Gekündigt", unpaid: "Unbezahlt", incomplete: "Unvollständig", incomplete_expired: "Abgelaufen" }
 const PLAN_DETAILS: Record<string, { price: number; jobs: string; saved: string; contacts: string; users: string; filters: string; chat: boolean; extras: string[] }> = {
   basic: { price: 149, jobs: "5", saved: "5", contacts: "5 / Monat", users: "1", filters: "Beruf", chat: false, extras: ["Matching-%", "Kandidatenprofile", "Live-Verfügbarkeit"] },
-  professional: { price: 299, jobs: "10", saved: "10", contacts: "10 / Monat", users: "3", filters: "Alle Filter", chat: true, extras: ["Intelligentes Matching", "Match DNA", "Verified Candidates", "Talent Radar", "Recruiting Analytics", "Prioritäts-Support"] },
+  professional: { price: 299, jobs: "10", saved: "10", contacts: "10 / Monat", users: "3", filters: "Alle Filter", chat: true, extras: ["Prioritäts-Support"] },
   business: { price: 499, jobs: "Unbegrenzt", saved: "Unbegrenzt", contacts: "Unbegrenzt", users: "Unbegrenzt", filters: "Alle Filter", chat: true, extras: ["Interviewplanung", "HR Copilot (KI)", "Advanced Verification", "Analytics & Reports", "Talent Pool Management", "Exporte & Integrationen", "Prioritäts-Support"] },
 }
 
