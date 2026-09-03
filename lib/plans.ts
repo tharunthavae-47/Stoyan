@@ -102,8 +102,8 @@ export const employerPlans: Plan[] = [
     description: "Für grössere Unternehmen und HR-Teams mit mehreren Stellen.",
     price: 499,
     period: "/ Monat",
-    priceNote: "Demo verfügbar",
-    ctaLabel: "Demo anfragen",
+    priceNote: "30 Tage kostenlos testen",
+    ctaLabel: "30 Tage kostenlos testen",
     ctaHref: "/registrieren?role=employer&plan=business",
     features: [
       { label: "Unbegrenzte Stellen" },
