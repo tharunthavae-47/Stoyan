@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client"
 const APP_ROUTE_PREFIXES = ["/arbeitgeber", "/arbeitnehmer", "/dashboard"]
 
 const links = [
-  { href: "/#ueber-stoyan", label: "Über jobmatch24" },
+  { href: "/#ueber-jobmatch24", label: "Über JobMatch24" },
   { href: "/#so-funktioniert", label: "So funktioniert's" },
   { href: "/#arbeitnehmer", label: "Arbeitnehmer" },
   { href: "/#arbeitgeber", label: "Arbeitgeber" },
@@ -50,7 +50,7 @@ export function SiteHeader() {
         <nav className="flex min-h-[64px] items-center border-b border-slate-200/80 bg-white px-1 sm:min-h-[70px] sm:px-2">
           <Link
             href="/"
-            aria-label="jobmatch24 Startseite"
+            aria-label="JobMatch24 Startseite"
             className="group flex shrink-0 items-center transition-opacity duration-200 hover:opacity-85"
           >
             <img
