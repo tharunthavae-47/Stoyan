@@ -154,7 +154,7 @@ function RegisterForm() {
         href="/"
         className="text-sm font-semibold text-blue-400"
       >
-        ← Stoyan
+        ← JobMatch24
       </Link>
 
       <h1 className="mt-6 text-3xl font-black">
@@ -162,7 +162,7 @@ function RegisterForm() {
       </h1>
 
       <p className="mt-2 text-slate-400">
-        Wähle zuerst aus, wie du Stoyan nutzen möchtest.
+        Wähle zuerst aus, wie du JobMatch24 nutzen möchtest.
       </p>
 
       <div className="mt-7 grid grid-cols-2 gap-3">
