@@ -28,19 +28,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Ungültiger kostenpflichtiger Plan." }, { status: 400 })
     }
 
-    const planRole =
-      plan === "premium"
-        ? "employee"
-        : plan === "professional"
-          ? "employer"
-          : null
-
-    if (!planRole) {
-      return NextResponse.json(
-        { error: "Dieser Plan kann nicht über den Checkout gekauft werden." },
-        { status: 400 },
-      )
-    }
+    // Alle drei aktuellen Arbeitgeber-Pläne können über Stripe gekauft werden.
+    const planRole = "employer" as const
 
     let role: "employee" | "employer"
 
