@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 export const runtime = "nodejs"
 
@@ -9,7 +10,8 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: "Nicht angemeldet" }, { status: 401 })
 
-    const { data: subscription, error: subscriptionError } = await supabase
+    const admin = createAdminClient()
+    const { data: subscription, error: subscriptionError } = await admin
       .from("subscriptions")
       .select("id, provider_subscription_id, status")
       .eq("user_id", user.id)
@@ -23,13 +25,16 @@ export async function POST(request: Request) {
     const stripeKey = process.env.STRIPE_SECRET_KEY
 
     if (!subscriptionId || !stripeKey) {
-      return NextResponse.json({ error: "Kein aktives Stripe-Abo gefunden." }, { status: 400 })
+      return NextResponse.json({ error: "Kein verwaltbares Stripe-Abo gefunden." }, { status: 400 })
     }
 
     if (["canceled", "incomplete_expired"].includes(subscription.status || "")) {
       return NextResponse.json({ success: true, alreadyCanceled: true })
     }
 
+    // DELETE auf Stripe beendet die Subscription sofort. Es wird bewusst nicht
+    // cancel_at_period_end verwendet, weil der Nutzer ausdrücklich eine
+    // sofortige Kündigung verlangt.
     const response = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(subscriptionId)}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${stripeKey}` },
@@ -47,7 +52,9 @@ export async function POST(request: Request) {
       ? new Date(data.canceled_at * 1000).toISOString()
       : new Date().toISOString()
 
-    const { error: updateError } = await supabase
+    // Sofort lokal sperren. Der Stripe-Webhook bestätigt den Status danach
+    // nochmals und hält die lokale Subscription synchron.
+    const { error: updateError } = await admin
       .from("subscriptions")
       .update({
         status: "canceled",
