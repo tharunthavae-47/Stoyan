@@ -78,8 +78,7 @@ export const employerPlans: Plan[] = [
   {
     id: "professional", name: "Professional", description: "Für Unternehmen, die regelmässig neue Mitarbeitende suchen.", price: 299, period: "/ Monat", priceNote: "30 Tage kostenlos testen", ctaLabel: "30 Tage kostenlos testen", ctaHref: "/registrieren?role=employer&plan=professional", highlighted: true, badge: "Beliebtester Plan",
     features: [
-      { label: "Bis zu 10 aktive Stellen" }, { label: "Alle Suchfilter" }, { label: "Intelligentes Matching" }, { label: "Match DNA" }, { label: "Verified Candidates" },
-      { label: "Verification Center" }, { label: "Talent Radar" }, { label: "Live-Verfügbarkeit" }, { label: "Recruiting Analytics" }, { label: "Direkter Chat" },
+      { label: "Bis zu 10 aktive Stellen" }, { label: "Alle Suchfilter" }, { label: "Live-Verfügbarkeit" }, { label: "Direkter Chat" },
       { label: "Interviewplanung", included: false }, { label: "HR Copilot (KI)", included: false }, { label: "Prioritäts-Support" },
     ],
   },
