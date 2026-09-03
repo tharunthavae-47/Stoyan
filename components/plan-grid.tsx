@@ -4,13 +4,15 @@ import Link from "next/link"
 import { useState } from "react"
 import { Check, Minus } from "lucide-react"
 import { formatPrice, type Plan } from "@/lib/plans"
+import { createClient } from "@/lib/supabase/client"
 
-type PaidPlan = "premium" | "professional"
-type CheckoutRole = "employee" | "employer"
+type PaidPlan = "basic" | "professional" | "business"
+type CheckoutRole = "employer"
 
 function getPaidPlanConfig(planId: string): { plan: PaidPlan; role: CheckoutRole } | null {
-  if (planId === "premium") return { plan: "premium", role: "employee" }
-  if (planId === "professional") return { plan: "professional", role: "employer" }
+  if (planId === "basic" || planId === "professional" || planId === "business") {
+    return { plan: planId, role: "employer" }
+  }
   return null
 }
 
@@ -26,9 +28,27 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
     setLoadingPlan(planId)
 
     try {
+      // Die bestehende Supabase-Session wird direkt aus dem Browser verwendet.
+      // Dadurch wird ein bereits angemeldeter Arbeitgeber nicht erneut zur
+      // Registrierung geschickt, wenn er aus dem Dashboard ein Abo kauft.
+      const supabase = createClient()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session?.user) {
+        setLoadingPlan(null)
+        setError("Bitte melde dich zuerst an. Deine Anmeldung bleibt danach für den Abo-Kauf erhalten.")
+        return
+      }
+
       const response = await fetch("/api/stripe/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify(config),
       })
 
@@ -38,7 +58,7 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
         throw new Error(data?.error || "Der Checkout konnte nicht gestartet werden.")
       }
 
-      window.location.href = data.url
+      window.location.assign(data.url)
     } catch (checkoutError) {
       setError(
         checkoutError instanceof Error
