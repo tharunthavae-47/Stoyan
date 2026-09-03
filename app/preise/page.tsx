@@ -14,7 +14,7 @@ export default function PreisePage() {
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg text-[var(--muted)]">
           30 Tage kostenlos testen. Keine langfristige Verpflichtung.
-          Arbeitnehmer nutzen STOYAN kostenlos.
+          Arbeitnehmer nutzen jobmatch24 kostenlos.
         </p>
       </section>
 
