@@ -100,7 +100,7 @@ export const employerPlans: Plan[] = [
     price: null,
     period: "",
     priceNote: "Individuelles Angebot",
-    ctaLabel: "30 Tage kostenlos nutzen",
+    ctaLabel: "Kontakt aufnehmen",
     ctaHref: "/registrieren?role=employer&plan=enterprise",
     features: [
       { label: "Alles aus Professional" },
