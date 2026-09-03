@@ -69,8 +69,8 @@ export default function TwoFactorSetupPage() {
 
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: "Stoyan",
-        issuer: "Stoyan",
+        friendlyName: "Jobmatch24",
+        issuer: "Jobmatch24",
       })
 
       if (enrollError || !data) {
