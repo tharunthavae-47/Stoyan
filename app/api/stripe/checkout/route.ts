@@ -129,6 +129,12 @@ export async function POST(request: Request) {
     params.set("subscription_data[metadata][role]", role)
     params.set("subscription_data[metadata][plan_id]", plan)
     if (user) params.set("subscription_data[metadata][user_id]", user.id)
+
+    // Erster Monat kostenlos. Stripe erstellt trotzdem direkt die Subscription
+    // und verwendet die hinterlegte Zahlungsmethode für die erste Rechnung
+    // nach Ablauf der 30-tägigen Testphase.
+    params.set("subscription_data[trial_period_days]", "30")
+    params.set("payment_method_collection", "always")
     params.set("billing_address_collection", "auto")
 
     const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
