@@ -50,34 +50,24 @@ function RegisterForm() {
       }
 
       if (!data.user) {
-        setError(
-          "Das Konto konnte nicht erstellt werden."
-        )
+        setError("Das Konto konnte nicht erstellt werden.")
         setLoading(false)
         return
       }
 
+      // Ein neues Profil wird bewusst mit INSERT statt UPSERT angelegt.
+      // UPSERT benötigt zusätzlich UPDATE-Rechte und kann dadurch trotz
+      // korrekter INSERT-RLS-Policy mit "permission denied" scheitern.
       const userId = data.user.id
-
-      const {
-        error: profileError,
-      } = await supabase
+      const { error: profileError } = await supabase
         .from("profiles")
-        .upsert(
-          {
-            id: userId,
-            role,
-          },
-          {
-            onConflict: "id",
-          }
-        )
+        .insert({
+          id: userId,
+          role,
+        })
 
       if (profileError) {
-        console.error(
-          "Fehler beim Erstellen des Profils:",
-          profileError
-        )
+        console.error("Fehler beim Erstellen des Profils:", profileError)
 
         setError(
           `Benutzer wurde erstellt, aber das Profil konnte nicht angelegt werden: ${profileError.message}`
@@ -88,20 +78,13 @@ function RegisterForm() {
       }
 
       if (role === "employee") {
-        const {
-          error: employeeProfileError,
-        } = await supabase
+        const { error: employeeProfileError } = await supabase
           .from("employee_profiles")
-          .upsert(
-            {
-              id: userId,
-              profile_visible: true,
-              contact_visible: true,
-            },
-            {
-              onConflict: "id",
-            }
-          )
+          .insert({
+            id: userId,
+            profile_visible: true,
+            contact_visible: true,
+          })
 
         if (employeeProfileError) {
           console.error(
@@ -133,10 +116,7 @@ function RegisterForm() {
 
       setLoading(false)
     } catch (err) {
-      console.error(
-        "Registrierungsfehler:",
-        err
-      )
+      console.error("Registrierungsfehler:", err)
 
       setError(
         err instanceof Error
@@ -185,17 +165,12 @@ function RegisterForm() {
         ))}
       </div>
 
-      <form
-        onSubmit={submit}
-        className="mt-7 space-y-4"
-      >
+      <form onSubmit={submit} className="mt-7 space-y-4">
         <input
           required
           type="email"
           value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="E-Mail-Adresse"
           className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-blue-500"
         />
@@ -205,9 +180,7 @@ function RegisterForm() {
           type="password"
           minLength={8}
           value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
+          onChange={(e) => setPassword(e.target.value)}
           placeholder="Passwort (mind. 8 Zeichen)"
           className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-blue-500"
         />
@@ -220,8 +193,8 @@ function RegisterForm() {
           {loading
             ? "Konto wird erstellt…"
             : role === "employer"
-            ? "Firmenkonto erstellen"
-            : "Arbeitnehmerkonto erstellen"}
+              ? "Firmenkonto erstellen"
+              : "Arbeitnehmerkonto erstellen"}
         </button>
       </form>
 
@@ -239,10 +212,7 @@ function RegisterForm() {
 
       <p className="mt-6 text-center text-sm text-slate-500">
         Bereits registriert?{" "}
-        <Link
-          href="/login"
-          className="font-bold text-blue-400"
-        >
+        <Link href="/login" className="font-bold text-blue-400">
           Anmelden
         </Link>
       </p>
