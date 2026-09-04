@@ -55,16 +55,24 @@ function RegisterForm() {
         return
       }
 
-      // Ein neues Profil wird bewusst mit INSERT statt UPSERT angelegt.
-      // UPSERT benötigt zusätzlich UPDATE-Rechte und kann dadurch trotz
-      // korrekter INSERT-RLS-Policy mit "permission denied" scheitern.
       const userId = data.user.id
+
+      // Ein neues Profil wird mit INSERT angelegt. Falls bereits ein Profil
+      // für diese User-ID existiert (z. B. durch einen DB-Trigger oder einen
+      // früheren Registrierungsversuch), wird der vorhandene Datensatz einfach
+      // beibehalten. So bricht die Registrierung nicht mit profiles_pkey ab.
       const { error: profileError } = await supabase
         .from("profiles")
-        .insert({
-          id: userId,
-          role,
-        })
+        .insert(
+          {
+            id: userId,
+            role,
+          },
+          {
+            onConflict: "id",
+            ignoreDuplicates: true,
+          }
+        )
 
       if (profileError) {
         console.error("Fehler beim Erstellen des Profils:", profileError)
@@ -80,11 +88,17 @@ function RegisterForm() {
       if (role === "employee") {
         const { error: employeeProfileError } = await supabase
           .from("employee_profiles")
-          .insert({
-            id: userId,
-            profile_visible: true,
-            contact_visible: true,
-          })
+          .insert(
+            {
+              id: userId,
+              profile_visible: true,
+              contact_visible: true,
+            },
+            {
+              onConflict: "id",
+              ignoreDuplicates: true,
+            }
+          )
 
         if (employeeProfileError) {
           console.error(
