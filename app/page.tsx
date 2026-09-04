@@ -191,7 +191,7 @@ export default function HomePage() {
             <div className="absolute left-1/2 top-[-180px] h-96 w-96 -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
             <div className="relative">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-100">Bereit für den nächsten Schritt?</p>
-              <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">Starte jetzt mit jobmatch24.</h2>
+              <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">Starte jetzt mit jobmatch24</h2>
               <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-blue-100">Erstelle dein Profil oder registriere dein Unternehmen und entdecke neue Möglichkeiten.</p>
               <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
                 <Link href="/registrieren?role=employee" className="rounded-xl bg-white px-6 py-3.5 font-bold text-blue-700 transition hover:bg-blue-50">Als Arbeitnehmer starten</Link>
