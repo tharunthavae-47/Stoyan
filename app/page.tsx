@@ -206,7 +206,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-6 py-10">
           <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
             <div>
-              <div className="text-xl font-black tracking-[-0.04em]">jobmatch24<span className="text-blue-500">.</span></div>
+              <div className="text-xl font-black tracking-[-0.04em]">jobmatch24</div>
               <p className="mt-1 text-sm text-slate-500">Menschen verbinden.</p>
             </div>
             <div className="flex flex-wrap gap-5 text-sm font-semibold text-slate-400">
