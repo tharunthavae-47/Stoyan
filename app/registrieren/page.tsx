@@ -55,65 +55,12 @@ function RegisterForm() {
         return
       }
 
-      const userId = data.user.id
-
-      // Ein neues Profil wird mit INSERT angelegt. Falls bereits ein Profil
-      // für diese User-ID existiert (z. B. durch einen DB-Trigger oder einen
-      // früheren Registrierungsversuch), wird der vorhandene Datensatz einfach
-      // beibehalten. So bricht die Registrierung nicht mit profiles_pkey ab.
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert(
-          {
-            id: userId,
-            role,
-          },
-          {
-            onConflict: "id",
-            ignoreDuplicates: true,
-          }
-        )
-
-      if (profileError) {
-        console.error("Fehler beim Erstellen des Profils:", profileError)
-
-        setError(
-          `Benutzer wurde erstellt, aber das Profil konnte nicht angelegt werden: ${profileError.message}`
-        )
-
-        setLoading(false)
-        return
-      }
-
-      if (role === "employee") {
-        const { error: employeeProfileError } = await supabase
-          .from("employee_profiles")
-          .insert(
-            {
-              id: userId,
-              profile_visible: true,
-              contact_visible: true,
-            },
-            {
-              onConflict: "id",
-              ignoreDuplicates: true,
-            }
-          )
-
-        if (employeeProfileError) {
-          console.error(
-            "Fehler beim Erstellen des Arbeitnehmerprofils:",
-            employeeProfileError
-          )
-
-          setError(
-            `Konto wurde erstellt, aber das Arbeitnehmerprofil konnte nicht angelegt werden: ${employeeProfileError.message}`
-          )
-
-          setLoading(false)
-          return
-        }
-      }
+      // Profile und Arbeitnehmerprofil werden automatisch durch die
+      // Supabase-Trigger auf auth.users angelegt. Die Registrierung darf hier
+      // NICHT noch einmal in profiles/employee_profiles schreiben, da sonst
+      // bei einem bereits vorhandenen Profil ein profiles_pkey-Fehler entsteht.
+      // Das funktioniert außerdem auch dann, wenn E-Mail-Bestätigung aktiviert
+      // ist und nach signUp noch keine Session vorhanden ist.
 
       if (data.session) {
         window.location.href =
