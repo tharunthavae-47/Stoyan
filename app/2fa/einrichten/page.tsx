@@ -141,7 +141,7 @@ export default function TwoFactorSetupPage() {
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-12 text-white">
       <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur">
         <div className="text-3xl">🔐</div>
-        <h1 className="mt-4 text-3xl font-black">Stoyan – Microsoft Authenticator</h1>
+        <h1 className="mt-4 text-3xl font-black">Jobmatch24 – Microsoft Authenticator</h1>
         <p className="mt-2 text-slate-300">
           Die Zwei-Faktor-Authentifizierung ist für jedes Stoyan-Konto verpflichtend.
           Scanne den QR-Code mit Microsoft Authenticator.
