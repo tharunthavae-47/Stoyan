@@ -10,6 +10,8 @@ const inter = Inter({
 })
 
 const BASE_URL = "https://jobmatch24.ch"
+const SITE_DESCRIPTION =
+  "jobmatch24 verbindet Arbeitnehmer und Arbeitgeber in der Schweiz. Finde passende Jobs oder qualifizierte Mitarbeiter mit intelligentem Matching."
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -17,9 +19,21 @@ export const metadata: Metadata = {
     default: "jobmatch24 – Jobs & Mitarbeiter in der Schweiz",
     template: "%s | jobmatch24",
   },
-  description:
-    "jobmatch24 verbindet Arbeitnehmer und Arbeitgeber in der Schweiz. Finde passende Jobs oder qualifizierte Mitarbeiter.",
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "Jobs Schweiz",
+    "Jobbörse Schweiz",
+    "Stellenangebote Schweiz",
+    "Arbeitnehmer Schweiz",
+    "Arbeitgeber Schweiz",
+    "Mitarbeiter finden",
+    "Jobs finden",
+    "Job Matching Schweiz",
+    "Bewerbung Schweiz",
+    "jobmatch24",
+  ],
   applicationName: "jobmatch24",
+  category: "jobs",
   alternates: {
     canonical: BASE_URL,
   },
@@ -34,21 +48,51 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  icons: {
+    icon: "/jobmatch24-logo.png",
+    apple: "/jobmatch24-logo.png",
+  },
   openGraph: {
     type: "website",
     locale: "de_CH",
     url: BASE_URL,
     siteName: "jobmatch24",
     title: "jobmatch24 – Jobs & Mitarbeiter in der Schweiz",
-    description:
-      "jobmatch24 verbindet Arbeitnehmer und Arbeitgeber in der Schweiz. Finde passende Jobs oder qualifizierte Mitarbeiter.",
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/jobmatch24-logo.png",
+        alt: "jobmatch24 – Jobs & Mitarbeiter in der Schweiz",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "jobmatch24 – Jobs & Mitarbeiter in der Schweiz",
-    description:
-      "jobmatch24 verbindet Arbeitnehmer und Arbeitgeber in der Schweiz. Finde passende Jobs oder qualifizierte Mitarbeiter.",
+    description: SITE_DESCRIPTION,
+    images: ["/jobmatch24-logo.png"],
   },
+}
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${BASE_URL}/#website`,
+      url: BASE_URL,
+      name: "jobmatch24",
+      description: SITE_DESCRIPTION,
+      inLanguage: "de-CH",
+    },
+    {
+      "@type": "Organization",
+      "@id": `${BASE_URL}/#organization`,
+      name: "jobmatch24",
+      url: BASE_URL,
+      logo: `${BASE_URL}/jobmatch24-logo.png`,
+    },
+  ],
 }
 
 export default function RootLayout({
@@ -57,7 +101,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="de" className={inter.variable}>
+    <html lang="de-CH" className={inter.variable}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body>
         <SiteHeader />
         <main>{children}</main>
