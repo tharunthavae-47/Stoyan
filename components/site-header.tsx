@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client"
 const APP_ROUTE_PREFIXES = ["/arbeitgeber", "/arbeitnehmer", "/dashboard"]
 
 const links = [
-  { href: "/#ueber-jobmatch24", label: "Über JobMatch24" },
+  { href: "/#ueber-stoyan", label: "Über JobMatch24" },
   { href: "/#so-funktioniert", label: "So funktioniert's" },
   { href: "/#arbeitnehmer", label: "Arbeitnehmer" },
   { href: "/#arbeitgeber", label: "Arbeitgeber" },
