@@ -1,4 +1,16 @@
+import type { Metadata } from "next"
 import { DashboardShell, type NavSection } from "@/components/dashboard-shell"
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+}
 
 const sections: NavSection[] = [
   {
