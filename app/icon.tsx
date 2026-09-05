@@ -6,7 +6,7 @@ export const contentType = "image/png"
 export const size = { width: 32, height: 32 }
 
 export default function Icon() {
-  const logoPath = path.join(process.cwd(), "public", "jobmatch24-logo.png")
+  const logoPath = path.join(process.cwd(), "public", "icon.png")
   const logo = fs.readFileSync(logoPath).toString("base64")
 
   return new ImageResponse(
