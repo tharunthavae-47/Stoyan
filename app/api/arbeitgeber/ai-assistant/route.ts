@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 
 export const runtime = "nodejs"
 
-const MODEL = process.env.OPENAI_MODEL || "gpt-5.6-luna"
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.7-flash"
 
 type ChatMessage = { role: "user" | "assistant"; content: string }
 
@@ -18,25 +18,26 @@ export async function POST(request: Request) {
     if (!messages.length) return NextResponse.json({ error: "Keine Nachricht erhalten." }, { status: 400 })
 
     // All context comes from JobMatch24 and is queried with the logged-in user's session.
-    const [{ data: company }, { data: candidates }, { data: requests }] = await Promise.all([
+    const [{ data: company, error: companyError }, { data: candidates, error: candidatesError }, { data: requests, error: requestsError }] = await Promise.all([
       supabase.from("companies").select("name,industry,city").eq("owner_id", user.id).maybeSingle(),
-      supabase.from("employer_candidate_profiles").select("id,profession,education,years_experience,desired_employment_percent,desired_salary_min,skills,contact_visible,first_name,last_name,city,avatar_url"),
+      supabase.from("employer_candidate_profiles").select("id,profession,education,years_experience,desired_employment_percent,desired_salary_min,skills,contact_visible,first_name,last_name,city"),
       supabase.from("contact_requests").select("employee_id,status,job_id,created_at").eq("employer_id", user.id),
     ])
 
+    if (companyError || candidatesError || requestsError) {
+      console.error("JobMatch24 data error", { companyError, candidatesError, requestsError })
+      return NextResponse.json({ error: "Die JobMatch24-Daten konnten nicht vollständig geladen werden." }, { status: 500 })
+    }
+
     const context = {
       company: company || null,
-      candidates: (candidates || []).map((candidate) => ({
-        ...candidate,
-        // Do not expose contact details to the model through this endpoint.
-        avatar_url: undefined,
-      })),
+      candidates: candidates || [],
       contact_requests: requests || [],
     }
 
-    const apiKey = process.env.OPENAI_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
-      return NextResponse.json({ error: "Der KI-Assistent ist noch nicht vollständig eingerichtet. OPENAI_API_KEY fehlt in den Server-Umgebungsvariablen." }, { status: 503 })
+      return NextResponse.json({ error: "Der KI-Assistent ist noch nicht vollständig eingerichtet. GEMINI_API_KEY fehlt in den Server-Umgebungsvariablen." }, { status: 503 })
     }
 
     const system = `Du bist der persönliche KI-Assistent von jobmatch24 für Arbeitgeber. Du arbeitest ausschließlich innerhalb der JobMatch24-Plattform.
@@ -53,29 +54,43 @@ WICHTIG:
 AKTUELLE JOBMATCH24-DATEN:
 ${JSON.stringify(context)}`
 
-    const openAiResponse = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        instructions: system,
-        input: messages,
-        max_output_tokens: 900,
-      }),
-    })
+    const contents = messages.map((message) => ({
+      role: message.role === "assistant" ? "model" : "user",
+      parts: [{ text: message.content }],
+    }))
 
-    const result = await openAiResponse.json()
-    if (!openAiResponse.ok) {
-      console.error("OpenAI error", result)
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "x-goog-api-key": apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: system }],
+          },
+          contents,
+          generationConfig: {
+            temperature: 0.2,
+            maxOutputTokens: 900,
+          },
+        }),
+      },
+    )
+
+    const result = await geminiResponse.json()
+    if (!geminiResponse.ok) {
+      console.error("Gemini error", result)
       return NextResponse.json({ error: result?.error?.message || "Die KI konnte nicht antworten." }, { status: 502 })
     }
 
-    const message = typeof result.output_text === "string"
-      ? result.output_text
-      : result.output?.flatMap((item: { content?: Array<{ type?: string; text?: string }> }) => item.content || []).find((content: { type?: string; text?: string }) => content.type === "output_text")?.text
+    const message = result?.candidates?.[0]?.content?.parts
+      ?.filter((part: { text?: string }) => typeof part.text === "string")
+      .map((part: { text: string }) => part.text)
+      .join("\n")
+      .trim()
 
     if (!message) return NextResponse.json({ error: "Die KI hat keine Antwort zurückgegeben." }, { status: 502 })
     return NextResponse.json({ message })
