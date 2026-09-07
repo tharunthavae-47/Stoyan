@@ -55,6 +55,26 @@ function RegisterForm() {
         return
       }
 
+      // Nach erfolgreicher Kontoerstellung wird die Willkommens-E-Mail
+      // serverseitig über Resend versendet. Ein Fehler beim Mailversand darf
+      // die erfolgreiche Registrierung nicht rückgängig machen.
+      try {
+        const emailResponse = await fetch("/api/auth/welcome-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: data.user.id,
+            email: email.trim(),
+          }),
+        })
+
+        if (!emailResponse.ok) {
+          console.error("Willkommens-E-Mail konnte nicht versendet werden.")
+        }
+      } catch (emailError) {
+        console.error("Fehler beim Versand der Willkommens-E-Mail:", emailError)
+      }
+
       // Profile und Arbeitnehmerprofil werden automatisch durch die
       // Supabase-Trigger auf auth.users angelegt. Die Registrierung darf hier
       // NICHT noch einmal in profiles/employee_profiles schreiben, da sonst
@@ -72,7 +92,7 @@ function RegisterForm() {
       }
 
       setMessage(
-        "Konto erfolgreich erstellt. Bitte bestätige deine E-Mail-Adresse und melde dich danach an."
+        "Konto erfolgreich erstellt. Eine Bestätigungs-E-Mail wurde an deine Adresse gesendet. Bitte bestätige deine E-Mail-Adresse und melde dich danach an."
       )
 
       setLoading(false)
