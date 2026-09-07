@@ -3,9 +3,19 @@ import { createClient } from "@/lib/supabase/server"
 
 export const runtime = "nodejs"
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-3.7-flash"
+const PRIMARY_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash"
+const FALLBACK_MODELS = [
+  PRIMARY_MODEL,
+  "gemini-3.7-flash",
+  "gemini-3.6-flash",
+  "gemini-3.5-flash-lite",
+].filter((model, index, models) => models.indexOf(model) === index)
 
 type ChatMessage = { role: "user" | "assistant"; content: string }
+
+function shouldTryFallback(status: number) {
+  return status === 429 || status === 500 || status === 502 || status === 503 || status === 504
+}
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +44,6 @@ export async function POST(request: Request) {
       contact_requests: requests || [],
     }
 
-    // Google supports both variable names; GEMINI_API_KEY is preferred.
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
     if (!apiKey) {
       return NextResponse.json({ error: "Der KI-Assistent ist noch nicht vollständig eingerichtet. Bitte hinterlege GEMINI_API_KEY (oder GOOGLE_API_KEY) in den Vercel Server-Umgebungsvariablen und deploye danach neu." }, { status: 503 })
@@ -59,39 +68,53 @@ ${JSON.stringify(context)}`
       parts: [{ text: message.content }],
     }))
 
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "x-goog-api-key": apiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: system }] },
-          contents,
-          generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 900,
-          },
-        }),
-      },
-    )
+    let lastResult: any = null
+    let lastStatus = 502
 
-    const result = await geminiResponse.json()
-    if (!geminiResponse.ok) {
-      console.error("Gemini error", result)
-      return NextResponse.json({ error: result?.error?.message || "Die KI konnte nicht antworten." }, { status: 502 })
+    for (const model of FALLBACK_MODELS) {
+      const geminiResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "x-goog-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: system }] },
+            contents,
+            generationConfig: {
+              maxOutputTokens: 900,
+            },
+          }),
+        },
+      )
+
+      const result = await geminiResponse.json()
+      lastResult = result
+      lastStatus = geminiResponse.status
+
+      if (geminiResponse.ok) {
+        const message = result?.candidates?.[0]?.content?.parts
+          ?.filter((part: { text?: string }) => typeof part.text === "string")
+          .map((part: { text: string }) => part.text)
+          .join("\n")
+          .trim()
+
+        if (message) {
+          return NextResponse.json({ message, model })
+        }
+      }
+
+      console.warn(`Gemini model ${model} failed`, { status: geminiResponse.status, error: result?.error })
+
+      if (!shouldTryFallback(geminiResponse.status)) break
     }
 
-    const message = result?.candidates?.[0]?.content?.parts
-      ?.filter((part: { text?: string }) => typeof part.text === "string")
-      .map((part: { text: string }) => part.text)
-      .join("\n")
-      .trim()
-
-    if (!message) return NextResponse.json({ error: "Die KI hat keine Antwort zurückgegeben." }, { status: 502 })
-    return NextResponse.json({ message })
+    console.error("All Gemini models failed", lastResult)
+    return NextResponse.json({
+      error: lastResult?.error?.message || "Die KI ist momentan stark ausgelastet. Bitte versuche es gleich nochmals.",
+    }, { status: lastStatus })
   } catch (error) {
     console.error("Employer AI assistant error", error)
     return NextResponse.json({ error: "Der KI-Assistent konnte die Anfrage nicht verarbeiten." }, { status: 500 })
