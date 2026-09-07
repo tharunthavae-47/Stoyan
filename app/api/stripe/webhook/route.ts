@@ -44,6 +44,63 @@ function isoFromUnix(value: unknown) {
   return typeof value === "number" ? new Date(value * 1000).toISOString() : null
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;")
+}
+
+async function sendSubscriptionPurchaseEmail(email: string) {
+  const resendApiKey = process.env.RESEND_API_KEY
+  const resendFromEmail = process.env.RESEND_FROM_EMAIL
+
+  if (!resendApiKey || !resendFromEmail) {
+    console.error("Resend ist für die Abo-Bestätigungs-E-Mail nicht konfiguriert.")
+    return
+  }
+
+  const normalizedEmail = email.trim().toLowerCase()
+  const safeEmail = escapeHtml(normalizedEmail)
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://stoyan-job-matching.vercel.app").replace(/\/$/, "")
+
+  const html = `<!doctype html><html lang="de"><body style="margin:0;background:#f8fafc;font-family:Arial,Helvetica,sans-serif;color:#0f172a"><div style="max-width:620px;margin:0 auto;padding:32px 18px"><div style="background:#0f172a;color:#fff;border-radius:18px;padding:22px 24px"><div style="font-size:24px;font-weight:800;letter-spacing:-.5px">JOBMATCH24</div><div style="margin-top:6px;color:#cbd5e1">Abo erfolgreich gekauft</div></div><div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:28px 24px;margin-top:16px"><h1 style="font-size:24px;margin:0 0 14px">Ihr Abo wurde erfolgreich gekauft.</h1><p style="line-height:1.7;color:#475569;margin:0">Die Zahlung wurde erfolgreich verarbeitet und Ihr JobMatch24-Abo wurde aktiviert.</p><p style="line-height:1.7;color:#475569">Das Abo ist mit Ihrer E-Mail-Adresse ${safeEmail} verknüpft.</p><a href="${siteUrl}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;padding:13px 18px;border-radius:10px;margin-top:8px">Zu JobMatch24</a><p style="margin-top:24px;color:#64748b;font-size:14px;line-height:1.6">Vielen Dank, dass Sie JobMatch24 nutzen.</p></div><p style="text-align:center;color:#94a3b8;font-size:12px;margin:20px 0">JobMatch24 · Diese Nachricht wurde automatisch versendet.</p></div></body></html>`
+
+  const text = `Ihr Abo wurde erfolgreich gekauft.\n\nDie Zahlung wurde erfolgreich verarbeitet und Ihr JobMatch24-Abo wurde aktiviert.\n\nDas Abo ist mit Ihrer E-Mail-Adresse ${normalizedEmail} verknüpft.\n\nZu JobMatch24: ${siteUrl}\n\nVielen Dank, dass Sie JobMatch24 nutzen.`
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify({
+        from: resendFromEmail,
+        to: [normalizedEmail],
+        subject: "Ihr JobMatch24-Abo wurde erfolgreich gekauft",
+        html,
+        text,
+      }),
+    })
+
+    const data = await response.json().catch(() => null)
+    if (!response.ok) {
+      console.error("Resend Abo-Bestätigungs-E-Mail:", data)
+      return
+    }
+
+    console.log("Abo-Bestätigungs-E-Mail versendet", {
+      email: normalizedEmail,
+      emailId: data?.id ?? null,
+    })
+  } catch (error) {
+    console.error("Fehler beim Versand der Abo-Bestätigungs-E-Mail:", error)
+  }
+}
+
 async function ensureUser(admin: ReturnType<typeof getAdminClient>, email: string, role: "employee" | "employer") {
   const normalizedEmail = email.trim().toLowerCase()
   if (!normalizedEmail) throw new Error("Stripe hat keine gültige E-Mail-Adresse geliefert.")
@@ -187,6 +244,11 @@ export async function POST(request: Request) {
           cancel_at_period_end: false,
           updated_at: new Date().toISOString(),
         })
+      }
+
+      // Erst nach erfolgreichem Stripe-Checkout eine Bestätigungs-E-Mail senden.
+      if (customerEmail) {
+        await sendSubscriptionPurchaseEmail(customerEmail)
       }
     }
 
