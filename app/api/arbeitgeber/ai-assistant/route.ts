@@ -24,6 +24,8 @@ type Candidate = {
 function shouldTryFallback(status: number) { return status === 429 || status === 500 || status === 502 || status === 503 || status === 504 }
 function normalize(value: unknown) { return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() }
 function candidateName(candidate: Candidate) { return `${candidate.first_name || "Kandidat"} ${candidate.last_name || ""}`.trim() }
+function profileIntent(text: string) { return /(profil|profile|details|detail|mehr uber|mehr ueber|infos|informationen|zeige|zeig)/.test(normalize(text)) }
+function pronounProfileRequest(text: string) { return /(ihr|ihre|ihn|ihm|dieser|diese|den kandidat|die kandidat)/.test(normalize(text)) && profileIntent(text) }
 
 function looksLikeCandidateSearch(text: string) {
   const q = normalize(text)
@@ -47,18 +49,36 @@ function findProfessionMatches(query: string, candidates: Candidate[]) {
 }
 
 function findReferencedProfiles(messages: ChatMessage[], candidates: Candidate[]) {
-  const recentText = messages.slice(-8).map((message) => message.content).join(" ")
-  const q = normalize(recentText)
-  const profileRequest = /(zeig|zeige|profil|details|mehr uber|mehr ueber|infos|information)/.test(q)
-  if (!profileRequest) return []
+  const latest = messages[messages.length - 1]?.content || ""
+  const latestQ = normalize(latest)
 
-  return candidates.filter((candidate) => {
+  // First priority: names explicitly mentioned in the current request.
+  const explicit = candidates.filter((candidate) => {
     const first = normalize(candidate.first_name)
     const last = normalize(candidate.last_name)
     const full = normalize(candidateName(candidate))
-    if (!full || full === "kandidat") return false
-    return q.includes(full) || (first && last && q.includes(first) && q.includes(last))
+    return Boolean(full && full !== "kandidat" && (latestQ.includes(full) || (first && last && latestQ.includes(first) && latestQ.includes(last))))
   })
+  if (explicit.length > 0) return explicit
+
+  // For pronoun follow-ups such as "Zeig mir ihr Profil", use the most recent
+  // assistant profile/search result only, rather than every candidate mentioned
+  // anywhere in the conversation.
+  if (pronounProfileRequest(latest)) {
+    for (let i = messages.length - 2; i >= 0; i--) {
+      const text = messages[i]?.content || ""
+      const textQ = normalize(text)
+      const matches = candidates.filter((candidate) => {
+        const first = normalize(candidate.first_name)
+        const last = normalize(candidate.last_name)
+        const full = normalize(candidateName(candidate))
+        return Boolean(full && full !== "kandidat" && (textQ.includes(full) || (first && last && textQ.includes(first) && textQ.includes(last))))
+      })
+      if (matches.length > 0) return [matches[matches.length - 1]]
+    }
+  }
+
+  return []
 }
 
 function isBestSearch(query: string) {
@@ -126,9 +146,7 @@ export async function POST(request: Request) {
     const latestUserMessage = messages[messages.length - 1]?.content || ""
     const referencedProfiles = findReferencedProfiles(messages, candidateRows)
 
-    // Any explicit profile request is rendered as the same structured profile card,
-    // including follow-ups such as "Zeig mir ihr Profil".
-    if (referencedProfiles.length > 0 && /(profil|details|mehr uber|mehr ueber|infos|information|zeige|zeig)/.test(normalize(latestUserMessage))) {
+    if (referencedProfiles.length > 0 && profileIntent(latestUserMessage)) {
       return NextResponse.json({
         message: referencedProfiles.length === 1 ? `Profil von ${candidateName(referencedProfiles[0])}` : `${referencedProfiles.length} Profile gefunden`,
         candidates: referencedProfiles,
