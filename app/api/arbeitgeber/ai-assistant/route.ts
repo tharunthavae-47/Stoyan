@@ -12,9 +12,71 @@ const FALLBACK_MODELS = [
 ].filter((model, index, models) => models.indexOf(model) === index)
 
 type ChatMessage = { role: "user" | "assistant"; content: string }
+type Candidate = {
+  id: string
+  profession: string | null
+  education: string | null
+  years_experience: number | null
+  desired_employment_percent: number | null
+  desired_salary_min: number | null
+  skills: string[] | null
+  contact_visible: boolean | null
+  first_name: string | null
+  last_name: string | null
+  city: string | null
+}
 
 function shouldTryFallback(status: number) {
   return status === 429 || status === 500 || status === 502 || status === 503 || status === 504
+}
+
+function normalize(value: unknown) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+}
+
+function looksLikeCandidateSearch(text: string) {
+  const q = normalize(text)
+  return /(kandidat|kandidaten|bewerber|bewerberin|arbeitnehmer|mitarbeiter|profil|profiles|wer sind|welche|zeig|finde|suche|passend)/.test(q)
+}
+
+function findProfessionMatches(query: string, candidates: Candidate[]) {
+  const q = normalize(query)
+  if (!looksLikeCandidateSearch(q)) return []
+
+  const professions = Array.from(
+    new Set(
+      candidates
+        .map((candidate) => candidate.profession)
+        .filter((profession): profession is string => Boolean(profession))
+        .map((profession) => profession.trim()),
+    ),
+  )
+
+  const matchingProfessions = professions.filter((profession) => {
+    const p = normalize(profession)
+    const words = p.split(/[^a-z0-9]+/).filter((word) => word.length >= 4)
+    return p.length >= 4 && (q.includes(p) || words.some((word) => q.includes(word)))
+  })
+
+  if (!matchingProfessions.length) return []
+
+  return candidates.filter((candidate) => {
+    const profession = normalize(candidate.profession)
+    return matchingProfessions.some((match) => profession === normalize(match) || profession.includes(normalize(match)))
+  })
+}
+
+function candidateName(candidate: Candidate) {
+  return `${candidate.first_name || "Kandidat"} ${candidate.last_name || ""}`.trim()
+}
+
+function candidateSummary(candidate: Candidate) {
+  const skills = Array.isArray(candidate.skills) && candidate.skills.length ? candidate.skills.join(", ") : "keine Skills angegeben"
+  return `${candidateName(candidate)} | ${candidate.profession || "Beruf nicht angegeben"} | ${candidate.city || "Ort offen"} | ${candidate.years_experience ?? 0} Jahre Erfahrung | ${candidate.desired_employment_percent ?? 100}% | Wunschlohn ${candidate.desired_salary_min == null ? "nicht angegeben" : `CHF ${candidate.desired_salary_min}`} | Skills: ${skills}`
 }
 
 export async function POST(request: Request) {
@@ -29,6 +91,8 @@ export async function POST(request: Request) {
 
     const [{ data: company, error: companyError }, { data: candidates, error: candidatesError }, { data: requests, error: requestsError }] = await Promise.all([
       supabase.from("companies").select("name,industry,city").eq("owner_id", user.id).maybeSingle(),
+      // This view is the same source used by the employer candidate search page.
+      // It only exposes profiles where employee_profiles.profile_visible = true.
       supabase.from("employer_candidate_profiles").select("id,profession,education,years_experience,desired_employment_percent,desired_salary_min,skills,contact_visible,first_name,last_name,city"),
       supabase.from("contact_requests").select("employee_id,status,job_id,created_at").eq("employer_id", user.id),
     ])
@@ -38,11 +102,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Die JobMatch24-Daten konnten nicht vollständig geladen werden." }, { status: 500 })
     }
 
+    const candidateRows = (candidates || []) as Candidate[]
+    const latestUserMessage = messages[messages.length - 1]?.content || ""
+    const exactMatches = findProfessionMatches(latestUserMessage, candidateRows)
+
     const context = {
       company: company || null,
-      candidates: candidates || [],
+      candidate_count: candidateRows.length,
+      candidates: candidateRows,
       contact_requests: requests || [],
     }
+
+    const exactSearchContext = exactMatches.length
+      ? `\n\nEXAKTER SERVER-SEITIGER TREFFER FÜR DIE LETZTE ANFRAGE:\nDie Anwendung hat ${exactMatches.length} passende Kandidaten anhand des Berufs erkannt. Diese Liste ist vollständig. Wenn die Anfrage nach Kandidaten/Bewerbern für diesen Beruf fragt, MUSST du alle ${exactMatches.length} Treffer nennen und darfst keinen davon weglassen:\n${exactMatches.map((candidate, index) => `${index + 1}. ${candidateSummary(candidate)}`).join("\n")}`
+      : ""
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
     if (!apiKey) {
@@ -55,13 +128,18 @@ WICHTIG:
 - Nutze ausschließlich die unten gelieferten JobMatch24-Daten.
 - Keine Websuche, keine Google-Suche, keine externen Quellen und keine erfundenen Kandidaten.
 - Wenn Informationen fehlen, sage klar, dass sie im System nicht vorhanden sind.
+- Die Kandidatenliste kommt aus der JobMatch24-Datenbank und darf nicht auf einen einzelnen Kandidaten verkürzt werden, wenn mehrere Treffer vorhanden sind.
+- Wenn der Nutzer nach Kandidaten für einen Beruf fragt, nenne ALLE serverseitig erkannten Treffer dieses Berufs. Erfinde keine weiteren und lasse keinen Treffer weg.
+- Bei "beste", "passende" oder ähnlichen Fragen darfst du die Treffer nach berufsbezogenen Kriterien wie Erfahrung, Ausbildung, Skills, Pensum, Wunschlohn und Ort priorisieren. Wenn mehrere Kandidaten passen, zeige die relevanten Kandidaten mit kurzer Begründung.
 - Hilf beim Suchen, Vergleichen, Zusammenfassen und Priorisieren von Kandidaten anhand berufsbezogener Kriterien wie Beruf, Erfahrung, Ausbildung, Skills, Pensum, Wunschlohn und Ort.
 - Gib keine Empfehlung aufgrund geschützter oder persönlicher Merkmale wie Geschlecht, Herkunft, Religion, Alter oder Gesundheit.
 - Die endgültige Einstellungsentscheidung trifft immer der Arbeitgeber.
-- Antworte auf Deutsch, kurz und praktisch. Wenn du Kandidaten nennst, verwende Name, Beruf, Ort, Erfahrung, Pensum, Skills und eine kurze Begründung.
+- Antworte auf Deutsch, kurz und praktisch. Bei einer Kandidatensuche verwende Name, Beruf, Ort, Erfahrung, Pensum, Skills und eine kurze Begründung.
+- Wenn keine Treffer vorhanden sind, sage das ausdrücklich und schlage keine erfundenen Personen vor.
 
 AKTUELLE JOBMATCH24-DATEN:
-${JSON.stringify(context)}`
+${JSON.stringify(context)}
+${exactSearchContext}`
 
     const contents = messages.map((message) => ({
       role: message.role === "assistant" ? "model" : "user",
@@ -84,7 +162,7 @@ ${JSON.stringify(context)}`
             systemInstruction: { parts: [{ text: system }] },
             contents,
             generationConfig: {
-              maxOutputTokens: 900,
+              maxOutputTokens: 1200,
             },
           }),
         },
@@ -102,7 +180,7 @@ ${JSON.stringify(context)}`
           .trim()
 
         if (message) {
-          return NextResponse.json({ message, model })
+          return NextResponse.json({ message, model, candidateCount: exactMatches.length || candidateRows.length })
         }
       }
 
