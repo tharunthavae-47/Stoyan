@@ -22,14 +22,12 @@ type Candidate = {
 }
 
 function shouldTryFallback(status: number) { return status === 429 || status === 500 || status === 502 || status === 503 || status === 504 }
-
-function normalize(value: unknown) {
-  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim()
-}
+function normalize(value: unknown) { return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() }
+function candidateName(candidate: Candidate) { return `${candidate.first_name || "Kandidat"} ${candidate.last_name || ""}`.trim() }
 
 function looksLikeCandidateSearch(text: string) {
   const q = normalize(text)
-  return /(kandidat|kandidaten|bewerber|bewerberin|arbeitnehmer|mitarbeiter|profil|profiles|wer sind|welche|zeig|finde|suche|passend)/.test(q)
+  return /(kandidat|kandidaten|bewerber|bewerberin|arbeitnehmer|mitarbeiter|profil|profile|wer sind|welche|zeig|finde|suche|passend)/.test(q)
 }
 
 function findProfessionMatches(query: string, candidates: Candidate[]) {
@@ -48,20 +46,31 @@ function findProfessionMatches(query: string, candidates: Candidate[]) {
   })
 }
 
-function candidateName(candidate: Candidate) { return `${candidate.first_name || "Kandidat"} ${candidate.last_name || ""}`.trim() }
+function findReferencedProfiles(messages: ChatMessage[], candidates: Candidate[]) {
+  const recentText = messages.slice(-8).map((message) => message.content).join(" ")
+  const q = normalize(recentText)
+  const profileRequest = /(zeig|zeige|profil|details|mehr uber|mehr ueber|infos|information)/.test(q)
+  if (!profileRequest) return []
+
+  return candidates.filter((candidate) => {
+    const first = normalize(candidate.first_name)
+    const last = normalize(candidate.last_name)
+    const full = normalize(candidateName(candidate))
+    if (!full || full === "kandidat") return false
+    return q.includes(full) || (first && last && q.includes(first) && q.includes(last))
+  })
+}
 
 function isBestSearch(query: string) {
   const q = normalize(query)
   return /(beste|besten|bester|passendste|passendsten|geeignetste|geeignetsten|top)/.test(q)
 }
-
 function educationScore(education: string | null) {
   const value = normalize(education)
   if (value.includes("efz")) return 3
   if (value.includes("eba")) return 2
   return value ? 1 : 0
 }
-
 function sortCandidatesForBestSearch(candidates: Candidate[]) {
   return [...candidates].sort((a, b) => {
     const experience = (b.years_experience ?? -1) - (a.years_experience ?? -1)
@@ -71,7 +80,6 @@ function sortCandidatesForBestSearch(candidates: Candidate[]) {
     return (b.desired_employment_percent ?? -1) - (a.desired_employment_percent ?? -1)
   })
 }
-
 function formatCandidateSearch(query: string, candidates: Candidate[]) {
   const sortedCandidates = isBestSearch(query) ? sortCandidatesForBestSearch(candidates) : candidates
   const bestSearch = isBestSearch(query)
@@ -116,6 +124,19 @@ export async function POST(request: Request) {
 
     const candidateRows = (candidates || []) as Candidate[]
     const latestUserMessage = messages[messages.length - 1]?.content || ""
+    const referencedProfiles = findReferencedProfiles(messages, candidateRows)
+
+    // Any explicit profile request is rendered as the same structured profile card,
+    // including follow-ups such as "Zeig mir ihr Profil".
+    if (referencedProfiles.length > 0 && /(profil|details|mehr uber|mehr ueber|infos|information|zeige|zeig)/.test(normalize(latestUserMessage))) {
+      return NextResponse.json({
+        message: referencedProfiles.length === 1 ? `Profil von ${candidateName(referencedProfiles[0])}` : `${referencedProfiles.length} Profile gefunden`,
+        candidates: referencedProfiles,
+        model: "JobMatch24 Profilansicht",
+        candidateCount: referencedProfiles.length,
+      })
+    }
+
     const exactMatches = findProfessionMatches(latestUserMessage, candidateRows)
     if (exactMatches.length > 0) {
       const formatted = formatCandidateSearch(latestUserMessage, exactMatches)
