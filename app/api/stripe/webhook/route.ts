@@ -53,7 +53,16 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#039;")
 }
 
-async function sendSubscriptionPurchaseEmail(email: string) {
+function getPlanName(planId: string | null) {
+  const names: Record<string, string> = {
+    basic: "Basic",
+    professional: "Professional",
+    business: "Business",
+  }
+  return planId ? names[planId] || planId : "Stoyan-Abo"
+}
+
+async function sendSubscriptionPurchaseEmail(email: string, planId: string | null) {
   const resendApiKey = process.env.RESEND_API_KEY
   const resendFromEmail = process.env.RESEND_FROM_EMAIL
 
@@ -64,11 +73,18 @@ async function sendSubscriptionPurchaseEmail(email: string) {
 
   const normalizedEmail = email.trim().toLowerCase()
   const safeEmail = escapeHtml(normalizedEmail)
+  const planName = getPlanName(planId)
+  const safePlanName = escapeHtml(planName)
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://stoyan-job-matching.vercel.app").replace(/\/$/, "")
+  const purchaseDate = new Intl.DateTimeFormat("de-CH", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "Europe/Zurich",
+  }).format(new Date())
 
-  const html = `<!doctype html><html lang="de"><body style="margin:0;background:#f8fafc;font-family:Arial,Helvetica,sans-serif;color:#0f172a"><div style="max-width:620px;margin:0 auto;padding:32px 18px"><div style="background:#0f172a;color:#fff;border-radius:18px;padding:22px 24px"><div style="font-size:24px;font-weight:800;letter-spacing:-.5px">JOBMATCH24</div><div style="margin-top:6px;color:#cbd5e1">Abo erfolgreich gekauft</div></div><div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:28px 24px;margin-top:16px"><h1 style="font-size:24px;margin:0 0 14px">Ihr Abo wurde erfolgreich gekauft.</h1><p style="line-height:1.7;color:#475569;margin:0">Die Zahlung wurde erfolgreich verarbeitet und Ihr JobMatch24-Abo wurde aktiviert.</p><p style="line-height:1.7;color:#475569">Das Abo ist mit Ihrer E-Mail-Adresse ${safeEmail} verknüpft.</p><a href="${siteUrl}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;padding:13px 18px;border-radius:10px;margin-top:8px">Zu JobMatch24</a><p style="margin-top:24px;color:#64748b;font-size:14px;line-height:1.6">Vielen Dank, dass Sie JobMatch24 nutzen.</p></div><p style="text-align:center;color:#94a3b8;font-size:12px;margin:20px 0">JobMatch24 · Diese Nachricht wurde automatisch versendet.</p></div></body></html>`
+  const html = `<!doctype html><html lang="de"><body style="margin:0;background:#f8fafc;font-family:Arial,Helvetica,sans-serif;color:#0f172a"><div style="max-width:620px;margin:0 auto;padding:32px 18px"><div style="background:#0f172a;color:#fff;border-radius:18px;padding:22px 24px"><div style="font-size:24px;font-weight:800;letter-spacing:-.5px">STOYAN</div><div style="margin-top:6px;color:#cbd5e1">Abo erfolgreich gekauft</div></div><div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:28px 24px;margin-top:16px"><h1 style="font-size:24px;margin:0 0 14px">Ihr Abo wurde erfolgreich gekauft.</h1><p style="line-height:1.7;color:#475569;margin:0">Vielen Dank! Ihre Zahlung wurde erfolgreich verarbeitet und Ihr Stoyan-Abo wurde aktiviert.</p><div style="margin:22px 0;padding:16px;background:#f8fafc;border-radius:12px"><p style="margin:0 0 8px;color:#64748b;font-size:13px">Abo</p><p style="margin:0;font-weight:700">${safePlanName}</p><p style="margin:12px 0 0;color:#64748b;font-size:13px">Kaufdatum</p><p style="margin:4px 0 0">${escapeHtml(purchaseDate)}</p></div><p style="line-height:1.7;color:#475569">Das Abo ist mit Ihrer E-Mail-Adresse ${safeEmail} verknüpft.</p><a href="${siteUrl}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;padding:13px 18px;border-radius:10px;margin-top:8px">Zu Stoyan</a><p style="margin-top:24px;color:#64748b;font-size:14px;line-height:1.6">Vielen Dank, dass Sie Stoyan nutzen.</p></div><p style="text-align:center;color:#94a3b8;font-size:12px;margin:20px 0">Stoyan · Diese Nachricht wurde automatisch versendet.</p></div></body></html>`
 
-  const text = `Ihr Abo wurde erfolgreich gekauft.\n\nDie Zahlung wurde erfolgreich verarbeitet und Ihr JobMatch24-Abo wurde aktiviert.\n\nDas Abo ist mit Ihrer E-Mail-Adresse ${normalizedEmail} verknüpft.\n\nZu JobMatch24: ${siteUrl}\n\nVielen Dank, dass Sie JobMatch24 nutzen.`
+  const text = `Ihr Abo wurde erfolgreich gekauft.\n\nVielen Dank! Ihre Zahlung wurde erfolgreich verarbeitet und Ihr Stoyan-Abo wurde aktiviert.\n\nAbo: ${planName}\nKaufdatum: ${purchaseDate}\n\nDas Abo ist mit Ihrer E-Mail-Adresse ${normalizedEmail} verknüpft.\n\nZu Stoyan: ${siteUrl}\n\nVielen Dank, dass Sie Stoyan nutzen.`
 
   try {
     const response = await fetch("https://api.resend.com/emails", {
@@ -80,7 +96,7 @@ async function sendSubscriptionPurchaseEmail(email: string) {
       body: JSON.stringify({
         from: resendFromEmail,
         to: [normalizedEmail],
-        subject: "Ihr JobMatch24-Abo wurde erfolgreich gekauft",
+        subject: "Ihr Stoyan-Abo wurde erfolgreich gekauft",
         html,
         text,
       }),
@@ -92,12 +108,12 @@ async function sendSubscriptionPurchaseEmail(email: string) {
       return
     }
 
-    console.log("Abo-Bestätigungs-E-Mail versendet", {
+    console.log("Stoyan Abo-Bestätigungs-E-Mail versendet", {
       email: normalizedEmail,
       emailId: data?.id ?? null,
     })
   } catch (error) {
-    console.error("Fehler beim Versand der Abo-Bestätigungs-E-Mail:", error)
+    console.error("Fehler beim Versand der Stoyan Abo-Bestätigungs-E-Mail:", error)
   }
 }
 
@@ -105,7 +121,6 @@ async function ensureUser(admin: ReturnType<typeof getAdminClient>, email: strin
   const normalizedEmail = email.trim().toLowerCase()
   if (!normalizedEmail) throw new Error("Stripe hat keine gültige E-Mail-Adresse geliefert.")
 
-  // Zuerst nach einem bereits vorhandenen Konto suchen.
   const { data: usersData, error: usersError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 })
   if (usersError) throw usersError
 
@@ -121,7 +136,6 @@ async function ensureUser(admin: ReturnType<typeof getAdminClient>, email: strin
     return { userId: existing.id, invited: false }
   }
 
-  // Neues Konto ohne vom Kunden festgelegtes Passwort anlegen und per Einladung zur Einrichtung schicken.
   const { data, error } = await admin.auth.admin.inviteUserByEmail(normalizedEmail, {
     data: { role },
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://stoyan-job-matching.vercel.app"}/login?invited=1`,
@@ -186,7 +200,6 @@ export async function POST(request: Request) {
     const event = JSON.parse(payload)
     const admin = getAdminClient()
 
-    // Idempotenz: bereits erfolgreich verarbeitete Events nicht erneut ausführen.
     const { data: existingEvent, error: existingEventError } = await admin
       .from("subscription_events")
       .select("id")
@@ -215,7 +228,6 @@ export async function POST(request: Request) {
         object.customer_email ||
         null
 
-      // Wenn der Kauf als Gast erfolgt ist, wird jetzt automatisch das passende Supabase-Konto erstellt.
       if (!userId && customerEmail && role) {
         const account = await ensureUser(admin, customerEmail, role)
         userId = account.userId
@@ -246,9 +258,8 @@ export async function POST(request: Request) {
         })
       }
 
-      // Erst nach erfolgreichem Stripe-Checkout eine Bestätigungs-E-Mail senden.
       if (customerEmail) {
-        await sendSubscriptionPurchaseEmail(customerEmail)
+        await sendSubscriptionPurchaseEmail(customerEmail, planId)
       }
     }
 
@@ -297,7 +308,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Event erst nach erfolgreicher Verarbeitung speichern.
     const { error: eventInsertError } = await admin.from("subscription_events").insert({
       provider: "stripe",
       provider_event_id: event.id,
