@@ -79,6 +79,60 @@ function candidateSummary(candidate: Candidate) {
   return `${candidateName(candidate)} | ${candidate.profession || "Beruf nicht angegeben"} | ${candidate.city || "Ort offen"} | ${candidate.years_experience ?? 0} Jahre Erfahrung | ${candidate.desired_employment_percent ?? 100}% | Wunschlohn ${candidate.desired_salary_min == null ? "nicht angegeben" : `CHF ${candidate.desired_salary_min}`} | Skills: ${skills}`
 }
 
+function isBestSearch(query: string) {
+  const q = normalize(query)
+  return /(beste|besten|bester|besten|passendste|passendsten|geeignetste|geeignetsten|top)/.test(q)
+}
+
+function educationScore(education: string | null) {
+  const value = normalize(education)
+  if (value.includes("efz")) return 3
+  if (value.includes("eba")) return 2
+  return value ? 1 : 0
+}
+
+function sortCandidatesForBestSearch(candidates: Candidate[]) {
+  return [...candidates].sort((a, b) => {
+    const experience = (b.years_experience ?? -1) - (a.years_experience ?? -1)
+    if (experience !== 0) return experience
+
+    const education = educationScore(b.education) - educationScore(a.education)
+    if (education !== 0) return education
+
+    return (b.desired_employment_percent ?? -1) - (a.desired_employment_percent ?? -1)
+  })
+}
+
+function formatCandidateSearch(query: string, candidates: Candidate[]) {
+  const sortedCandidates = isBestSearch(query) ? sortCandidatesForBestSearch(candidates) : candidates
+  const bestSearch = isBestSearch(query)
+  const lines = [`${sortedCandidates.length} passende Kandidaten gefunden`, ""]
+
+  sortedCandidates.forEach((candidate, index) => {
+    const skills = Array.isArray(candidate.skills) && candidate.skills.length
+      ? candidate.skills.join(", ")
+      : "keine Angaben"
+
+    lines.push(`${index + 1}. ${candidateName(candidate)}`)
+    lines.push(`${candidate.profession || "Beruf nicht angegeben"}, ${candidate.city || "Ort nicht angegeben"}`)
+    lines.push(`${candidate.education || "Ausbildung nicht angegeben"}, ${candidate.years_experience ?? 0} Jahre Erfahrung, ${candidate.desired_employment_percent ?? 100} Prozent`)
+    lines.push(`Wunschlohn: ${candidate.desired_salary_min == null ? "nicht angegeben" : `CHF ${candidate.desired_salary_min}`}`)
+    lines.push(`Skills: ${skills}`)
+
+    if (bestSearch) {
+      const reasons: string[] = []
+      if ((candidate.years_experience ?? 0) > 0) reasons.push(`${candidate.years_experience} Jahre Berufserfahrung`)
+      if (candidate.education) reasons.push(candidate.education)
+      if ((candidate.desired_employment_percent ?? 0) > 0) reasons.push(`${candidate.desired_employment_percent} Prozent Pensum`)
+      if (reasons.length) lines.push(`Grund: ${reasons.slice(0, 2).join(" und ")}`)
+    }
+
+    if (index < sortedCandidates.length - 1) lines.push("")
+  })
+
+  return lines.join("\n")
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
@@ -104,16 +158,22 @@ export async function POST(request: Request) {
     const latestUserMessage = messages[messages.length - 1]?.content || ""
     const exactMatches = findProfessionMatches(latestUserMessage, candidateRows)
 
+    // Kandidatensuchen werden serverseitig formatiert. So bleibt die Trefferliste
+    // vollständig und das Layout bleibt unabhängig von Geminis Antwort sauber.
+    if (exactMatches.length > 0) {
+      return NextResponse.json({
+        message: formatCandidateSearch(latestUserMessage, exactMatches),
+        model: "JobMatch24 Kandidatensuche",
+        candidateCount: exactMatches.length,
+      })
+    }
+
     const context = {
       company: company || null,
       candidate_count: candidateRows.length,
       candidates: candidateRows,
       contact_requests: requests || [],
     }
-
-    const exactSearchContext = exactMatches.length
-      ? `\n\nEXAKTER SERVER-SEITIGER TREFFER FÜR DIE LETZTE ANFRAGE:\nDie Anwendung hat ${exactMatches.length} passende Kandidaten anhand des Berufs erkannt. Diese Liste ist vollständig. Wenn die Anfrage nach Kandidaten oder Bewerbern für diesen Beruf fragt, MUSST du alle ${exactMatches.length} Treffer nennen und darfst keinen davon weglassen:\n${exactMatches.map((candidate, index) => `${index + 1}. ${candidateSummary(candidate)}`).join("\n")}`
-      : ""
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
     if (!apiKey) {
@@ -126,9 +186,6 @@ WICHTIG:
 - Nutze ausschließlich die unten gelieferten JobMatch24-Daten.
 - Keine Websuche, keine Google-Suche, keine externen Quellen und keine erfundenen Kandidaten.
 - Wenn Informationen fehlen, sage klar, dass sie im System nicht vorhanden sind.
-- Die Kandidatenliste kommt aus der JobMatch24-Datenbank und darf nicht auf einen einzelnen Kandidaten verkürzt werden, wenn mehrere Treffer vorhanden sind.
-- Wenn der Nutzer nach Kandidaten für einen Beruf fragt, nenne ALLE serverseitig erkannten Treffer dieses Berufs. Erfinde keine weiteren und lasse keinen Treffer weg.
-- Bei "beste", "passende" oder ähnlichen Fragen darfst du die Treffer nach berufsbezogenen Kriterien wie Erfahrung, Ausbildung, Skills, Pensum, Wunschlohn und Ort priorisieren. Wenn mehrere Kandidaten passen, zeige die relevanten Kandidaten mit kurzer Begründung.
 - Hilf beim Suchen, Vergleichen, Zusammenfassen und Priorisieren von Kandidaten anhand berufsbezogener Kriterien wie Beruf, Erfahrung, Ausbildung, Skills, Pensum, Wunschlohn und Ort.
 - Gib keine Empfehlung aufgrund geschützter oder persönlicher Merkmale wie Geschlecht, Herkunft, Religion, Alter oder Gesundheit.
 - Die endgültige Einstellungsentscheidung trifft immer der Arbeitgeber.
@@ -136,19 +193,15 @@ WICHTIG:
 FORMATIERUNG:
 - Antworte ausschließlich als sauberer Klartext.
 - Verwende KEINE Markdown-Formatierung.
-- Keine Sternchen, keine doppelten Sternchen, keine Backticks, keine Emojis und keine dekorativen Sonderzeichen.
-- Keine Tabellen.
-- Keine langen Trennlinien.
+- Keine Sternchen, keine Backticks, keine Emojis und keine dekorativen Sonderzeichen.
+- Keine Tabellen und keine langen Trennlinien.
 - Verwende einfache Überschriften und normale Zeilenumbrüche.
 - Nummerierte Listen mit 1., 2., 3. sind erlaubt.
-- Verwende normale Schreibweise wie "100 Prozent" statt "100%" und "CHF 5000" statt "CHF 5'000.-".
+- Verwende "100 Prozent" statt "100%" und "CHF 5000" statt "CHF 5'000.-".
 - Halte Antworten kurz, übersichtlich und vollständig.
-- Keine unnötigen Wiederholungen oder Füllsätze.
-- Wenn mehrere Kandidaten gefunden wurden, liste jeden Kandidaten genau einmal.
 
 AKTUELLE JOBMATCH24-DATEN:
-${JSON.stringify(context)}
-${exactSearchContext}`
+${JSON.stringify(context)}`
 
     const contents = messages.map((message) => ({
       role: message.role === "assistant" ? "model" : "user",
@@ -189,7 +242,7 @@ ${exactSearchContext}`
           .trim()
 
         if (message) {
-          return NextResponse.json({ message, model, candidateCount: exactMatches.length || candidateRows.length })
+          return NextResponse.json({ message, model, candidateCount: candidateRows.length })
         }
       }
 
