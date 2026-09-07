@@ -91,8 +91,6 @@ export async function POST(request: Request) {
 
     const [{ data: company, error: companyError }, { data: candidates, error: candidatesError }, { data: requests, error: requestsError }] = await Promise.all([
       supabase.from("companies").select("name,industry,city").eq("owner_id", user.id).maybeSingle(),
-      // This view is the same source used by the employer candidate search page.
-      // It only exposes profiles where employee_profiles.profile_visible = true.
       supabase.from("employer_candidate_profiles").select("id,profession,education,years_experience,desired_employment_percent,desired_salary_min,skills,contact_visible,first_name,last_name,city"),
       supabase.from("contact_requests").select("employee_id,status,job_id,created_at").eq("employer_id", user.id),
     ])
@@ -114,15 +112,15 @@ export async function POST(request: Request) {
     }
 
     const exactSearchContext = exactMatches.length
-      ? `\n\nEXAKTER SERVER-SEITIGER TREFFER FÜR DIE LETZTE ANFRAGE:\nDie Anwendung hat ${exactMatches.length} passende Kandidaten anhand des Berufs erkannt. Diese Liste ist vollständig. Wenn die Anfrage nach Kandidaten/Bewerbern für diesen Beruf fragt, MUSST du alle ${exactMatches.length} Treffer nennen und darfst keinen davon weglassen:\n${exactMatches.map((candidate, index) => `${index + 1}. ${candidateSummary(candidate)}`).join("\n")}`
+      ? `\n\nEXAKTER SERVER-SEITIGER TREFFER FÜR DIE LETZTE ANFRAGE:\nDie Anwendung hat ${exactMatches.length} passende Kandidaten anhand des Berufs erkannt. Diese Liste ist vollständig. Wenn die Anfrage nach Kandidaten oder Bewerbern für diesen Beruf fragt, MUSST du alle ${exactMatches.length} Treffer nennen und darfst keinen davon weglassen:\n${exactMatches.map((candidate, index) => `${index + 1}. ${candidateSummary(candidate)}`).join("\n")}`
       : ""
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
     if (!apiKey) {
-      return NextResponse.json({ error: "Der KI-Assistent ist noch nicht vollständig eingerichtet. Bitte hinterlege GEMINI_API_KEY (oder GOOGLE_API_KEY) in den Vercel Server-Umgebungsvariablen und deploye danach neu." }, { status: 503 })
+      return NextResponse.json({ error: "Der KI-Assistent ist noch nicht vollständig eingerichtet. Bitte hinterlege GEMINI_API_KEY oder GOOGLE_API_KEY in den Vercel Server-Umgebungsvariablen und deploye danach neu." }, { status: 503 })
     }
 
-    const system = `Du bist der persönliche KI-Assistent von jobmatch24 für Arbeitgeber. Du arbeitest ausschließlich innerhalb der JobMatch24-Plattform.
+    const system = `Du bist der persönliche KI-Assistent von JobMatch24 für Arbeitgeber. Du arbeitest ausschließlich innerhalb der JobMatch24-Plattform.
 
 WICHTIG:
 - Nutze ausschließlich die unten gelieferten JobMatch24-Daten.
@@ -134,8 +132,19 @@ WICHTIG:
 - Hilf beim Suchen, Vergleichen, Zusammenfassen und Priorisieren von Kandidaten anhand berufsbezogener Kriterien wie Beruf, Erfahrung, Ausbildung, Skills, Pensum, Wunschlohn und Ort.
 - Gib keine Empfehlung aufgrund geschützter oder persönlicher Merkmale wie Geschlecht, Herkunft, Religion, Alter oder Gesundheit.
 - Die endgültige Einstellungsentscheidung trifft immer der Arbeitgeber.
-- Antworte auf Deutsch, kurz und praktisch. Bei einer Kandidatensuche verwende Name, Beruf, Ort, Erfahrung, Pensum, Skills und eine kurze Begründung.
-- Wenn keine Treffer vorhanden sind, sage das ausdrücklich und schlage keine erfundenen Personen vor.
+
+FORMATIERUNG:
+- Antworte ausschließlich als sauberer Klartext.
+- Verwende KEINE Markdown-Formatierung.
+- Keine Sternchen, keine doppelten Sternchen, keine Backticks, keine Emojis und keine dekorativen Sonderzeichen.
+- Keine Tabellen.
+- Keine langen Trennlinien.
+- Verwende einfache Überschriften und normale Zeilenumbrüche.
+- Nummerierte Listen mit 1., 2., 3. sind erlaubt.
+- Verwende normale Schreibweise wie "100 Prozent" statt "100%" und "CHF 5000" statt "CHF 5'000.-".
+- Halte Antworten kurz, übersichtlich und vollständig.
+- Keine unnötigen Wiederholungen oder Füllsätze.
+- Wenn mehrere Kandidaten gefunden wurden, liste jeden Kandidaten genau einmal.
 
 AKTUELLE JOBMATCH24-DATEN:
 ${JSON.stringify(context)}
