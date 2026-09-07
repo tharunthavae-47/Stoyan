@@ -28,19 +28,10 @@ const suggestions = [
 
 function candidateName(candidate: Candidate) { return `${candidate.first_name || "Kandidat"} ${candidate.last_name || ""}`.trim() }
 
-// Keep the conversation context around the last 10 user messages.
-// Assistant replies belonging to those messages are kept as well, so follow-up
-// questions such as "und nur 100 %" or "zeig mir ihr Profil" remain understandable.
+// Keep exactly the last 10 messages written by the employer as AI memory.
+// This lets follow-up searches build on earlier filters without sending the full chat.
 function getMemoryMessages(allMessages: Message[]) {
-  let userCount = 0
-  const selected: Message[] = []
-  for (let i = allMessages.length - 1; i >= 0; i--) {
-    const message = allMessages[i]
-    selected.unshift(message)
-    if (message.role === "user") userCount += 1
-    if (userCount >= 10) break
-  }
-  return selected
+  return allMessages.filter((message) => message.role === "user").slice(-10)
 }
 
 function CandidateCard({ candidate }: { candidate: Candidate }) {
