@@ -17,7 +17,6 @@ export async function POST(request: Request) {
     const messages = Array.isArray(body.messages) ? (body.messages as ChatMessage[]).slice(-12) : []
     if (!messages.length) return NextResponse.json({ error: "Keine Nachricht erhalten." }, { status: 400 })
 
-    // All context comes from JobMatch24 and is queried with the logged-in user's session.
     const [{ data: company, error: companyError }, { data: candidates, error: candidatesError }, { data: requests, error: requestsError }] = await Promise.all([
       supabase.from("companies").select("name,industry,city").eq("owner_id", user.id).maybeSingle(),
       supabase.from("employer_candidate_profiles").select("id,profession,education,years_experience,desired_employment_percent,desired_salary_min,skills,contact_visible,first_name,last_name,city"),
@@ -35,9 +34,10 @@ export async function POST(request: Request) {
       contact_requests: requests || [],
     }
 
-    const apiKey = process.env.GEMINI_API_KEY
+    // Google supports both variable names; GEMINI_API_KEY is preferred.
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
     if (!apiKey) {
-      return NextResponse.json({ error: "Der KI-Assistent ist noch nicht vollständig eingerichtet. GEMINI_API_KEY fehlt in den Server-Umgebungsvariablen." }, { status: 503 })
+      return NextResponse.json({ error: "Der KI-Assistent ist noch nicht vollständig eingerichtet. Bitte hinterlege GEMINI_API_KEY (oder GOOGLE_API_KEY) in den Vercel Server-Umgebungsvariablen und deploye danach neu." }, { status: 503 })
     }
 
     const system = `Du bist der persönliche KI-Assistent von jobmatch24 für Arbeitgeber. Du arbeitest ausschließlich innerhalb der JobMatch24-Plattform.
@@ -68,9 +68,7 @@ ${JSON.stringify(context)}`
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: system }],
-          },
+          systemInstruction: { parts: [{ text: system }] },
           contents,
           generationConfig: {
             temperature: 0.2,
