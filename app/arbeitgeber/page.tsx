@@ -6,7 +6,7 @@ import { ArrowRight, Building2, Check, Clock3, MessageCircle, RefreshCw, Search,
 import { createClient } from "@/lib/supabase/client"
 import { SubscriptionCard } from "@/components/subscription-card"
 
-type Company = { name: string | null; industry: string | null; city: string | null }
+type Company = { name: string | null; industry: string | null; city: string | null; avatar_url: string | null }
 type ContactRequest = { id: string; employer_id: string; employee_id: string; job_id: string | null; status: string; created_at: string }
 type EmployeeProfile = { id: string; vorname: string | null; nachname: string | null; beruf: string | null; city: string | null; stadt: string | null; email: string | null; phone: string | null }
 type Stat = { label: string; count: number; Icon: ComponentType<LucideProps>; style: string }
@@ -28,7 +28,7 @@ export default function ArbeitgeberPage() {
       if (userError) throw new Error(userError.message)
       if (!user) { window.location.href = "/login"; return }
 
-      const { data: companyData } = await supabase.from("companies").select("name,industry,city").eq("owner_id", user.id).maybeSingle()
+      const { data: companyData } = await supabase.from("companies").select("name,industry,city,avatar_url").eq("owner_id", user.id).maybeSingle()
       setCompany(companyData || null)
 
       const { data: requestData, error: requestError } = await supabase.from("contact_requests").select("id,employer_id,employee_id,job_id,status,created_at").eq("employer_id", user.id).order("created_at", { ascending: false })
@@ -98,7 +98,7 @@ export default function ArbeitgeberPage() {
 
     <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{stats.map(({ label, count, Icon, style }) => <div key={label} className="card card-pad"><div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-[var(--muted)]">{label}</p><p className="mt-2 text-3xl font-black text-[var(--navy)]">{count}</p></div><div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${style}`}><Icon className="h-5 w-5" /></div></div></div>)}</section>
 
-    <section className="card card-pad mt-6"><div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center"><div className="flex items-center gap-4"><div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--navy)] text-xl font-black text-white">{(company?.name || "O")[0]?.toUpperCase()}</div><div><p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--muted-light)]">Unternehmen</p><h2 className="mt-1 text-xl font-black text-[var(--navy)]">{company?.name || "Ihr Unternehmen"}</h2><p className="mt-1 text-sm text-[var(--muted)]">{company?.industry || "Branche noch nicht angegeben"}{company?.city ? ` · ${company.city}` : ""}</p></div></div><Link href="/arbeitgeber/firma" className="btn-ghost">Unternehmensprofil bearbeiten<ArrowRight className="ml-2 h-4 w-4" /></Link></div></section>
+    <section className="card card-pad mt-6"><div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center"><div className="flex items-center gap-4"><div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-[var(--navy)] text-xl font-black text-white">{company?.avatar_url ? <img src={company.avatar_url} alt="Unternehmensprofilbild" className="h-full w-full object-cover" /> : (company?.name || "O")[0]?.toUpperCase()}</div><div><p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--muted-light)]">Unternehmen</p><h2 className="mt-1 text-xl font-black text-[var(--navy)]">{company?.name || "Ihr Unternehmen"}</h2><p className="mt-1 text-sm text-[var(--muted)]">{company?.industry || "Branche noch nicht angegeben"}{company?.city ? ` · ${company.city}` : ""}</p></div></div><Link href="/arbeitgeber/firma" className="btn-ghost">Unternehmensprofil bearbeiten<ArrowRight className="ml-2 h-4 w-4" /></Link></div></section>
 
     <SubscriptionCard />
 
