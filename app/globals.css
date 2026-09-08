@@ -474,8 +474,44 @@ textarea:focus { outline: none; }
   opacity: 0;
   transform: translateY(24px) scale(0.985);
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 .reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0) scale(1); }
+
+/* =========================================================
+   3D TILT + PARALLAX
+   ========================================================= */
+
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.tilt-card > * { border-radius: inherit; }
+
+@keyframes stoyan-float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -22px, 0); }
+}
+@keyframes stoyan-float-x {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(26px, -14px, 0); }
+}
+.stoyan-blob-1 { animation: stoyan-float-slow 12s ease-in-out infinite; }
+.stoyan-blob-2 { animation: stoyan-float-x 16s ease-in-out infinite; }
+
+@keyframes stoyan-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.stoyan-gradient-text {
+  background: linear-gradient(100deg, #2563eb 0%, #6366f1 30%, #2563eb 60%, #1e40af 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: stoyan-shimmer 6s linear infinite;
+}
 
 @keyframes stoyan-fade-up {
   from { opacity: 0; transform: translateY(12px); }
