@@ -25,7 +25,7 @@ export default async function DashboardPage() {
     <div className="animate-fade-up">
       {/* Kopfbereich */}
       <div>
-        <p className="text-sm font-bold uppercase tracking-widest text-[var(--brand)]">STOYAN</p>
+        <p className="text-sm font-bold uppercase tracking-widest text-[var(--brand)]">Jobmatch24</p>
         <h1 className="mt-2 text-4xl font-black tracking-tight text-[var(--navy)]">
           Willkommen zurück
         </h1>
