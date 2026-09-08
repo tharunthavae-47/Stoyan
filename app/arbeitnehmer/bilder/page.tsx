@@ -1,13 +1,133 @@
 "use client"
-import Link from "next/link"
-import { useEffect,useState } from "react"
+
+import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 
-type ImageRow={id:string;image_url:string;image_name:string|null;image_position:number}
+type Category = "lebenslauf" | "diplome" | "zeugnisse" | "arbeitszeugnisse" | "zertifikate" | "sonstige"
+type DocumentRow = { id: string; category: Category; file_name: string; file_path: string; mime_type: string; file_size: number; created_at: string }
 
-export default function BilderPage(){
- const [files,setFiles]=useState<File[]>([]);const [images,setImages]=useState<ImageRow[]>([]);const [message,setMessage]=useState("");const [busy,setBusy]=useState(false)
- useEffect(()=>{(async()=>{const s=createClient();const {data:{user}}=await s.auth.getUser();if(!user){window.location.href="/login";return}const {data,error}=await s.from("employee_images").select("id,image_url,image_name,image_position").eq("employee_id",user.id).order("image_position");if(error){setMessage(error.message);return}setImages((data||[]) as ImageRow[])})()},[])
- async function upload(){setMessage("");if(!files.length)return;setBusy(true);const s=createClient();const {data:{user}}=await s.auth.getUser();if(!user){window.location.href="/login";return}for(let i=0;i<files.length;i++){const file=files[i];if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>10*1024*1024){setMessage("Bitte JPG, PNG oder WEBP bis 10 MB verwenden.");continue}const ext=file.name.split(".").pop()?.toLowerCase()||"jpg";const path=`${user.id}/gallery-${Date.now()}-${i}.${ext}`;const up=await s.storage.from("employee-media").upload(path,file,{contentType:file.type});if(up.error){setMessage(up.error.message);continue}const {data:url}=s.storage.from("employee-media").getPublicUrl(path);const row=await s.from("employee_images").insert({employee_id:user.id,image_url:url.publicUrl,image_name:file.name,image_position:images.length+i});if(row.error){setMessage(row.error.message);continue}}const {data}=await s.from("employee_images").select("id,image_url,image_name,image_position").eq("employee_id",user.id).order("image_position");setImages((data||[]) as ImageRow[]);setFiles([]);setMessage("Bilder erfolgreich hochgeladen.");setBusy(false)}
- async function remove(id:string){const s=createClient();const {data:{user}}=await s.auth.getUser();if(!user)return;const row=images.find(x=>x.id===id);const result=await s.from("employee_images").delete().eq("id",id);if(result.error){setMessage(result.error.message);return}if(row){const path=row.image_url.split("/employee-media/")[1];if(path)await s.storage.from("employee-media").remove([decodeURIComponent(path)])}setImages(x=>x.filter(i=>i.id!==id))}
- return <div className="animate-fade-up"><div className="mx-auto max-w-5xl"><p className="text-sm font-black uppercase tracking-widest text-[var(--brand)]">Meine Bilder</p><h1 className="mt-2 text-4xl font-black text-[var(--navy)]">Dein Profil. Deine Geschichte.</h1><p className="mt-3 max-w-2xl text-[var(--muted)]">Zeige Arbeitgebern mit professionellen Bildern einen authentischen Eindruck von dir und deiner Arbeit.</p><section className="card card-pad mt-8"><input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={e=>setFiles(Array.from(e.target.files||[]))} className="block w-full rounded-xl border border-[var(--line)] p-4"/><p className="mt-2 text-sm text-[var(--muted)]">JPG, PNG oder WEBP · maximal 10 MB pro Bild</p>{files.length>0&&<p className="mt-2 text-sm font-semibold text-[var(--navy)]">{files.length} Bild{files.length===1?"":"er"} ausgewählt</p>}<button onClick={upload} disabled={busy||!files.length} className="btn-primary mt-5 disabled:opacity-50">{busy?"Hochladen…":"Bilder hochladen"}</button>{message&&<p className="mt-4 rounded-xl border border-[var(--brand)]/20 bg-[var(--brand)]/8 p-3 text-sm font-semibold text-[var(--brand)]">{message}</p>}</section><section className="mt-8"><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{images.map(i=><div key={i.id} className="overflow-hidden rounded-2xl border bg-white shadow-sm"><img src={i.image_url} alt={i.image_name||"Profilbild"} className="aspect-square w-full object-cover"/><div className="flex items-center justify-between gap-3 p-4"><span className="truncate text-sm font-semibold">{i.image_name||"Bild"}</span><button onClick={()=>remove(i.id)} className="shrink-0 text-sm font-bold text-red-600">Löschen</button></div></div>)}</div>{!images.length&&<div className="rounded-3xl border border-dashed bg-white p-10 text-center text-slate-500">Noch keine Bilder hochgeladen.</div>}</section></div></div>}
+const CATEGORIES: { id: Category; title: string; description: string; icon: string }[] = [
+  { id: "lebenslauf", title: "Lebenslauf", description: "Deinen aktuellen Lebenslauf hochladen", icon: "📄" },
+  { id: "diplome", title: "Diplome & Abschlüsse", description: "Diplome, Ausbildungs- und Studienabschlüsse", icon: "🎓" },
+  { id: "zeugnisse", title: "Zeugnisse", description: "Schul-, Ausbildungs- und andere Zeugnisse", icon: "📜" },
+  { id: "arbeitszeugnisse", title: "Arbeitszeugnisse", description: "Arbeitszeugnisse und Referenzen", icon: "💼" },
+  { id: "zertifikate", title: "Zertifikate & Kurse", description: "Weiterbildungen, Kurse und Zertifikate", icon: "🏆" },
+  { id: "sonstige", title: "Weitere wichtige Dokumente", description: "Andere Dokumente, die für Arbeitgeber wichtig sind", icon: "📁" },
+]
+
+function formatSize(bytes: number) {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+export default function BilderPage() {
+  const [documents, setDocuments] = useState<DocumentRow[]>([])
+  const [busy, setBusy] = useState<Category | null>(null)
+  const [message, setMessage] = useState("")
+
+  async function loadDocuments() {
+    const s = createClient()
+    const { data: { user } } = await s.auth.getUser()
+    if (!user) { window.location.href = "/login"; return }
+    const { data, error } = await s.from("employee_documents").select("id,category,file_name,file_path,mime_type,file_size,created_at").eq("employee_id", user.id).order("created_at", { ascending: false })
+    if (error) setMessage(error.message)
+    else setDocuments((data || []) as DocumentRow[])
+  }
+
+  useEffect(() => { loadDocuments() }, [])
+
+  async function upload(category: Category, file: File | undefined) {
+    if (!file) return
+    setMessage("")
+    const allowed = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
+    if (!allowed.includes(file.type)) { setMessage("Bitte PDF, JPG, PNG oder WEBP verwenden."); return }
+    if (file.size > 15 * 1024 * 1024) { setMessage("Maximal 15 MB pro Dokument."); return }
+
+    setBusy(category)
+    const s = createClient()
+    const { data: { user } } = await s.auth.getUser()
+    if (!user) { window.location.href = "/login"; return }
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-")
+    const path = `${user.id}/${category}/${Date.now()}-${safeName}`
+    const uploadResult = await s.storage.from("employee-documents").upload(path, file, { contentType: file.type, upsert: false })
+    if (uploadResult.error) { setMessage(uploadResult.error.message); setBusy(null); return }
+
+    const row = await s.from("employee_documents").insert({ employee_id: user.id, category, file_name: file.name, file_path: path, mime_type: file.type, file_size: file.size })
+    if (row.error) {
+      await s.storage.from("employee-documents").remove([path])
+      setMessage(row.error.message)
+      setBusy(null)
+      return
+    }
+
+    await loadDocuments()
+    setMessage("Dokument erfolgreich hochgeladen.")
+    setBusy(null)
+  }
+
+  async function remove(doc: DocumentRow) {
+    const s = createClient()
+    const result = await s.from("employee_documents").delete().eq("id", doc.id)
+    if (result.error) { setMessage(result.error.message); return }
+    await s.storage.from("employee-documents").remove([doc.file_path])
+    setDocuments(x => x.filter(d => d.id !== doc.id))
+  }
+
+  async function openDocument(doc: DocumentRow) {
+    const s = createClient()
+    const { data, error } = await s.storage.from("employee-documents").createSignedUrl(doc.file_path, 60 * 10)
+    if (error || !data?.signedUrl) { setMessage(error?.message || "Dokument konnte nicht geöffnet werden."); return }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer")
+  }
+
+  return (
+    <div className="animate-fade-up">
+      <div className="mx-auto max-w-5xl">
+        <p className="text-sm font-black uppercase tracking-widest text-[var(--brand)]">Meine Unterlagen</p>
+        <h1 className="mt-2 text-4xl font-black text-[var(--navy)]">Dein Profil. Deine Geschichte.</h1>
+        <p className="mt-3 max-w-2xl text-[var(--muted)]">Lade deinen Lebenslauf, Diplome, Zeugnisse und weitere wichtige Unterlagen getrennt hoch. So können Arbeitgeber deine Qualifikationen besser kennenlernen.</p>
+
+        {message && <p className="mt-6 rounded-xl border border-[var(--brand)]/20 bg-[var(--brand)]/8 p-3 text-sm font-semibold text-[var(--brand)]">{message}</p>}
+
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          {CATEGORIES.map(category => {
+            const docs = documents.filter(d => d.category === category.id)
+            return (
+              <section key={category.id} className="card card-pad">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--brand)]/10 text-2xl">{category.icon}</div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-lg font-black text-[var(--navy)]">{category.title}</h2>
+                    <p className="mt-1 text-sm text-[var(--muted)]">{category.description}</p>
+                  </div>
+                </div>
+
+                <label className="mt-5 flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-[var(--brand)]/40 bg-[var(--brand)]/5 px-4 py-3 text-sm font-bold text-[var(--brand)] hover:bg-[var(--brand)]/10">
+                  {busy === category.id ? "Hochladen…" : "+ Dokument hochladen"}
+                  <input type="file" accept="application/pdf,image/jpeg,image/png,image/webp" className="hidden" disabled={busy !== null} onChange={e => { const file = e.target.files?.[0]; e.currentTarget.value = ""; upload(category.id, file) }} />
+                </label>
+
+                <div className="mt-4 space-y-2">
+                  {docs.map(doc => (
+                    <div key={doc.id} className="flex items-center gap-3 rounded-xl border border-[var(--line)] bg-white p-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-bold text-[var(--navy)]">{doc.file_name}</p>
+                        <p className="text-xs text-[var(--muted)]">{formatSize(doc.file_size)}</p>
+                      </div>
+                      <button onClick={() => openDocument(doc)} className="text-sm font-bold text-[var(--brand)]">Öffnen</button>
+                      <button onClick={() => remove(doc)} className="text-sm font-bold text-red-600">Löschen</button>
+                    </div>
+                  ))}
+                  {!docs.length && <p className="text-center text-xs text-[var(--muted)]">Noch kein Dokument hochgeladen.</p>}
+                </div>
+              </section>
+            )
+          })}
+        </div>
+
+        <p className="mt-6 text-sm text-[var(--muted)]">Erlaubte Formate: PDF, JPG, PNG oder WEBP · maximal 15 MB pro Dokument.</p>
+      </div>
+    </div>
+  )
+}
