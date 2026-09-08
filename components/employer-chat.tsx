@@ -2,14 +2,29 @@
 
 import Link from "next/link"
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react"
-import { ArrowLeft, Building2, CheckCheck, Loader2, MessageCircle, Send } from "lucide-react"
+import { ArrowLeft, Building2, CheckCheck, FileText, Loader2, MessageCircle, Send } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
 type RequestData = { id: string; status: "pending" | "accepted" | "rejected" | string; created_at: string; employer_id: string; employee_id: string }
 type Company = { name: string | null; industry: string | null; city: string | null }
 type Employee = { first_name: string | null; last_name: string | null; beruf: string | null; city: string | null }
 type Message = { id: string; contact_request_id: string; sender_id: string; message: string; created_at: string; read_at: string | null }
+type EmployeeDocument = { id: string; category: string; file_name: string; mime_type: string; file_size: number; created_at: string; url: string | null }
 type Props = { requestId: string }
+
+const CATEGORY_LABELS: Record<string, string> = {
+  lebenslauf: "Lebenslauf",
+  diplome: "Diplome & Abschlüsse",
+  zeugnisse: "Zeugnisse",
+  arbeitszeugnisse: "Arbeitszeugnisse",
+  zertifikate: "Zertifikate & Kurse",
+  sonstige: "Weitere wichtige Dokumente",
+}
+
+function formatSize(bytes: number) {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
 
 export default function EmployerChat({ requestId }: Props) {
   const supabase = createClient()
@@ -18,9 +33,11 @@ export default function EmployerChat({ requestId }: Props) {
   const [request, setRequest] = useState<RequestData | null>(null)
   const [company, setCompany] = useState<Company | null>(null)
   const [employee, setEmployee] = useState<Employee | null>(null)
+  const [documents, setDocuments] = useState<EmployeeDocument[]>([])
   const [messages, setMessages] = useState<Message[]>([])
   const [text, setText] = useState("")
   const [loading, setLoading] = useState(true)
+  const [loadingDocuments, setLoadingDocuments] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState("")
 
@@ -28,6 +45,20 @@ export default function EmployerChat({ requestId }: Props) {
   const initials = employeeName.split(" ").map((part) => part.charAt(0)).join("").slice(0, 2).toUpperCase()
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }) }, [messages])
+
+  async function loadDocuments(employeeId: string, contactRequestId: string) {
+    setLoadingDocuments(true)
+    try {
+      const response = await fetch(`/api/arbeitgeber/dokumente?employeeId=${encodeURIComponent(employeeId)}&requestId=${encodeURIComponent(contactRequestId)}`)
+      const data = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(data?.error || "Dokumente konnten nicht geladen werden.")
+      setDocuments((data?.documents || []) as EmployeeDocument[])
+    } catch (err) {
+      console.error(err)
+      setDocuments([])
+      setError(err instanceof Error ? err.message : "Dokumente konnten nicht geladen werden.")
+    } finally { setLoadingDocuments(false) }
+  }
 
   useEffect(() => {
     let active = true
@@ -71,6 +102,7 @@ export default function EmployerChat({ requestId }: Props) {
         setRequest(typedRequest); setCompany(companyData as Company | null); setEmployee(resolvedEmployee); setMessages((messageData || []) as Message[])
         const unreadIds = ((messageData || []) as Message[]).filter((message) => message.sender_id !== currentUserId && !message.read_at).map((message) => message.id)
         if (unreadIds.length > 0) await supabase.from("contact_messages").update({ read_at: new Date().toISOString() }).in("id", unreadIds)
+        void loadDocuments(typedRequest.employee_id, typedRequest.id)
       } catch (err) {
         console.error(err); if (active) setError(err instanceof Error ? err.message : "Der Chat konnte nicht geladen werden.")
       } finally { if (active) setLoading(false) }
@@ -109,6 +141,10 @@ export default function EmployerChat({ requestId }: Props) {
     {error && <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</div>}
     <section className="overflow-hidden rounded-[28px] border border-[var(--line)] bg-white shadow-sm">
       <header className="bg-[var(--navy)] px-6 py-5 text-white sm:px-8"><div className="flex items-center gap-4"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-lg font-black ring-1 ring-white/10">{initials || "A"}</div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><MessageCircle className="h-4 w-4 text-blue-300" /><p className="text-xs font-black uppercase tracking-[0.16em] text-blue-300">Direkter Kontakt</p></div><h1 className="mt-1 truncate text-2xl font-black">{employeeName}</h1><p className="mt-1 text-sm text-blue-100/80">{employee?.beruf || "Beruf nicht angegeben"}{employee?.city ? ` · ${employee.city}` : ""}</p></div><div className="hidden text-right sm:block"><p className="text-xs text-blue-200/70">Unternehmen</p><p className="mt-1 flex items-center gap-1 font-bold"><Building2 className="h-4 w-4" />{company?.name || "Ihr Unternehmen"}</p></div></div></header>
+      <div className="border-b border-[var(--line)] bg-white p-5 sm:p-7">
+        <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600"><FileText className="h-5 w-5" /></div><div><h2 className="text-xl font-black text-[var(--navy)]">Unterlagen des Arbeitnehmers</h2><p className="text-sm text-[var(--muted)]">Freigegeben, weil der Arbeitnehmer diese Kontaktanfrage angenommen hat.</p></div></div>
+        {loadingDocuments ? <div className="mt-5 flex items-center gap-2 text-sm text-[var(--muted)]"><Loader2 className="h-4 w-4 animate-spin" />Unterlagen werden geladen…</div> : documents.length === 0 ? <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-[var(--muted)]">Der Arbeitnehmer hat noch keine Unterlagen hochgeladen.</p> : <div className="mt-5 grid gap-3 sm:grid-cols-2">{documents.map((document) => <div key={document.id} className="flex items-center gap-3 rounded-2xl border border-[var(--line)] p-4"><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold text-[var(--navy)]">{document.file_name}</p><p className="mt-1 text-xs text-[var(--muted)]">{CATEGORY_LABELS[document.category] || "Dokument"} · {formatSize(document.file_size)}</p></div>{document.url ? <a href={document.url} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-xl bg-[var(--brand)] px-3 py-2 text-xs font-bold text-white">Öffnen</a> : <span className="text-xs text-red-600">Nicht verfügbar</span>}</div>)}</div>}
+      </div>
       <div className="h-[min(62vh,600px)] min-h-[420px] overflow-y-auto bg-slate-50 p-5 sm:p-7">{messages.length === 0 ? <div className="flex h-full items-center justify-center text-center"><div><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[var(--brand)] shadow-sm"><MessageCircle className="h-7 w-7" /></div><h2 className="mt-5 text-xl font-black text-[var(--navy)]">Noch keine Nachrichten</h2><p className="mt-2 max-w-md text-sm leading-6 text-[var(--muted)]">Schreiben Sie {employeeName} die erste Nachricht und starten Sie das Gespräch.</p></div></div> : <div className="space-y-4">{messages.map((message) => { const employerMessage = message.sender_id === request?.employer_id; return <div key={message.id} className={`flex ${employerMessage ? "justify-start" : "justify-end"}`}><div className="max-w-[85%] sm:max-w-[70%]"><div className={`rounded-2xl px-4 py-3 text-sm leading-6 ${employerMessage ? "rounded-bl-md bg-white text-[var(--navy)] shadow-sm" : "rounded-br-md bg-[var(--brand)] text-white"}`}>{message.message}</div><div className={`mt-1 flex items-center gap-1 px-1 text-[10px] text-[var(--muted-light)] ${employerMessage ? "justify-start" : "justify-end"}`}><span>{formatDate(message.created_at)}</span>{employerMessage && <CheckCheck className="h-3 w-3" />}</div></div></div> })}<div ref={bottomRef} /></div>}</div>
       <form onSubmit={sendMessage} className="border-t border-[var(--line)] bg-white p-4 sm:p-5"><div className="flex gap-3"><textarea value={text} onChange={(event) => setText(event.target.value)} onKeyDown={handleKeyDown} placeholder={`Nachricht an ${employeeName} schreiben…`} rows={2} maxLength={5000} disabled={sending} className="min-h-[54px] flex-1 resize-none rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm text-[var(--navy)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand)]/10 disabled:bg-slate-50" /><button type="submit" disabled={sending || !text.trim()} className="self-end inline-flex h-[54px] items-center gap-2 rounded-2xl bg-[var(--brand)] px-5 font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">{sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}<span className="hidden sm:inline">Senden</span></button></div><p className="mt-2 text-xs text-[var(--muted-light)]">Enter = Senden · Shift + Enter = neue Zeile</p></form>
     </section>
