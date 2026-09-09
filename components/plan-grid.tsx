@@ -8,6 +8,13 @@ import { createClient } from "@/lib/supabase/client"
 
 type PaidPlan = "basic" | "professional" | "business"
 type CheckoutRole = "employer"
+type BillingCycle = "month" | "year"
+
+const annualPrices: Record<PaidPlan, number> = {
+  basic: 1490,
+  professional: 2990,
+  business: 4990,
+}
 
 function getPaidPlanConfig(planId: string): { plan: PaidPlan; role: CheckoutRole } | null {
   if (planId === "basic" || planId === "professional" || planId === "business") {
@@ -19,6 +26,8 @@ function getPaidPlanConfig(planId: string): { plan: PaidPlan; role: CheckoutRole
 export function PlanGrid({ plans }: { plans: Plan[] }) {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [error, setError] = useState("")
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("month")
+  const hasEmployerPlans = plans.some((plan) => getPaidPlanConfig(plan.id) !== null)
 
   async function startCheckout(planId: string) {
     const config = getPaidPlanConfig(planId)
@@ -28,9 +37,6 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
     setLoadingPlan(planId)
 
     try {
-      // Die bestehende Supabase-Session wird direkt aus dem Browser verwendet.
-      // Dadurch wird ein bereits angemeldeter Arbeitgeber nicht erneut zur
-      // Registrierung geschickt, wenn er aus dem Dashboard ein Abo kauft.
       const supabase = createClient()
       const {
         data: { session },
@@ -49,7 +55,7 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify(config),
+        body: JSON.stringify({ ...config, billingCycle }),
       })
 
       const data = await response.json().catch(() => ({}))
@@ -71,11 +77,54 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
 
   return (
     <div>
+      {hasEmployerPlans && (
+        <>
+          <div className="mb-3 flex justify-center">
+            <div className="inline-flex items-center rounded-full border border-[var(--line)] bg-white p-1.5 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setBillingCycle("month")}
+                className={
+                  "rounded-full px-6 py-2.5 text-sm font-bold transition " +
+                  (billingCycle === "month"
+                    ? "bg-[var(--navy)] text-white shadow-sm"
+                    : "text-[var(--muted)] hover:text-[var(--navy)]")
+                }
+              >
+                Monatlich
+              </button>
+              <button
+                type="button"
+                onClick={() => setBillingCycle("year")}
+                className={
+                  "rounded-full px-6 py-2.5 text-sm font-bold transition " +
+                  (billingCycle === "year"
+                    ? "bg-[var(--brand)] text-white shadow-sm"
+                    : "text-[var(--muted)] hover:text-[var(--navy)]")
+                }
+              >
+                Jährlich
+              </button>
+            </div>
+          </div>
+          <p className="mb-8 text-center text-sm font-bold text-[var(--brand)]">
+            {billingCycle === "year" ? "Jährlich zahlen und 2 Monate sparen" : "3 Monate kostenlos testen"}
+          </p>
+        </>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-3">
         {plans.map((plan) => {
           const highlighted = Boolean(plan.highlighted)
           const paidConfig = getPaidPlanConfig(plan.id)
           const isLoading = loadingPlan === plan.id
+          const annualPrice = paidConfig ? annualPrices[paidConfig.plan] : null
+          const displayPrice = billingCycle === "year" && annualPrice !== null ? annualPrice : plan.price
+          const displayPeriod = billingCycle === "year" && annualPrice !== null ? "/ Jahr" : plan.period
+          const displayNote =
+            billingCycle === "year" && annualPrice !== null
+              ? "3 Monate kostenlos testen · 2 Monate sparen"
+              : plan.priceNote
 
           return (
             <div
@@ -90,9 +139,7 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
                 <span
                   className={
                     "absolute -top-3 left-8 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider " +
-                    (highlighted
-                      ? "bg-[var(--brand)] text-white"
-                      : "bg-[var(--navy)] text-white")
+                    (highlighted ? "bg-[var(--brand)] text-white" : "bg-[var(--navy)] text-white")
                   }
                 >
                   {plan.badge}
@@ -100,23 +147,19 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
               )}
 
               <h3 className="text-xl font-black text-[var(--navy)]">{plan.name}</h3>
-              <p className="mt-2 min-h-[42px] text-sm text-[var(--muted)]">
-                {plan.description}
-              </p>
+              <p className="mt-2 min-h-[42px] text-sm text-[var(--muted)]">{plan.description}</p>
 
               <div className="mt-6 flex items-end gap-2">
                 <span className="text-4xl font-black tracking-tight text-[var(--navy)]">
-                  {formatPrice(plan.price)}
+                  {formatPrice(displayPrice)}
                 </span>
-                {plan.period && (
-                  <span className="pb-1 text-sm font-medium text-[var(--muted)]">
-                    {plan.period}
-                  </span>
+                {displayPeriod && (
+                  <span className="pb-1 text-sm font-medium text-[var(--muted)]">{displayPeriod}</span>
                 )}
               </div>
-              {plan.priceNote && (
+              {displayNote && (
                 <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                  {plan.priceNote}
+                  {displayNote}
                 </p>
               )}
 
@@ -132,7 +175,7 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
                       : "border border-[var(--line)] text-[var(--navy)] hover:bg-[var(--surface-2)]")
                   }
                 >
-                  {isLoading ? "Checkout wird geöffnet…" : plan.ctaLabel}
+                  {isLoading ? "Checkout wird geöffnet…" : billingCycle === "year" ? "Jährlich starten" : plan.ctaLabel}
                 </button>
               ) : (
                 <Link
@@ -156,24 +199,12 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
                       <span
                         className={
                           "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full " +
-                          (included
-                            ? "bg-[var(--brand)]/12 text-[var(--brand)]"
-                            : "bg-[var(--surface-2)] text-[var(--muted)]")
+                          (included ? "bg-[var(--brand)]/12 text-[var(--brand)]" : "bg-[var(--surface-2)] text-[var(--muted)]")
                         }
                       >
-                        {included ? (
-                          <Check className="h-3 w-3" strokeWidth={3} />
-                        ) : (
-                          <Minus className="h-3 w-3" strokeWidth={3} />
-                        )}
+                        {included ? <Check className="h-3 w-3" strokeWidth={3} /> : <Minus className="h-3 w-3" strokeWidth={3} />}
                       </span>
-                      <span
-                        className={
-                          included
-                            ? "font-medium text-[var(--navy)]"
-                            : "text-[var(--muted)] line-through"
-                        }
-                      >
+                      <span className={included ? "font-medium text-[var(--navy)]" : "text-[var(--muted)] line-through"}>
                         {feature.label}
                       </span>
                     </li>
