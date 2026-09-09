@@ -4,6 +4,18 @@ import { STRIPE_PRICE_IDS, type PaidPlan } from "@/lib/stripe"
 
 export const runtime = "nodejs"
 
+const annualPrices: Record<PaidPlan, number> = {
+  basic: 1490,
+  professional: 2990,
+  business: 4990,
+}
+
+const planNames: Record<PaidPlan, string> = {
+  basic: "Basic",
+  professional: "Professional",
+  business: "Business",
+}
+
 function getOrigin(request: Request) {
   return new URL(request.url).origin
 }
@@ -17,6 +29,7 @@ export async function POST(request: Request) {
 
     const body = await request.json().catch(() => ({}))
     const plan = body?.plan as PaidPlan
+    const billingCycle = body?.billingCycle === "year" ? "year" : "month"
     const requestedRole =
       body?.role === "employee"
         ? "employee"
@@ -28,14 +41,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Ungültiger kostenpflichtiger Plan." }, { status: 400 })
     }
 
-    // Alle drei aktuellen Arbeitgeber-Pläne können über Stripe gekauft werden.
     const planRole = "employer" as const
-
     let role: "employee" | "employer"
 
     if (user) {
-      // Bei eingeloggten Nutzern niemals user_metadata für Berechtigungen verwenden.
-      // Die autoritative Rolle kommt aus der geschützten profiles-Tabelle.
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
@@ -58,7 +67,6 @@ export async function POST(request: Request) {
 
       role = profile.role
     } else {
-      // Gast-Checkout: die UI darf die gewünschte Rolle für den Kauf angeben.
       role = requestedRole || planRole
     }
 
@@ -118,21 +126,30 @@ export async function POST(request: Request) {
     const params = new URLSearchParams()
     params.set("mode", "subscription")
     if (customerId) params.set("customer", customerId)
-    params.set("line_items[0][price]", STRIPE_PRICE_IDS[plan])
+
+    if (billingCycle === "year") {
+      params.set("line_items[0][price_data][currency]", "chf")
+      params.set("line_items[0][price_data][unit_amount]", String(annualPrices[plan] * 100))
+      params.set("line_items[0][price_data][recurring][interval]", "year")
+      params.set("line_items[0][price_data][product_data][name]", `Stoyan ${planNames[plan]} – Jahresabo`)
+    } else {
+      params.set("line_items[0][price]", STRIPE_PRICE_IDS[plan])
+    }
+
     params.set("line_items[0][quantity]", "1")
     params.set("success_url", `${getOrigin(request)}/abo/erfolg?session_id={CHECKOUT_SESSION_ID}`)
     params.set("cancel_url", `${getOrigin(request)}/preise?checkout=cancelled`)
     if (user) params.set("client_reference_id", user.id)
     params.set("metadata[role]", role)
     params.set("metadata[plan_id]", plan)
+    params.set("metadata[billing_cycle]", billingCycle)
     if (user) params.set("metadata[user_id]", user.id)
     params.set("subscription_data[metadata][role]", role)
     params.set("subscription_data[metadata][plan_id]", plan)
+    params.set("subscription_data[metadata][billing_cycle]", billingCycle)
     if (user) params.set("subscription_data[metadata][user_id]", user.id)
 
-    // Die ersten 3 Monate sind kostenlos. Stripe erstellt trotzdem direkt die Subscription
-    // und verwendet die hinterlegte Zahlungsmethode für die erste Rechnung
-    // nach Ablauf der 90-tägigen Testphase.
+    // Die ersten 3 Monate sind kostenlos – unabhängig davon, ob monatlich oder jährlich bezahlt wird.
     params.set("subscription_data[trial_period_days]", "90")
     params.set("payment_method_collection", "always")
     params.set("billing_address_collection", "auto")
@@ -154,7 +171,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // Die endgültige Speicherung in subscriptions übernimmt ausschließlich der signierte Stripe-Webhook.
     return NextResponse.json({ url: session.url })
   } catch (error) {
     console.error("Stripe checkout error", error)
