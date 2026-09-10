@@ -11,7 +11,7 @@ export function SiteFooter() {
           <Link href="/datenschutz" className="hover:text-sky-600">Datenschutz</Link>
           <Link href="/datenschutz-einstellungen" className="hover:text-sky-600">Datenschutz-Einstellungen</Link>
         </div>
-        <p>Job Matching für Arbeitnehmer und Unternehmen.</p>
+        <p>Job Matching für Arbeitnehmer und Unternehmen und habub.</p>
       </div>
     </footer>
   )
