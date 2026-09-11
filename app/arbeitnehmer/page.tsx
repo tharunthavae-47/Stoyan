@@ -38,17 +38,32 @@ export default async function EmployeeDashboard() {
 
   const employerIds = Array.from(new Set((contactRequests ?? []).map((request) => request.employer_id)))
 
-  const { data: companies } = employerIds.length > 0
+  // companies has no avatar_url column. Load company data and employer profile images separately.
+  const { data: companies, error: companiesError } = employerIds.length > 0
     ? await supabase
         .from("companies")
-        .select("owner_id,name,industry,city,avatar_url")
+        .select("owner_id,name,industry,city")
         .in("owner_id", employerIds)
-    : { data: [] }
+    : { data: [], error: null }
 
-  const requestsWithCompanies = (contactRequests ?? []).map((request) => ({
-    ...request,
-    company: companies?.find((company) => company.owner_id === request.employer_id) ?? null,
-  }))
+  const { data: employerProfiles, error: employerProfilesError } = employerIds.length > 0
+    ? await supabase
+        .from("profiles")
+        .select("id,avatar_url")
+        .in("id", employerIds)
+    : { data: [], error: null }
+
+  if (companiesError) console.error("Unternehmen konnten nicht geladen werden:", companiesError)
+  if (employerProfilesError) console.error("Arbeitgeberprofile konnten nicht geladen werden:", employerProfilesError)
+
+  const requestsWithCompanies = (contactRequests ?? []).map((request) => {
+    const company = companies?.find((item) => item.owner_id === request.employer_id)
+    const employerProfile = employerProfiles?.find((item) => item.id === request.employer_id)
+    return {
+      ...request,
+      company: company ? { ...company, avatar_url: employerProfile?.avatar_url ?? null } : null,
+    }
+  })
 
   const pendingRequests = requestsWithCompanies.filter((request) => request.status === "pending")
   const acceptedRequests = requestsWithCompanies.filter((request) => request.status === "accepted")
