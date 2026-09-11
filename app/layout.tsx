@@ -10,33 +10,37 @@ const inter = Inter({
 })
 
 const BASE_URL = "https://jobmatch24.ch"
+const SITE_NAME = "JobMatch24"
 const SITE_DESCRIPTION =
-  "jobmatch24 verbindet Arbeitnehmer und Arbeitgeber in der Schweiz. Finde passende Jobs oder qualifizierte Mitarbeiter mit intelligentem Matching."
+  "JobMatch24 verbindet Arbeitnehmer und Arbeitgeber in der Schweiz. Finde passende Jobs, qualifizierte Mitarbeiter und neue berufliche Chancen mit intelligentem Job Matching."
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "jobmatch24 – Jobs & Mitarbeiter in der Schweiz",
-    template: "%s | jobmatch24",
+    default: "JobMatch24 – Job Matching für Jobs & Mitarbeiter in der Schweiz",
+    template: "%s | JobMatch24",
   },
   description: SITE_DESCRIPTION,
   keywords: [
+    "JobMatch24",
+    "Job Match 24",
+    "Job Matching Schweiz",
     "Jobs Schweiz",
+    "Jobs finden Schweiz",
     "Jobbörse Schweiz",
     "Stellenangebote Schweiz",
     "Arbeitnehmer Schweiz",
     "Arbeitgeber Schweiz",
-    "Mitarbeiter finden",
-    "Jobs finden",
-    "Job Matching Schweiz",
-    "Bewerbung Schweiz",
-    "jobmatch24",
+    "Mitarbeiter finden Schweiz",
+    "qualifizierte Mitarbeiter finden",
+    "Jobsuche Schweiz",
   ],
-  applicationName: "jobmatch24",
+  applicationName: SITE_NAME,
   category: "jobs",
-  alternates: {
-    canonical: BASE_URL,
-  },
+  authors: [{ name: SITE_NAME, url: BASE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: { canonical: BASE_URL },
   robots: {
     index: true,
     follow: true,
@@ -56,19 +60,17 @@ export const metadata: Metadata = {
     type: "website",
     locale: "de_CH",
     url: BASE_URL,
-    siteName: "jobmatch24",
-    title: "jobmatch24 – Jobs & Mitarbeiter in der Schweiz",
+    siteName: SITE_NAME,
+    title: "JobMatch24 – Job Matching für Jobs & Mitarbeiter in der Schweiz",
     description: SITE_DESCRIPTION,
-    images: [
-      {
-        url: "/jobmatch24-logo.png",
-        alt: "jobmatch24 – Jobs & Mitarbeiter in der Schweiz",
-      },
-    ],
+    images: [{
+      url: "/jobmatch24-logo.png",
+      alt: "JobMatch24 – Jobs und Mitarbeiter in der Schweiz",
+    }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "jobmatch24 – Jobs & Mitarbeiter in der Schweiz",
+    title: "JobMatch24 – Job Matching für Jobs & Mitarbeiter in der Schweiz",
     description: SITE_DESCRIPTION,
     images: ["/jobmatch24-logo.png"],
   },
@@ -81,14 +83,16 @@ const structuredData = {
       "@type": "WebSite",
       "@id": `${BASE_URL}/#website`,
       url: BASE_URL,
-      name: "jobmatch24",
+      name: SITE_NAME,
+      alternateName: ["jobmatch24", "Job Match 24"],
       description: SITE_DESCRIPTION,
       inLanguage: "de-CH",
     },
     {
       "@type": "Organization",
       "@id": `${BASE_URL}/#organization`,
-      name: "jobmatch24",
+      name: SITE_NAME,
+      alternateName: "jobmatch24",
       url: BASE_URL,
       logo: `${BASE_URL}/jobmatch24-logo.png`,
     },
