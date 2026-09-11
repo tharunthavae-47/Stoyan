@@ -28,8 +28,8 @@ export default async function ArbeitnehmerAnfragenPage() {
 
   if (!user) {
     return (
-      <div className="card card-pad">
-        <Link href="/login" className="font-bold text-[var(--brand)]">Zum Login</Link>
+      <div className="ed-card ed-card-pad">
+        <Link href="/login" className="font-medium text-[var(--brand)]">Zum Login</Link>
       </div>
     )
   }
@@ -56,27 +56,25 @@ export default async function ArbeitnehmerAnfragenPage() {
   return (
     <div className="animate-fade-up">
       <div className="mx-auto max-w-5xl">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--brand)]">Kommunikation</p>
-          <h1 className="mt-2 text-4xl font-black tracking-[-0.04em] text-[var(--navy)]">Kontaktanfragen</h1>
-          <p className="mt-3 max-w-2xl text-[var(--muted)]">
+        <div className="border-b border-[#e2e7ee] pb-8">
+          <p className="ed-eyebrow">Kommunikation</p>
+          <h1 className="mt-4 text-4xl font-light tracking-[-0.03em] text-[var(--navy)] text-balance">Kontaktanfragen</h1>
+          <p className="mt-4 max-w-2xl leading-relaxed text-[var(--muted)]">
             Hier siehst du von Anfang an, welche Firma dich kontaktiert hat. Deine E-Mail-Adresse und Telefonnummer werden erst nach deiner Annahme freigegeben.
           </p>
         </div>
 
         {error && (
-          <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+          <div className="alert-error mt-6 text-sm font-medium">
             Kontaktanfragen konnten nicht geladen werden: {error.message}
           </div>
         )}
 
         {requestRows.length === 0 ? (
-          <section className="mt-8 rounded-3xl border border-dashed border-[var(--line-strong)] bg-white p-12 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--brand)]/10 text-[var(--brand)]">
-              <MessageCircle className="h-7 w-7" />
-            </div>
-            <h2 className="mt-5 text-xl font-black text-[var(--navy)]">Noch keine Kontaktanfragen</h2>
-            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[var(--muted)]">
+          <section className="mt-8 border border-dashed border-[var(--line-strong)] p-12 text-center">
+            <MessageCircle className="mx-auto h-8 w-8 text-[var(--muted-light)]" />
+            <h2 className="mt-4 text-lg font-normal text-[var(--navy)]">Noch keine Kontaktanfragen</h2>
+            <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-[var(--muted)]">
               Sobald ein Arbeitgeber dich kontaktieren möchte, erscheint die Firma hier.
             </p>
           </section>
@@ -89,15 +87,15 @@ export default async function ArbeitnehmerAnfragenPage() {
               const rejected = request.status === "rejected"
 
               return (
-                <section key={request.id} className={`rounded-3xl border bg-white p-6 shadow-sm ${accepted ? "border-emerald-200 ring-1 ring-emerald-100" : "border-[var(--line)]"}`}>
+                <section key={request.id} className={`ed-card ed-card-pad ${accepted ? "border-l-2 border-l-[var(--success)]" : ""}`}>
                   <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex min-w-0 items-center gap-4">
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[var(--navy)] text-xl font-black text-white">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[6px] bg-[var(--navy)] text-xl font-normal text-white">
                         {(company?.name || "F").charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--muted-light)]">Arbeitgeber</p>
-                        <h2 className="mt-1 truncate text-2xl font-black text-[var(--navy)]">{company?.name || "Unternehmen"}</h2>
+                        <p className="ed-eyebrow">Arbeitgeber</p>
+                        <h2 className="mt-2 truncate text-2xl font-light tracking-tight text-[var(--navy)]">{company?.name || "Unternehmen"}</h2>
                         <p className="mt-1 text-sm text-[var(--muted)]">
                           {company?.industry || "Branche nicht angegeben"}
                           {company?.city ? ` · ${company.city}` : ""}
@@ -106,47 +104,47 @@ export default async function ArbeitnehmerAnfragenPage() {
                     </div>
 
                     <div className="shrink-0">
-                      {pending && <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-2 text-xs font-black text-amber-700"><Clock3 className="h-4 w-4" /> Anfrage offen</span>}
-                      {accepted && <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700"><Check className="h-4 w-4" /> Angenommen</span>}
-                      {rejected && <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-2 text-xs font-black text-slate-600"><X className="h-4 w-4" /> Abgelehnt</span>}
+                      {pending && <span className="ed-chip ed-chip-amber"><Clock3 className="h-4 w-4" /> Anfrage offen</span>}
+                      {accepted && <span className="ed-chip ed-chip-green"><Check className="h-4 w-4" /> Angenommen</span>}
+                      {rejected && <span className="ed-chip"><X className="h-4 w-4" /> Abgelehnt</span>}
                     </div>
                   </div>
 
-                  <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Unternehmen</p>
-                      <p className="mt-1 font-bold text-slate-900">{company?.name || "Nicht angegeben"}</p>
+                  <div className="mt-6 grid gap-px overflow-hidden rounded-[4px] border border-[#e2e7ee] bg-[#e2e7ee] sm:grid-cols-3">
+                    <div className="bg-white p-4">
+                      <p className="text-[0.66rem] font-semibold uppercase tracking-wider text-[var(--muted-light)]">Unternehmen</p>
+                      <p className="mt-1 font-medium text-[var(--navy)]">{company?.name || "Nicht angegeben"}</p>
                     </div>
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Standort</p>
-                      <p className="mt-1 font-bold text-slate-900">{company?.city || "Nicht angegeben"}</p>
+                    <div className="bg-white p-4">
+                      <p className="text-[0.66rem] font-semibold uppercase tracking-wider text-[var(--muted-light)]">Standort</p>
+                      <p className="mt-1 font-medium text-[var(--navy)]">{company?.city || "Nicht angegeben"}</p>
                     </div>
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Anfrage</p>
-                      <p className="mt-1 font-bold text-slate-900">{new Date(request.created_at).toLocaleDateString("de-CH")}</p>
+                    <div className="bg-white p-4">
+                      <p className="text-[0.66rem] font-semibold uppercase tracking-wider text-[var(--muted-light)]">Anfrage</p>
+                      <p className="mt-1 font-medium text-[var(--navy)]">{new Date(request.created_at).toLocaleDateString("de-CH")}</p>
                     </div>
                   </div>
 
                   {pending && (
-                    <div className="mt-5 rounded-2xl border border-sky-100 bg-sky-50 p-4">
-                      <p className="text-sm font-bold text-sky-900">Diese Firma möchte dich kontaktieren.</p>
-                      <p className="mt-1 text-sm leading-6 text-sky-800/80">
+                    <div className="mt-5 border-l-2 border-l-[var(--brand)] bg-[var(--brand-soft)] p-4">
+                      <p className="text-sm font-medium text-[var(--navy)]">Diese Firma möchte dich kontaktieren.</p>
+                      <p className="mt-1 text-sm leading-relaxed text-[var(--muted)]">
                         Du kannst die Anfrage öffnen und annehmen oder ablehnen. Deine privaten Kontaktdaten bleiben bis zur Annahme geschützt.
                       </p>
                     </div>
                   )}
 
                   {accepted && (
-                    <div className="mt-5 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
-                      <p className="text-sm font-bold text-emerald-900">Kontakt angenommen</p>
-                      <p className="mt-1 text-sm leading-6 text-emerald-800/80">
+                    <div className="mt-5 border-l-2 border-l-[var(--success)] bg-[var(--success-soft)] p-4">
+                      <p className="text-sm font-medium text-[var(--navy)]">Kontakt angenommen</p>
+                      <p className="mt-1 text-sm leading-relaxed text-[var(--muted)]">
                         Deine Telefonnummer und E-Mail-Adresse wurden für diesen Arbeitgeber freigegeben. Ihr könnt jetzt privat chatten.
                       </p>
                     </div>
                   )}
 
                   <div className="mt-5 flex justify-end">
-                    <Link href={`/arbeitnehmer/anfragen/${request.id}`} className={accepted ? "btn-primary" : "btn-ghost"}>
+                    <Link href={`/arbeitnehmer/anfragen/${request.id}`} className={accepted ? "ed-btn-primary" : "ed-btn-ghost"}>
                       {accepted ? <><MessageCircle className="h-4 w-4" /> Chat öffnen</> : <>Anfrage ansehen <ArrowRight className="h-4 w-4" /></>}
                     </Link>
                   </div>

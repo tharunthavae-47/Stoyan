@@ -84,42 +84,44 @@ export default function BilderPage() {
   return (
     <div className="animate-fade-up">
       <div className="mx-auto max-w-5xl">
-        <p className="text-sm font-black uppercase tracking-widest text-[var(--brand)]">Meine Unterlagen</p>
-        <h1 className="mt-2 text-4xl font-black text-[var(--navy)]">Dein Profil. Deine Geschichte.</h1>
-        <p className="mt-3 max-w-2xl text-[var(--muted)]">Lade deinen Lebenslauf, Diplome, Zeugnisse und weitere wichtige Unterlagen getrennt hoch. So können Arbeitgeber deine Qualifikationen besser kennenlernen.</p>
+        <div className="border-b border-[#e2e7ee] pb-8">
+          <p className="ed-eyebrow">Meine Unterlagen</p>
+          <h1 className="mt-4 text-4xl font-light tracking-[-0.03em] text-[var(--navy)] text-balance">Dein Profil. Deine Geschichte.</h1>
+          <p className="mt-4 max-w-2xl leading-relaxed text-[var(--muted)]">Lade deinen Lebenslauf, Diplome, Zeugnisse und weitere wichtige Unterlagen getrennt hoch. So können Arbeitgeber deine Qualifikationen besser kennenlernen.</p>
+        </div>
 
-        {message && <p className="mt-6 rounded-xl border border-[var(--brand)]/20 bg-[var(--brand)]/8 p-3 text-sm font-semibold text-[var(--brand)]">{message}</p>}
+        {message && <p className="mt-6 border-l-2 border-l-[var(--brand)] bg-[var(--brand-soft)] p-3 text-sm font-medium text-[var(--navy)]">{message}</p>}
 
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           {CATEGORIES.map(category => {
             const docs = documents.filter(d => d.category === category.id)
             return (
-              <section key={category.id} className="card card-pad">
+              <section key={category.id} className="ed-card ed-card-pad">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--brand)]/10 text-2xl">{category.icon}</div>
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[6px] border border-[#e2e7ee] text-xl">{category.icon}</div>
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-lg font-black text-[var(--navy)]">{category.title}</h2>
+                    <h2 className="text-lg font-normal tracking-tight text-[var(--navy)]">{category.title}</h2>
                     <p className="mt-1 text-sm text-[var(--muted)]">{category.description}</p>
                   </div>
                 </div>
 
-                <label className="mt-5 flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-[var(--brand)]/40 bg-[var(--brand)]/5 px-4 py-3 text-sm font-bold text-[var(--brand)] hover:bg-[var(--brand)]/10">
+                <label className="mt-5 flex cursor-pointer items-center justify-center border border-dashed border-[var(--brand)]/40 bg-[var(--brand-soft)]/50 px-4 py-3 text-sm font-medium text-[var(--brand)] transition hover:bg-[var(--brand-soft)]">
                   {busy === category.id ? "Hochladen…" : "+ Dokument hochladen"}
                   <input type="file" accept="application/pdf,image/jpeg,image/png,image/webp" className="hidden" disabled={busy !== null} onChange={e => { const file = e.target.files?.[0]; e.currentTarget.value = ""; upload(category.id, file) }} />
                 </label>
 
                 <div className="mt-4 space-y-2">
                   {docs.map(doc => (
-                    <div key={doc.id} className="flex items-center gap-3 rounded-xl border border-[var(--line)] bg-white p-3">
+                    <div key={doc.id} className="flex items-center gap-3 border border-[#e2e7ee] bg-white p-3">
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold text-[var(--navy)]">{doc.file_name}</p>
+                        <p className="truncate text-sm font-medium text-[var(--navy)]">{doc.file_name}</p>
                         <p className="text-xs text-[var(--muted)]">{formatSize(doc.file_size)}</p>
                       </div>
-                      <button onClick={() => openDocument(doc)} className="text-sm font-bold text-[var(--brand)]">Öffnen</button>
-                      <button onClick={() => remove(doc)} className="text-sm font-bold text-red-600">Löschen</button>
+                      <button onClick={() => openDocument(doc)} className="text-sm font-medium text-[var(--brand)]">Öffnen</button>
+                      <button onClick={() => remove(doc)} className="text-sm font-medium text-red-600">Löschen</button>
                     </div>
                   ))}
-                  {!docs.length && <p className="text-center text-xs text-[var(--muted)]">Noch kein Dokument hochgeladen.</p>}
+                  {!docs.length && <p className="text-center text-xs text-[var(--muted-light)]">Noch kein Dokument hochgeladen.</p>}
                 </div>
               </section>
             )

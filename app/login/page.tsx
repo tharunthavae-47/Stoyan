@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { FormEvent, useState } from "react"
+import { ArrowRight, ShieldCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
 export default function LoginPage() {
@@ -66,34 +67,100 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-12 text-white">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur">
-        <Link href="/" className="text-sm font-semibold text-blue-300">← JobMatch24</Link>
-        {step === "login" ? (
-          <>
-            <h1 className="mt-6 text-3xl font-black">Willkommen zurück</h1>
-            <p className="mt-2 text-slate-300">Melde dich bei deinem Konto an.</p>
-            <form onSubmit={submit} className="mt-7 space-y-4">
-              <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="E-Mail-Adresse" className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-slate-400 focus:border-blue-400" />
-              <input required minLength={6} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Passwort" className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-slate-400 focus:border-blue-400" />
-              <div className="flex justify-end"><Link href="/passwort-vergessen" className="text-sm font-semibold text-blue-300 hover:text-blue-200">Passwort vergessen?</Link></div>
-              <button disabled={loading} className="w-full rounded-xl bg-blue-600 py-3.5 font-bold text-white transition hover:bg-blue-500 disabled:opacity-50">{loading ? "Anmeldung…" : "Anmelden"}</button>
-            </form>
-          </>
-        ) : (
-          <>
-            <div className="mt-6 text-3xl">🔐</div>
-            <h1 className="mt-3 text-3xl font-black">2FA bestätigen</h1>
-            <p className="mt-2 text-slate-300">Öffne Microsoft Authenticator und gib den 6-stelligen Code ein.</p>
-            <form onSubmit={submit} className="mt-7 space-y-4">
-              <input required autoFocus inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="6-stelliger Code" className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-4 text-center text-2xl font-bold tracking-[0.5em] text-white outline-none placeholder:text-slate-500 focus:border-blue-400" />
-              <button disabled={loading || code.length !== 6} className="w-full rounded-xl bg-blue-600 py-3.5 font-bold text-white transition hover:bg-blue-500 disabled:opacity-50">{loading ? "Prüfe Code…" : "Code bestätigen"}</button>
-            </form>
-          </>
-        )}
-        {error && <p className="mt-4 rounded-xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">{error}</p>}
-        {step === "login" && <p className="mt-6 text-center text-sm text-slate-400">Noch kein Konto? <Link href="/registrieren" className="font-bold text-blue-300">Registrieren</Link></p>}
-      </div>
+    <main className="grid min-h-screen bg-white text-[#14243a] lg:grid-cols-[1.05fr_1fr]">
+      {/* Editorial intro panel */}
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-[#162940] px-12 py-14 text-white lg:flex">
+        <Link href="/" className="text-[1.05rem] font-medium tracking-[-0.02em]">
+          jobmatch<span className="text-[#7ea6ff]">24</span>
+        </Link>
+        <div className="max-w-[420px]">
+          <p className="ed-eyebrow no-marker mb-6 text-[#9bbcfb]">
+            <span aria-hidden="true" className="h-1.5 w-1.5 bg-[#7ea6ff]" />
+            WILLKOMMEN ZURÜCK
+          </p>
+          <h1 className="text-[clamp(2.4rem,3.4vw,3.4rem)] font-medium leading-[1.1] tracking-[-0.055em] text-balance">
+            Deine nächste
+            <br />
+            Chance wartet.
+          </h1>
+          <p className="mt-6 max-w-[380px] text-[1rem] leading-[1.8] text-[#b9c7d8]">
+            Melde dich an, um dein Profil zu bearbeiten, passende Übereinstimmungen zu sehen und Kontaktanfragen zu
+            verwalten.
+          </p>
+        </div>
+        <p className="flex items-center gap-2.5 text-[0.8125rem] text-[#9fb2c8]">
+          <ShieldCheck className="h-[18px] w-[18px]" strokeWidth={1.6} />
+          Geschützt durch Zwei-Faktor-Authentifizierung
+        </p>
+      </aside>
+
+      {/* Form */}
+      <section className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
+        <div className="mx-auto w-full max-w-[420px]">
+          <Link href="/" className="mb-10 inline-block text-[1.05rem] font-medium tracking-[-0.02em] lg:hidden">
+            jobmatch<span className="text-[#2356d8]">24</span>
+          </Link>
+
+          {step === "login" ? (
+            <>
+              <p className="ed-eyebrow mb-4">ANMELDEN</p>
+              <h2 className="mb-3 text-[clamp(2rem,3vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.05em]">
+                Bei deinem Konto anmelden.
+              </h2>
+              <p className="mb-9 text-[1rem] leading-[1.8] text-[#576373]">
+                Gib deine E-Mail-Adresse und dein Passwort ein.
+              </p>
+              <form onSubmit={submit} className="grid gap-5">
+                <div className="grid gap-2">
+                  <label htmlFor="email" className="ed-label">E-Mail-Adresse</label>
+                  <input id="email" required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@beispiel.ch" className="ed-input" />
+                </div>
+                <div className="grid gap-2">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="password" className="ed-label">Passwort</label>
+                    <Link href="/passwort-vergessen" className="text-[0.75rem] font-medium text-[#2356d8] hover:text-[#1844b6]">Passwort vergessen?</Link>
+                  </div>
+                  <input id="password" required minLength={6} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Passwort" className="ed-input" />
+                </div>
+                <button disabled={loading} className="ed-btn-primary mt-1 w-full">
+                  {loading ? "Anmeldung…" : "Anmelden"}
+                  {!loading && <ArrowRight className="h-[18px] w-[18px]" />}
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <p className="ed-eyebrow mb-4">ZWEITER FAKTOR</p>
+              <h2 className="mb-3 text-[clamp(2rem,3vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.05em]">
+                Anmeldung bestätigen.
+              </h2>
+              <p className="mb-9 text-[1rem] leading-[1.8] text-[#576373]">
+                Öffne Microsoft Authenticator und gib den 6-stelligen Code ein.
+              </p>
+              <form onSubmit={submit} className="grid gap-5">
+                <input required autoFocus inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="––––––" className="ed-input text-center text-[1.75rem] font-medium tracking-[0.6em]" />
+                <button disabled={loading || code.length !== 6} className="ed-btn-primary w-full">
+                  {loading ? "Prüfe Code…" : "Code bestätigen"}
+                  {!loading && <ArrowRight className="h-[18px] w-[18px]" />}
+                </button>
+              </form>
+            </>
+          )}
+
+          {error && (
+            <p className="mt-5 border-l-2 border-[#da3839] bg-[#fef2f2] px-4 py-3 text-[0.875rem] text-[#b91c1c]">
+              {error}
+            </p>
+          )}
+
+          {step === "login" && (
+            <p className="mt-8 border-t border-[#e4e9ef] pt-6 text-[0.9375rem] text-[#576373]">
+              Noch kein Konto?{" "}
+              <Link href="/registrieren" className="font-medium text-[#2356d8] hover:text-[#1844b6]">Jetzt registrieren</Link>
+            </p>
+          )}
+        </div>
+      </section>
     </main>
   )
 }

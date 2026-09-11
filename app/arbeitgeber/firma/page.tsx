@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 
@@ -57,7 +58,55 @@ export default function CompanyPage(){
     setMessage(error?error.message:"Unternehmensprofil gespeichert.");setSaving(false)
   }
 
-  if(loading)return <div className="card card-pad text-[var(--muted)]">Unternehmen wird geladen…</div>
-  return <div className="animate-fade-up"><div className="mx-auto max-w-3xl"><p className="text-sm font-bold uppercase tracking-widest text-blue-600">Unternehmen</p><h1 className="mt-2 text-4xl font-black">Ihr Unternehmensprofil</h1><p className="mt-3 text-slate-600">Diese Informationen helfen Arbeitnehmern, Ihr Unternehmen einzuordnen.</p><form onSubmit={save} className="mt-8 rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><div className="mb-7 flex flex-col items-center rounded-2xl border border-slate-200 bg-slate-50 p-6"><div className="relative"><div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-blue-100 text-4xl font-black text-blue-600 shadow-sm">{avatarUrl?<img src={avatarUrl} alt="Unternehmensprofilbild" className="h-full w-full object-cover"/>:<span>{form.name.trim().charAt(0).toUpperCase()||"U"}</span>}</div></div><label className="mt-4 cursor-pointer rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700">{avatarUrl?"Profilbild ändern":"Profilbild hinzufügen"}<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={e=>selectAvatar(e.target.files?.[0]??null)} className="hidden"/></label><p className="mt-2 text-center text-xs text-slate-500">JPG, PNG, WEBP oder GIF · maximal 5 MB</p></div><div className="grid gap-5 sm:grid-cols-2"><Field label="Firmenname"><input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="input" placeholder="Muster AG"/></Field><Field label="Branche"><input value={form.industry} onChange={e=>setForm({...form,industry:e.target.value})} className="input" placeholder="Automobil, IT, Logistik…"/></Field><Field label="Ort"><input value={form.city} onChange={e=>setForm({...form,city:e.target.value})} className="input" placeholder="Luzern"/></Field><Field label="PLZ"><input value={form.postal_code} onChange={e=>setForm({...form,postal_code:e.target.value})} className="input" placeholder="6000"/></Field><Field label="Website"><input type="url" value={form.website} onChange={e=>setForm({...form,website:e.target.value})} className="input" placeholder="https://…"/></Field><Field label="Mitarbeiterzahl"><input type="number" min="1" value={form.employee_count} onChange={e=>setForm({...form,employee_count:e.target.value})} className="input" placeholder="25"/></Field><Field label="Über das Unternehmen"><textarea rows={6} value={form.description} onChange={e=>setForm({...form,description:e.target.value})} className="input min-h-32 sm:col-span-2" placeholder="Wofür steht Ihr Unternehmen? Was zeichnet Sie als Arbeitgeber aus?"/></Field></div>{message&&<p className="mt-5 rounded-xl bg-blue-50 p-4 text-sm font-semibold text-blue-800">{message}</p>}<div className="mt-6 flex justify-end"><button disabled={saving} className="rounded-xl bg-blue-600 px-7 py-3.5 font-bold text-white disabled:opacity-50">{saving?"Speichern…":"Unternehmensprofil speichern"}</button></div></form></div></div>
+  if(loading)return <div className="text-[#576373]">Unternehmen wird geladen…</div>
+  return <div className="mx-auto max-w-3xl text-[#14243a]">
+    <div>
+      <p className="ed-eyebrow mb-4">UNTERNEHMEN</p>
+      <h1 className="text-[clamp(2rem,3.2vw,2.8rem)] font-medium leading-[1.12] tracking-[-0.05em]">Ihr Unternehmensprofil.</h1>
+      <p className="mt-4 max-w-[560px] text-[1rem] leading-[1.8] text-[#576373]">Diese Informationen helfen Arbeitnehmern, Ihr Unternehmen einzuordnen.</p>
+    </div>
+
+    <form onSubmit={save} className="mt-12 grid gap-12">
+      <section>
+        <div className="flex flex-col items-center border border-[#dfe4ea] bg-[#f7f9fc] p-8 sm:flex-row sm:items-center sm:gap-7">
+          <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#e5edf9] text-4xl font-medium text-[#2356d8] shadow-sm">
+            {avatarUrl?<img src={avatarUrl} alt="Unternehmensprofilbild" className="h-full w-full object-cover"/>:<span>{form.name.trim().charAt(0).toUpperCase()||"U"}</span>}
+          </div>
+          <div className="mt-5 text-center sm:mt-0 sm:text-left">
+            <label className="ed-btn-primary cursor-pointer !min-h-[46px] !px-5 text-[0.875rem]">
+              {avatarUrl?"Profilbild ändern":"Profilbild hinzufügen"}
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={e=>selectAvatar(e.target.files?.[0]??null)} className="hidden"/>
+            </label>
+            <p className="mt-3 text-[0.75rem] text-[#687384]">JPG, PNG, WEBP oder GIF · maximal 5 MB</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="ed-section">
+        <h2 className="mb-6 text-[1.25rem] font-medium tracking-[-0.03em]">Unternehmensdaten</h2>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field label="Firmenname"><input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="ed-input" placeholder="Muster AG"/></Field>
+          <Field label="Branche"><input value={form.industry} onChange={e=>setForm({...form,industry:e.target.value})} className="ed-input" placeholder="Automobil, IT, Logistik…"/></Field>
+          <Field label="Ort"><input value={form.city} onChange={e=>setForm({...form,city:e.target.value})} className="ed-input" placeholder="Luzern"/></Field>
+          <Field label="PLZ"><input value={form.postal_code} onChange={e=>setForm({...form,postal_code:e.target.value})} className="ed-input" placeholder="6003"/></Field>
+          <Field label="Website"><input value={form.website} onChange={e=>setForm({...form,website:e.target.value})} className="ed-input" placeholder="https://…"/></Field>
+          <Field label="Anzahl Mitarbeitende"><input type="number" min="1" value={form.employee_count} onChange={e=>setForm({...form,employee_count:e.target.value})} className="ed-input" placeholder="25"/></Field>
+        </div>
+      </section>
+
+      <section className="ed-section">
+        <h2 className="mb-6 text-[1.25rem] font-medium tracking-[-0.03em]">Über das Unternehmen</h2>
+        <Field label="Beschreibung">
+          <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} rows={5} className="ed-input" placeholder="Was macht Ihr Unternehmen aus? Welche Werte und Perspektiven bieten Sie?"/>
+        </Field>
+      </section>
+
+      {message&&<div className="border-l-2 border-[#2356d8] bg-[#eef3fd] px-4 py-3 text-[0.875rem] font-medium text-[#1844b6]">{message}</div>}
+      <div className="flex flex-wrap justify-end gap-3 border-t border-[#dbe1e9] pt-6">
+        <Link href="/arbeitgeber" className="ed-btn-ghost">Abbrechen</Link>
+        <button disabled={saving} className="ed-btn-primary">{saving?"Speichern…":"Unternehmen speichern"}</button>
+      </div>
+    </form>
+  </div>
 }
-function Field({label,children}:{label:string;children:React.ReactNode}){return <label className="text-sm font-bold"><span>{label}</span><div className="mt-2">{children}</div></label>}
+function Field({label,children}:{label:string;children:React.ReactNode}){return <label className="grid gap-2"><span className="ed-label">{label}</span>{children}</label>}
