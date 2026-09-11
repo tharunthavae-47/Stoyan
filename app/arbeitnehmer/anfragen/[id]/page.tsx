@@ -51,9 +51,26 @@ export default function ContactRequestPage({ params }: Props) {
         if (requestError) throw new Error(`Anfrage konnte nicht geladen werden: ${requestError.message}`)
         if (!requestData) throw new Error("Diese Anfrage wurde nicht gefunden oder du hast keinen Zugriff darauf.")
 
-        const { data: company } = await supabase.from("companies").select("name,industry,city,avatar_url").eq("owner_id", requestData.employer_id).maybeSingle()
+        // companies has no avatar_url column. Load the company and the employer's profile image separately.
+        const { data: company, error: companyError } = await supabase
+          .from("companies")
+          .select("name,industry,city")
+          .eq("owner_id", requestData.employer_id)
+          .maybeSingle()
+        if (companyError) console.error("Unternehmen konnte nicht geladen werden:", companyError)
+
+        const { data: employerProfile, error: employerProfileError } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", requestData.employer_id)
+          .maybeSingle()
+        if (employerProfileError) console.error("Arbeitgeberprofil konnte nicht geladen werden:", employerProfileError)
+
         if (!active) return
-        const formattedRequest: RequestData = { ...requestData, company: company || null }
+        const formattedRequest: RequestData = {
+          ...requestData,
+          company: company ? { ...company, avatar_url: employerProfile?.avatar_url ?? null } : null,
+        }
         setRequest(formattedRequest)
         if (formattedRequest.status === "accepted") await loadMessages(supabase, formattedRequest.id)
       } catch (err) {
