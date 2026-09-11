@@ -114,22 +114,22 @@ export function SubscriptionCard() {
 
   return (
     <>
-      <section className="mt-6 rounded-3xl border border-[var(--line)] bg-white p-6 shadow-sm">
+      <section className="ed-card ed-card-pad mt-8">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--brand)]/10 text-[var(--brand)]"><CreditCard className="h-5 w-5" /></div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[6px] border border-[#e2e7ee] text-[var(--brand)]"><CreditCard className="h-5 w-5" /></div>
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--muted)]">Mein Abo</p>
-              {loading ? <p className="mt-2 text-sm font-semibold text-[var(--muted)]">Abo wird geladen…</p> : subscription ? <>
-                <div className="mt-1 flex flex-wrap items-center gap-2"><h2 className="text-xl font-black text-[var(--navy)]">{PLAN_NAMES[subscription.plan_id || ""] || subscription.plan_id || "Abo"}</h2><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">{STATUS_NAMES[subscription.status || ""] || subscription.status || "—"}</span></div>
+              <p className="ed-eyebrow">Mein Abo</p>
+              {loading ? <p className="mt-2 text-sm text-[var(--muted)]">Abo wird geladen…</p> : subscription ? <>
+                <div className="mt-2 flex flex-wrap items-center gap-3"><h2 className="text-xl font-normal tracking-tight text-[var(--navy)]">{PLAN_NAMES[subscription.plan_id || ""] || subscription.plan_id || "Abo"}</h2><span className="ed-chip ed-chip-green">{STATUS_NAMES[subscription.status || ""] || subscription.status || "—"}</span></div>
                 <p className="mt-1 text-sm text-[var(--muted)]">{subscription.cancel_at_period_end ? `Kündigung zum ${formatDate(subscription.current_period_end)}` : `Läuft bis ${formatDate(subscription.current_period_end)}`}</p>
-              </> : <><h2 className="mt-1 text-xl font-black text-[var(--navy)]">Noch kein kostenpflichtiges Abo</h2><p className="mt-1 text-sm text-[var(--muted)]">Wähle deinen passenden Plan.</p></>}
+              </> : <><h2 className="mt-2 text-xl font-normal tracking-tight text-[var(--navy)]">Noch kein kostenpflichtiges Abo</h2><p className="mt-1 text-sm text-[var(--muted)]">Wähle deinen passenden Plan.</p></>}
               {error && <p className="mt-2 text-sm font-semibold text-red-600">{error}</p>}
             </div>
           </div>
-          <button type="button" onClick={() => subscription ? setOpen(true) : (window.location.href = "/preise")} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--line)] px-5 py-3 text-sm font-bold text-[var(--navy)] transition hover:bg-[var(--surface-2)]">{subscription ? "Abo verwalten" : "Abo auswählen"}{subscription ? <Settings2 className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}</button>
+          <button type="button" onClick={() => subscription ? setOpen(true) : (window.location.href = "/preise")} className="ed-btn-ghost shrink-0 gap-2 text-sm">{subscription ? "Abo verwalten" : "Abo auswählen"}{subscription ? <Settings2 className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}</button>
         </div>
-        {subscription && <div className="mt-5 grid gap-3 border-t border-[var(--line)] pt-5 text-sm sm:grid-cols-3"><div><span className="text-[var(--muted)]">Plan</span><p className="mt-1 font-bold text-[var(--navy)]">{PLAN_NAMES[subscription.plan_id || ""] || subscription.plan_id || "—"}</p></div><div><span className="text-[var(--muted)]">Status</span><p className="mt-1 font-bold text-[var(--navy)]">{STATUS_NAMES[subscription.status || ""] || subscription.status || "—"}</p></div><div><span className="text-[var(--muted)]">Nächste Abrechnung</span><p className="mt-1 font-bold text-[var(--navy)]">{formatDate(subscription.current_period_end)}</p></div></div>}
+        {subscription && <div className="mt-6 grid gap-4 border-t border-[#e2e7ee] pt-6 text-sm sm:grid-cols-3"><div><span className="text-[var(--muted-light)]">Plan</span><p className="mt-1 font-medium text-[var(--navy)]">{PLAN_NAMES[subscription.plan_id || ""] || subscription.plan_id || "—"}</p></div><div><span className="text-[var(--muted-light)]">Status</span><p className="mt-1 font-medium text-[var(--navy)]">{STATUS_NAMES[subscription.status || ""] || subscription.status || "—"}</p></div><div><span className="text-[var(--muted-light)]">Nächste Abrechnung</span><p className="mt-1 font-medium text-[var(--navy)]">{formatDate(subscription.current_period_end)}</p></div></div>}
       </section>
 
       {open && subscription && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4" onMouseDown={e => { if (e.target === e.currentTarget) setOpen(false) }}>
