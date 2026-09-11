@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { Check, Minus } from "lucide-react"
+import { ArrowRight, Check, Minus } from "lucide-react"
 import { formatPrice, type Plan } from "@/lib/plans"
 import { createClient } from "@/lib/supabase/client"
 
@@ -78,43 +78,42 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
   return (
     <div>
       {hasEmployerPlans && (
-        <>
-          <div className="mb-3 flex justify-center">
-            <div className="inline-flex items-center rounded-full border border-[var(--line)] bg-white p-1.5 shadow-sm">
-              <button
-                type="button"
-                onClick={() => setBillingCycle("month")}
-                className={
-                  "rounded-full px-6 py-2.5 text-sm font-bold transition " +
-                  (billingCycle === "month"
-                    ? "bg-[var(--navy)] text-white shadow-sm"
-                    : "text-[var(--muted)] hover:text-[var(--navy)]")
-                }
-              >
-                Monatlich
-              </button>
-              <button
-                type="button"
-                onClick={() => setBillingCycle("year")}
-                className={
-                  "rounded-full px-6 py-2.5 text-sm font-bold transition " +
-                  (billingCycle === "year"
-                    ? "bg-[var(--brand)] text-white shadow-sm"
-                    : "text-[var(--muted)] hover:text-[var(--navy)]")
-                }
-              >
-                Jährlich
-              </button>
-            </div>
+        <div className="mb-9 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="inline-flex border border-[#dfe4ea]">
+            <button
+              type="button"
+              onClick={() => setBillingCycle("month")}
+              className={
+                "px-6 py-2.5 text-[0.875rem] font-medium transition " +
+                (billingCycle === "month"
+                  ? "bg-[#162940] text-white"
+                  : "bg-white text-[#576373] hover:text-[#14243a]")
+              }
+            >
+              Monatlich
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingCycle("year")}
+              className={
+                "px-6 py-2.5 text-[0.875rem] font-medium transition " +
+                (billingCycle === "year"
+                  ? "bg-[#2356d8] text-white"
+                  : "bg-white text-[#576373] hover:text-[#14243a]")
+              }
+            >
+              Jährlich
+            </button>
           </div>
-          <p className="mb-8 text-center text-sm font-bold text-[var(--brand)]">
-            {billingCycle === "year" ? "Jährlich zahlen und 2 Monate sparen" : "3 Monate kostenlos testen"}
+          <p className="flex items-center gap-2.5 text-[0.8125rem] font-medium tracking-[0.04em] text-[#2356d8]">
+            <span aria-hidden="true" className="h-1.5 w-1.5 bg-[#2356d8]" />
+            {billingCycle === "year" ? "JÄHRLICH ZAHLEN UND 2 MONATE SPAREN" : "3 MONATE KOSTENLOS TESTEN"}
           </p>
-        </>
+        </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {plans.map((plan) => {
+      <div className="grid gap-0 border-t border-[#cdd6e0] lg:grid-cols-3">
+        {plans.map((plan, index) => {
           const highlighted = Boolean(plan.highlighted)
           const paidConfig = getPaidPlanConfig(plan.id)
           const isLoading = loadingPlan === plan.id
@@ -130,35 +129,36 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
             <div
               key={plan.id}
               className={
-                highlighted
-                  ? "relative flex flex-col rounded-3xl border-2 border-[var(--brand)] bg-white p-8 shadow-[0_20px_60px_-20px_rgba(37,99,235,0.35)]"
-                  : "relative flex flex-col rounded-3xl border border-[var(--line)] bg-white p-8 shadow-[0_2px_10px_rgba(15,23,42,0.04)]"
+                "flex flex-col border-b border-[#dfe4ea] p-8 lg:border-b-0 " +
+                (index > 0 ? "lg:border-l lg:border-[#dfe4ea] " : "") +
+                (highlighted ? "bg-[#f4f7fe]" : "bg-white")
               }
             >
-              {plan.badge && (
-                <span
-                  className={
-                    "absolute -top-3 left-8 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider " +
-                    (highlighted ? "bg-[var(--brand)] text-white" : "bg-[var(--navy)] text-white")
-                  }
-                >
-                  {plan.badge}
-                </span>
-              )}
+              <div className="flex items-center justify-between">
+                <h3 className="text-[1.25rem] font-medium tracking-[-0.03em] text-[#14243a]">{plan.name}</h3>
+                {plan.badge && (
+                  <span
+                    className={
+                      "px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.08em] " +
+                      (highlighted ? "bg-[#2356d8] text-white" : "border border-[#c9d2dd] text-[#52667e]")
+                    }
+                  >
+                    {plan.badge}
+                  </span>
+                )}
+              </div>
+              <p className="mt-2.5 min-h-[42px] text-[0.9375rem] leading-[1.6] text-[#576373]">{plan.description}</p>
 
-              <h3 className="text-xl font-black text-[var(--navy)]">{plan.name}</h3>
-              <p className="mt-2 min-h-[42px] text-sm text-[var(--muted)]">{plan.description}</p>
-
-              <div className="mt-6 flex items-end gap-2">
-                <span className="text-4xl font-black tracking-tight text-[var(--navy)]">
+              <div className="mt-6 flex items-end gap-2 border-b border-[#dfe4ea] pb-6">
+                <span className="text-[2.75rem] font-medium leading-none tracking-[-0.05em] text-[#14243a]">
                   {formatPrice(displayPrice)}
                 </span>
                 {displayPeriod && (
-                  <span className="pb-1 text-sm font-medium text-[var(--muted)]">{displayPeriod}</span>
+                  <span className="pb-1.5 text-[0.875rem] text-[#687384]">{displayPeriod}</span>
                 )}
               </div>
               {displayNote && (
-                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                <p className="mt-3 text-[0.72rem] font-semibold uppercase tracking-[0.06em] text-[#687384]">
                   {displayNote}
                 </p>
               )}
@@ -169,42 +169,41 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
                   onClick={() => startCheckout(plan.id)}
                   disabled={loadingPlan !== null}
                   className={
-                    "mt-7 inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60 " +
+                    "mt-6 inline-flex min-h-[50px] items-center justify-center gap-2 rounded-[4px] px-6 text-[0.9375rem] font-medium transition disabled:cursor-not-allowed disabled:opacity-60 " +
                     (highlighted
-                      ? "bg-[var(--brand)] text-white hover:brightness-110"
-                      : "border border-[var(--line)] text-[var(--navy)] hover:bg-[var(--surface-2)]")
+                      ? "bg-[#2356d8] text-white hover:bg-[#1844b6]"
+                      : "border border-[#d3dbe4] text-[#14243a] hover:bg-[#f2f5f8]")
                   }
                 >
                   {isLoading ? "Checkout wird geöffnet…" : billingCycle === "year" ? "Jährlich starten" : plan.ctaLabel}
+                  {!isLoading && <ArrowRight className="h-[17px] w-[17px]" />}
                 </button>
               ) : (
                 <Link
                   href={plan.ctaHref}
                   className={
-                    "mt-7 inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-bold transition " +
+                    "mt-6 inline-flex min-h-[50px] items-center justify-center gap-2 rounded-[4px] px-6 text-[0.9375rem] font-medium transition " +
                     (highlighted
-                      ? "bg-[var(--brand)] text-white hover:brightness-110"
-                      : "border border-[var(--line)] text-[var(--navy)] hover:bg-[var(--surface-2)]")
+                      ? "bg-[#2356d8] text-white hover:bg-[#1844b6]"
+                      : "border border-[#d3dbe4] text-[#14243a] hover:bg-[#f2f5f8]")
                   }
                 >
                   {plan.ctaLabel}
+                  <ArrowRight className="h-[17px] w-[17px]" />
                 </Link>
               )}
 
-              <ul className="mt-8 space-y-3 border-t border-[var(--line)] pt-6">
+              <ul className="mt-8 grid gap-3.5 border-t border-[#dfe4ea] pt-6">
                 {plan.features.map((feature, i) => {
                   const included = feature.included !== false
                   return (
-                    <li key={i} className="flex items-start gap-3 text-sm">
-                      <span
-                        className={
-                          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full " +
-                          (included ? "bg-[var(--brand)]/12 text-[var(--brand)]" : "bg-[var(--surface-2)] text-[var(--muted)]")
-                        }
-                      >
-                        {included ? <Check className="h-3 w-3" strokeWidth={3} /> : <Minus className="h-3 w-3" strokeWidth={3} />}
-                      </span>
-                      <span className={included ? "font-medium text-[var(--navy)]" : "text-[var(--muted)] line-through"}>
+                    <li key={i} className="flex items-start gap-3 text-[0.875rem]">
+                      {included ? (
+                        <Check className="mt-0.5 h-[17px] w-[17px] shrink-0 text-[#2356d8]" strokeWidth={2} />
+                      ) : (
+                        <Minus className="mt-0.5 h-[17px] w-[17px] shrink-0 text-[#a7b3c2]" strokeWidth={2} />
+                      )}
+                      <span className={included ? "text-[#38465a]" : "text-[#98a4b3] line-through"}>
                         {feature.label}
                       </span>
                     </li>
@@ -217,7 +216,7 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
       </div>
 
       {error && (
-        <p className="mx-auto mt-6 max-w-2xl rounded-xl border border-red-200 bg-red-50 p-4 text-center text-sm font-medium text-red-700">
+        <p className="mt-6 border-l-2 border-[#da3839] bg-[#fef2f2] px-4 py-3 text-[0.875rem] text-[#b91c1c]">
           {error}
         </p>
       )}

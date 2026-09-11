@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { PlanGrid } from "@/components/plan-grid"
 import { employerPlans, employeePlans } from "@/lib/plans"
@@ -56,27 +57,30 @@ export default function PreisePage() {
   const plans = audience === "arbeitgeber" ? employerPlans : employeePlans
 
   return (
-    <main className="min-h-screen bg-[var(--surface-2)]">
-      <section className="mx-auto max-w-6xl px-6 pt-20 pb-10 text-center">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
-          Preise
-        </p>
-        <h1 className="mx-auto mt-3 max-w-3xl text-balance text-4xl font-black leading-tight tracking-tight text-[var(--navy)] sm:text-5xl">
-          Ein Preis, der zu deinem Vorhaben passt.
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg text-[var(--muted)]">
-          Transparent, fair und jederzeit anpassbar. Wähle den Plan, der zu dir
-          passt – du kannst später jederzeit wechseln.
-        </p>
+    <main className="bg-white text-[#14243a]">
+      <section className="mx-auto w-[min(1280px,calc(100%-48px))] pt-16 pb-10 sm:w-[min(1280px,calc(100%-64px))] sm:pt-20">
+        <div className="max-w-[720px]">
+          <p className="ed-eyebrow mb-5">PREISE UND ABOS</p>
+          <h1 className="text-[clamp(2.4rem,4vw,3.5rem)] font-medium leading-[1.08] tracking-[-0.055em] text-balance">
+            Ein Preis, der zu
+            <br />
+            deinem Vorhaben passt.
+          </h1>
+          <p className="mt-6 max-w-[520px] text-[1.0625rem] leading-[1.8] text-[#576373]">
+            Transparent, fair und jederzeit anpassbar. Wähle den Plan, der zu dir passt – du kannst später jederzeit
+            wechseln.
+          </p>
+        </div>
 
         {loadingRole ? (
-          <div className="mx-auto mt-8 h-11 w-72 animate-pulse rounded-full bg-white" />
+          <div className="mt-9 h-11 w-72 animate-pulse rounded-[4px] bg-[#eef2f8]" />
         ) : userRole ? (
-          <div className="mx-auto mt-8 inline-flex rounded-full border border-[var(--line)] bg-white px-5 py-2.5 text-sm font-bold text-[var(--navy)] shadow-sm">
-            {userRole === "employer" ? "Abo für Arbeitgeber" : "Abo für Arbeitnehmer"}
+          <div className="mt-9 inline-flex items-center gap-2.5 border border-[#dfe4ea] px-4 py-2.5 text-[0.8125rem] font-medium tracking-[0.04em]">
+            <span aria-hidden="true" className="h-1.5 w-1.5 bg-[#2356d8]" />
+            {userRole === "employer" ? "ABO FÜR ARBEITGEBER" : "ABO FÜR ARBEITNEHMER"}
           </div>
         ) : (
-          <div className="mx-auto mt-8 inline-flex rounded-full border border-[var(--line)] bg-white p-1 shadow-sm">
+          <div className="mt-9 inline-flex border border-[#dfe4ea]">
             {(
               [
                 ["arbeitgeber", "Für Arbeitgeber"],
@@ -88,10 +92,10 @@ export default function PreisePage() {
                 type="button"
                 onClick={() => setAudience(value)}
                 className={
-                  "rounded-full px-6 py-2.5 text-sm font-bold transition " +
+                  "px-6 py-3 text-[0.875rem] font-medium transition " +
                   (audience === value
-                    ? "bg-[var(--navy)] text-white"
-                    : "text-[var(--muted)] hover:text-[var(--navy)]")
+                    ? "bg-[#162940] text-white"
+                    : "bg-white text-[#576373] hover:text-[#14243a]")
                 }
               >
                 {label}
@@ -101,35 +105,36 @@ export default function PreisePage() {
         )}
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto w-[min(1280px,calc(100%-48px))] pb-16 sm:w-[min(1280px,calc(100%-64px))]">
         <PlanGrid plans={plans} />
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-24">
-        <div className="grid gap-6 rounded-3xl border border-[var(--line)] bg-white p-8 sm:grid-cols-3">
+      <section className="border-t border-[#dfe4ea] bg-[#f2f5f8]">
+        <div className="mx-auto grid w-[min(1280px,calc(100%-48px))] gap-8 py-14 sm:w-[min(1280px,calc(100%-64px))] sm:grid-cols-3">
           {[
             ["Jederzeit kündbar", "Keine Mindestlaufzeit, keine versteckten Kosten."],
             ["Schweizer Datenschutz", "Alle Daten werden DSG-konform verarbeitet."],
             ["Persönlicher Support", "Unser Team hilft dir schnell und direkt weiter."],
           ].map(([title, text]) => (
-            <div key={title}>
-              <h3 className="font-black text-[var(--navy)]">{title}</h3>
-              <p className="mt-2 text-sm text-[var(--muted)]">{text}</p>
+            <div key={title} className="border-t border-[#c9d2dd] pt-5">
+              <h3 className="text-[1.0625rem] font-semibold tracking-[-0.02em]">{title}</h3>
+              <p className="mt-2.5 text-[0.9375rem] leading-[1.7] text-[#576373]">{text}</p>
             </div>
           ))}
         </div>
+      </section>
 
-        <div className="mt-10 text-center">
-          <p className="text-[var(--muted)]">
-            Noch unsicher, welcher Plan passt?
-          </p>
-          <Link
-            href="/registrieren"
-            className="mt-3 inline-flex items-center justify-center rounded-xl border border-[var(--line)] bg-white px-6 py-3 text-sm font-bold text-[var(--navy)] transition hover:bg-[var(--surface-2)]"
-          >
-            Jetzt kostenlos starten
-          </Link>
-        </div>
+      <section className="mx-auto flex w-[min(1280px,calc(100%-48px))] flex-col items-start gap-5 py-16 sm:w-[min(1280px,calc(100%-64px))] sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-[1.125rem] font-medium tracking-[-0.02em]">
+          Noch unsicher, welcher Plan passt?
+        </p>
+        <Link
+          href="/registrieren"
+          className="ed-btn-primary"
+        >
+          Jetzt kostenlos starten
+          <ArrowRight className="h-[18px] w-[18px]" />
+        </Link>
       </section>
     </main>
   )
