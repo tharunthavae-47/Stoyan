@@ -8,27 +8,32 @@
 
 :root {
   /* Brand navy / accents */
-  --navy: #132238;
+  --navy: #162940;
   --navy-2: #1d3454;
   --navy-deep: #0f1c2e;
 
   /* Surfaces */
-  --background: #f5f7fb;
-  --background-soft: #fbfcff;
+  --background: #ffffff;
+  --background-soft: #f7f9fc;
   --surface: #ffffff;
-  --surface-soft: #f8faff;
+  --surface-soft: #f2f5f8;
 
   /* Text */
-  --foreground: #172435;
+  --foreground: #14243a;
   --foreground-soft: #334155;
-  --muted: #6a7788;
-  --muted-light: #94a3b8;
+  --muted: #576373;
+  --muted-light: #8593a3;
+
+  /* Editorial primary */
+  --primary: #2356d8;
+  --primary-foreground: #ffffff;
+  --swiss-red: #da3839;
 
   /* Accents */
-  --brand: #2d6fc1;
-  --brand-strong: #275f9f;
-  --brand-dark: #1d3454;
-  --brand-soft: #eaf2ff;
+  --brand: #2356d8;
+  --brand-strong: #1844b6;
+  --brand-dark: #162940;
+  --brand-soft: #eaf1ff;
   --success: #1f9464;
   --success-soft: #e8f7f0;
   --teal: #168a89;
@@ -75,22 +80,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
-  background:
-    radial-gradient(circle at 15% 0%, rgba(45, 111, 193, 0.07), transparent 30rem),
-    radial-gradient(circle at 90% 18%, rgba(22, 138, 137, 0.05), transparent 26rem),
-    linear-gradient(180deg, #fbfcff 0%, #f5f7fb 48%, #ffffff 100%);
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.28;
-  background-image: radial-gradient(rgba(19, 34, 56, 0.06) 0.7px, transparent 0.7px);
-  background-size: 22px 22px;
-  mask-image: linear-gradient(to bottom, black, transparent 75%);
+  background: var(--background);
 }
 
 /* Element-level resets go in @layer base so Tailwind utilities
