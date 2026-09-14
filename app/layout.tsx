@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { SiteHeader } from "@/components/site-header"
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -115,6 +116,7 @@ export default function RootLayout({
       <body>
         <SiteHeader />
         <main>{children}</main>
+        <Analytics />
       </body>
     </html>
   )
