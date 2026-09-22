@@ -23,7 +23,17 @@ export async function POST(request: Request) {
 
     const params = new URLSearchParams()
     params.set("customer", customerId)
-    params.set("return_url", `${new URL(request.url).origin}/arbeitgeber`)
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle()
+
+    params.set(
+      "return_url",
+      `${new URL(request.url).origin}${profile?.role === "employee" ? "/arbeitnehmer" : "/arbeitgeber"}`,
+    )
 
     const response = await fetch("https://api.stripe.com/v1/billing_portal/sessions", {
       method: "POST",
