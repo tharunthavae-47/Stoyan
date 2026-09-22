@@ -7,7 +7,7 @@ export const STRIPE_PRICE_IDS = {
 // Arbeitnehmer Premium: monatlicher Stripe Price.
 // Den Price aus dem Stripe-Dashboard in Vercel als STRIPE_EMPLOYEE_PREMIUM_PRICE_ID hinterlegen.
 export function getEmployeePremiumPriceId() {
-  return process.env.STRIPE_EMPLOYEE_PREMIUM_PRICE_ID || ""
+  return process.env.STRIPE_EMPLOYEE_PREMIUM_PRICE_ID || "price_1UITb1R6nscSb26oaVgF6IhM"
 }
 
 export type PaidPlan = keyof typeof STRIPE_PRICE_IDS
