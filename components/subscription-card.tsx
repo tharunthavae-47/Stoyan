@@ -23,6 +23,7 @@ const PLAN_DETAILS: Record<string, { price: number; jobs: string; saved: string;
   basic: { price: 149, jobs: "5", saved: "5", contacts: "5 / Monat", users: "1", filters: "Beruf", chat: false, extras: ["Matching-%", "Kandidatenprofile", "Live-Verfügbarkeit"] },
   professional: { price: 299, jobs: "10", saved: "10", contacts: "10 / Monat", users: "3", filters: "Alle Filter", chat: true, extras: ["Prioritäts-Support"] },
   business: { price: 499, jobs: "Unbegrenzt", saved: "Unbegrenzt", contacts: "Unbegrenzt", users: "Unbegrenzt", filters: "Alle Filter", chat: true, extras: ["Interviewplanung", "HR Copilot (KI)", "Advanced Verification", "Analytics & Reports", "Talent Pool Management", "Exporte & Integrationen", "Prioritäts-Support"] },
+  premium: { price: 19, jobs: "—", saved: "—", contacts: "—", users: "1", filters: "—", chat: true, extras: ["Premium-Platzierung in der Suche", "Profil-Statistiken & Einblicke", "Prioritäts-Support", "Verifiziertes Profil-Badge", "Frühzeitiger Zugang zu neuen Funktionen"] },
 }
 
 function formatDate(value: string | null) { return value ? new Date(value).toLocaleDateString("de-CH") : "—" }
