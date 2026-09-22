@@ -111,7 +111,13 @@ export function PlanGrid({ plans }: { plans: Plan[] }) {
           </div>
           <p className="flex items-center gap-2.5 text-[0.8125rem] font-medium tracking-[0.04em] text-[#2356d8]">
             <span aria-hidden="true" className="h-1.5 w-1.5 bg-[#2356d8]" />
-            {billingCycle === "year" ? "JÄHRLICH ZAHLEN UND 2 MONATE SPAREN" : "3 MONATE KOSTENLOS TESTEN"}
+            {billingCycle === "year"
+              ? plans.some((plan) => plan.id === "premium")
+                ? "JÄHRLICH BEZAHLEN · 2 MONATE SPAREN"
+                : "JÄHRLICH ZAHLEN UND 2 MONATE SPAREN"
+              : plans.some((plan) => plan.id === "premium")
+                ? "JEDERZEIT KÜNDBAR"
+                : "3 MONATE KOSTENLOS TESTEN"}
           </p>
         </div>
       )}
