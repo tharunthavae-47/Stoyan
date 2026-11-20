@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
-import { MessageCircle, Check, Clock3, ArrowRight, X } from "lucide-react"
+import { MessageCircle, Check, CheckCircle2, Circle, Clock3, ArrowRight, X, Briefcase, MapPin, Eye, EyeOff, UserRound } from "lucide-react"
 import { SubscriptionCard } from "@/components/subscription-card"
 
 export default async function EmployeeDashboard() {
@@ -68,112 +68,150 @@ export default async function EmployeeDashboard() {
   const pendingRequests = requestsWithCompanies.filter((request) => request.status === "pending")
   const acceptedRequests = requestsWithCompanies.filter((request) => request.status === "accepted")
 
+  const checklist = [
+    { label: "Profilbild", done: Boolean(profile?.avatar_url), href: "/arbeitnehmer/bilder" },
+    { label: "Name", done: Boolean(profile?.first_name && profile?.last_name), href: "/arbeitnehmer/profil" },
+    { label: "Wohnort", done: Boolean(profile?.city), href: "/arbeitnehmer/profil" },
+    { label: "Beruf", done: Boolean(employee?.profession), href: "/arbeitnehmer/profil" },
+    { label: "Berufliche Überschrift", done: Boolean(employee?.headline), href: "/arbeitnehmer/profil" },
+    { label: "Berufserfahrung", done: (employee?.years_experience ?? 0) > 0, href: "/arbeitnehmer/profil" },
+  ]
+  const completion = Math.round((checklist.filter((item) => item.done).length / checklist.length) * 100)
+  const openItems = checklist.filter((item) => !item.done)
+  const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ")
+
+  const stats = [
+    { label: "Neue Anfragen", value: String(pendingRequests.length), Icon: Clock3 },
+    { label: "Aktive Chats", value: String(acceptedRequests.length), Icon: MessageCircle },
+    { label: "Wunsch-Pensum", value: `${employee?.desired_employment_percent ?? 100} %`, Icon: Briefcase },
+    { label: "Umkreis", value: `${employee?.preferred_radius_km ?? 30} km`, Icon: MapPin },
+  ]
+
   return (
-    <div className="animate-fade-up">
-      <div className="flex flex-col justify-between gap-5 border-b border-[#e2e7ee] pb-8 sm:flex-row sm:items-end">
-        <div>
-          <p className="ed-eyebrow">Arbeitnehmer</p>
-          <h1 className="mt-4 text-4xl font-light tracking-[-0.03em] text-[var(--navy)] sm:text-5xl text-balance">Dein Profil. Deine Möglichkeiten.</h1>
-          <p className="mt-4 max-w-2xl leading-relaxed text-[var(--muted)]">Präsentiere dich professionell und zeige Arbeitgebern, was du kannst.</p>
+    <div className="animate-fade-up space-y-6">
+      <section className="dash-hero">
+        <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
+          <div className="flex items-center gap-5">
+            <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-white/15 bg-white/10">
+              {profile?.avatar_url ? <img src={profile.avatar_url || "/placeholder.svg"} alt="Profilbild" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><UserRound className="h-8 w-8 text-white/60" aria-hidden="true" /></div>}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-teal-200">Hallo{profile?.first_name ? ` ${profile.first_name}` : ""}</p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">Dein Profil. Deine Möglichkeiten.</h1>
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-300">
+                <span>{employee?.profession || "Beruf noch nicht angegeben"}</span>
+                {profile?.city && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{profile.city}</span>}
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${employee?.profile_visible ? "bg-emerald-400/15 text-emerald-200" : "bg-white/10 text-slate-200"}`}>
+                  {employee?.profile_visible ? <Eye className="h-3.5 w-3.5" aria-hidden="true" /> : <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />}
+                  {employee?.profile_visible ? "Für Arbeitgeber sichtbar" : "Profil privat"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full max-w-xs rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div className="flex items-baseline justify-between">
+              <p className="text-sm font-medium text-slate-200">Profil vollständig</p>
+              <p className="text-2xl font-semibold">{completion}%</p>
+            </div>
+            <div className="dash-progress mt-3" role="progressbar" aria-valuenow={completion} aria-valuemin={0} aria-valuemax={100} aria-label="Profil-Vollständigkeit"><span style={{ width: `${completion}%` }} /></div>
+            <Link href="/arbeitnehmer/profil" className="dash-btn dash-btn-light mt-4 w-full">Profil bearbeiten<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+          </div>
         </div>
-        <Link href="/arbeitnehmer/profil" className="ed-btn-primary shrink-0">Profil bearbeiten</Link>
+      </section>
+
+      <section aria-label="Kennzahlen" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map(({ label, value, Icon }) => (
+          <div key={label} className="dash-card dash-card-pad">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-[var(--muted)]">{label}</p>
+              <span className="dash-kpi-icon"><Icon className="h-5 w-5" aria-hidden="true" /></span>
+            </div>
+            <p className="mt-4 text-3xl font-semibold tracking-tight text-[var(--navy)]">{value}</p>
+          </div>
+        ))}
+      </section>
+
+      <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
+        <section className="dash-card dash-card-pad" aria-labelledby="requests-heading">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <h2 id="requests-heading" className="text-lg font-semibold tracking-tight text-[var(--navy)]">Anfragen &amp; Nachrichten</h2>
+              <p className="mt-1 text-sm text-[var(--muted)]">Arbeitgeber, die dich kennenlernen möchten.</p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-[var(--surface-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--muted)]">{pendingRequests.length} offen · {acceptedRequests.length} Chat{acceptedRequests.length === 1 ? "" : "s"}</span>
+          </div>
+
+          {requestsWithCompanies.length === 0 ? (
+            <div className="mt-6 rounded-[var(--radius-md)] border border-dashed border-[var(--line-strong)] bg-[var(--background-soft)] p-10 text-center">
+              <span className="dash-kpi-icon mx-auto"><MessageCircle className="h-5 w-5" aria-hidden="true" /></span>
+              <h3 className="mt-4 font-semibold text-[var(--navy)]">Noch keine Kontaktanfragen</h3>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[var(--muted)]">Sobald ein Arbeitgeber dich kontaktieren möchte, erscheint die Anfrage hier. Ein vollständiges Profil erhöht deine Chancen.</p>
+            </div>
+          ) : (
+            <ul className="mt-6 space-y-3">
+              {requestsWithCompanies.map((request) => {
+                const company = request.company
+                const accepted = request.status === "accepted"
+                const pending = request.status === "pending"
+                return (
+                  <li key={request.id} className="dash-row">
+                    <div className="flex min-w-0 items-center gap-4">
+                      <div className="dash-avatar">
+                        {company?.avatar_url ? <img src={company.avatar_url || "/placeholder.svg"} alt="Unternehmensprofilbild" className="h-full w-full object-cover" /> : (company?.name || "U")[0]?.toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-semibold text-[var(--navy)]">{company?.name || "Unternehmen"}</h3>
+                          {accepted && <span className="ed-chip ed-chip-green"><Check className="h-3 w-3" aria-hidden="true" />Chat frei</span>}
+                          {pending && <span className="ed-chip ed-chip-amber"><Clock3 className="h-3 w-3" aria-hidden="true" />Offen</span>}
+                          {request.status === "rejected" && <span className="ed-chip"><X className="h-3 w-3" aria-hidden="true" />Abgelehnt</span>}
+                        </div>
+                        <p className="mt-1 truncate text-sm text-[var(--muted)]">{company?.industry || "Branche nicht angegeben"}{company?.city ? ` · ${company.city}` : ""}</p>
+                        <p className="mt-0.5 text-xs text-[var(--muted-light)]">Anfrage vom {new Date(request.created_at).toLocaleDateString("de-CH")}</p>
+                      </div>
+                    </div>
+                    <Link href={`/arbeitnehmer/anfragen/${request.id}`} className={`dash-btn shrink-0 ${accepted ? "" : "dash-btn-outline"}`}>
+                      {accepted ? <><MessageCircle className="h-4 w-4" aria-hidden="true" />Chat öffnen</> : <>Ansehen<ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+          {contactRequestsError && <div className="alert-error mt-5 text-sm font-medium" role="alert">Die Kontaktanfragen konnten nicht geladen werden.</div>}
+        </section>
+
+        <aside className="space-y-6">
+          <section className="dash-card dash-card-pad" aria-labelledby="checklist-heading">
+            <h2 id="checklist-heading" className="font-semibold text-[var(--navy)]">{openItems.length === 0 ? "Dein Profil ist komplett" : "Nächste Schritte"}</h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">{openItems.length === 0 ? "Arbeitgeber sehen alle wichtigen Angaben." : `Noch ${openItems.length} Angabe${openItems.length === 1 ? "" : "n"} bis zum vollständigen Profil.`}</p>
+            <ul className="mt-4 space-y-1">
+              {checklist.map((item) => (
+                <li key={item.label}>
+                  <Link href={item.href} className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-sm transition hover:bg-[var(--surface-soft)]">
+                    <span className="flex items-center gap-3">
+                      {item.done ? <CheckCircle2 className="h-5 w-5 text-[var(--success)]" aria-hidden="true" /> : <Circle className="h-5 w-5 text-[var(--line-strong)]" aria-hidden="true" />}
+                      <span className={item.done ? "text-[var(--muted)] line-through decoration-[var(--line-strong)]" : "font-medium text-[var(--navy)]"}>{item.label}</span>
+                      <span className="sr-only">{item.done ? "(erledigt)" : "(offen)"}</span>
+                    </span>
+                    {!item.done && <ArrowRight className="h-4 w-4 text-[var(--muted-light)]" aria-hidden="true" />}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="dash-card dash-card-pad" aria-labelledby="pitch-heading">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">So sehen dich Arbeitgeber</p>
+            <h2 id="pitch-heading" className="mt-2 font-semibold text-[var(--navy)]">{fullName || "Dein Name"}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{employee?.headline || "Noch keine berufliche Überschrift hinterlegt."}</p>
+            <p className="mt-4 border-t border-[var(--line)] pt-3 text-sm text-[var(--muted)]">Erfahrung: <span className="font-medium text-[var(--navy)]">{employee?.years_experience ?? 0} Jahre</span></p>
+          </section>
+        </aside>
       </div>
 
       <SubscriptionCard />
-
-      <div className="mt-8 grid gap-6 lg:grid-cols-[340px_1fr]">
-        <section className="ed-card ed-card-pad">
-          <div className="flex items-center gap-4">
-            <div className="h-24 w-24 overflow-hidden rounded-[6px] border border-[#e2e7ee] bg-[var(--surface-soft)]">
-              {profile?.avatar_url ? <img src={profile.avatar_url || "/placeholder.svg"} alt="Profilbild" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-3xl font-light text-[var(--muted-light)]">+</div>}
-            </div>
-            <div>
-              <p className="text-xl font-normal tracking-tight text-[var(--navy)]">{profile?.first_name || "Vorname"} {profile?.last_name || "Nachname"}</p>
-              <p className="mt-1 text-sm text-[var(--muted)]">{employee?.profession || "Beruf noch nicht angegeben"}</p>
-              <p className="mt-0.5 text-sm text-[var(--muted)]">{profile?.city || "Ort noch nicht angegeben"}</p>
-            </div>
-          </div>
-          <div className="mt-7 border-t border-[#e2e7ee] pt-6">
-            <div className="flex items-center justify-between text-sm"><span className="text-[var(--muted-light)]">Profilstatus</span><span className={`ed-chip ${employee?.profile_visible ? "ed-chip-green" : "ed-chip"}`}>{employee?.profile_visible ? "Sichtbar" : "Privat"}</span></div>
-            <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">Je vollständiger dein Profil, desto besser können passende Arbeitgeber dich einschätzen.</p>
-          </div>
-        </section>
-
-        <section className="grid gap-6 sm:grid-cols-2">
-          <div className="ed-card ed-card-pad">
-            <p className="ed-eyebrow">Profil</p>
-            <h2 className="mt-3 text-xl font-normal tracking-tight text-[var(--navy)]">Berufliche Präsentation</h2>
-            <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">{employee?.headline || "Noch keine berufliche Überschrift hinterlegt."}</p>
-            <div className="mt-5 border-t border-[#e2e7ee] pt-4 text-sm text-[var(--muted)]">Erfahrung: <span className="font-medium text-[var(--navy)]">{employee?.years_experience ?? 0} Jahre</span></div>
-          </div>
-          <div className="ed-card ed-card-pad">
-            <p className="ed-eyebrow">Arbeitswunsch</p>
-            <h2 className="mt-3 text-xl font-normal tracking-tight text-[var(--navy)]">Was du suchst</h2>
-            <div className="mt-4 space-y-2 text-sm text-[var(--muted)]"><p>Pensum: <span className="font-medium text-[var(--navy)]">{employee?.desired_employment_percent ?? 100} %</span></p><p>Umkreis: <span className="font-medium text-[var(--navy)]">{employee?.preferred_radius_km ?? 30} km</span></p></div>
-          </div>
-          <div className="ed-card ed-card-pad">
-            <p className="ed-eyebrow">Kontaktanfragen</p>
-            <p className="ed-metric mt-3">{pendingRequests.length}</p>
-            <p className="mt-2 text-sm text-[var(--muted)]">Neue Anfrage{pendingRequests.length === 1 ? "" : "n"}</p>
-          </div>
-          <div className="rounded-[6px] bg-[var(--navy)] p-[22px] text-white sm:p-6">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-blue-300">Nächster Schritt</p>
-            <h2 className="mt-3 text-xl font-normal tracking-tight">Vervollständige dein Profil</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">Füge Foto, Ausbildung, Erfahrung, Skills und deine Wünsche hinzu.</p>
-            <Link href="/arbeitnehmer/profil" className="mt-6 inline-flex items-center gap-2 rounded-[4px] bg-white px-5 py-3 text-sm font-medium text-[var(--navy)] transition hover:bg-slate-100">Profil aufbauen <ArrowRight className="h-4 w-4" /></Link>
-          </div>
-        </section>
-      </div>
-
-      <section className="ed-section mt-10">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <p className="ed-eyebrow">Kommunikation</p>
-            <h2 className="mt-3 text-2xl font-light tracking-[-0.02em] text-[var(--navy)]">Anfragen &amp; Nachrichten</h2>
-            <p className="mt-2 text-sm text-[var(--muted)]">Hier findest du deine Kontaktanfragen und deine privaten Chats.</p>
-          </div>
-          <div className="flex gap-3 text-xs font-medium text-[var(--muted-light)]"><span>{pendingRequests.length} offen</span><span>·</span><span>{acceptedRequests.length} Chat{acceptedRequests.length === 1 ? "" : "s"}</span></div>
-        </div>
-
-        {requestsWithCompanies.length === 0 ? (
-          <div className="mt-6 border border-dashed border-[var(--line-strong)] p-12 text-center">
-            <MessageCircle className="mx-auto h-8 w-8 text-[var(--muted-light)]" />
-            <h3 className="mt-4 text-lg font-normal text-[var(--navy)]">Noch keine Kontaktanfragen</h3>
-            <p className="mt-2 text-sm text-[var(--muted)]">Sobald ein Arbeitgeber dich kontaktieren möchte, erscheint die Anfrage hier.</p>
-          </div>
-        ) : (
-          <div className="mt-6 divide-y divide-[#e2e7ee] border-y border-[#e2e7ee]">
-            {requestsWithCompanies.map((request) => {
-              const company = request.company
-              const accepted = request.status === "accepted"
-              const pending = request.status === "pending"
-              return (
-                <div key={request.id} className="flex flex-col justify-between gap-4 py-5 sm:flex-row sm:items-center">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[6px] bg-[var(--navy)] text-lg font-normal text-white">
-                      {company?.avatar_url ? <img src={company.avatar_url || "/placeholder.svg"} alt="Unternehmensprofilbild" className="h-full w-full object-cover" /> : (company?.name || "U")[0]?.toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-lg font-normal tracking-tight text-[var(--navy)]">{company?.name || "Unternehmen"}</p>
-                        {accepted && <span className="ed-chip ed-chip-green"><Check className="h-3 w-3" /> Chat frei</span>}
-                        {pending && <span className="ed-chip ed-chip-amber"><Clock3 className="h-3 w-3" /> Offen</span>}
-                        {request.status === "rejected" && <span className="ed-chip"><X className="h-3 w-3" /> Abgelehnt</span>}
-                      </div>
-                      <p className="mt-1 text-sm text-[var(--muted)]">{company?.industry || "Branche nicht angegeben"}{company?.city ? ` · ${company.city}` : ""}</p>
-                      <p className="mt-0.5 text-xs text-[var(--muted-light)]">Anfrage vom {new Date(request.created_at).toLocaleDateString("de-CH")}</p>
-                    </div>
-                  </div>
-                  <Link href={`/arbeitnehmer/anfragen/${request.id}`} className={`shrink-0 ${accepted ? "ed-btn-primary" : "ed-btn-ghost"}`}>
-                    {accepted ? <><MessageCircle className="h-4 w-4" /> Chat öffnen</> : <>Ansehen <ArrowRight className="h-4 w-4" /></>}
-                  </Link>
-                </div>
-              )
-            })}
-          </div>
-        )}
-        {contactRequestsError && <div className="alert-error mt-5 text-sm font-medium">Die Kontaktanfragen konnten nicht geladen werden.</div>}
-      </section>
     </div>
   )
 }
