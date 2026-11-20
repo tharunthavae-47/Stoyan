@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState, type ComponentType } from "react"
-import { ArrowRight, Check, Clock3, MessageCircle, RefreshCw, Search, Send, Users, X, type LucideProps } from "lucide-react"
+import { ArrowRight, Building2, Check, Clock3, MessageCircle, RefreshCw, Search, Send, Users, X, type LucideProps } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { SubscriptionCard } from "@/components/subscription-card"
 
@@ -86,33 +86,110 @@ export default function ArbeitgeberPage() {
     { label: "Abgelehnt", count: rejected.length, Icon: X },
   ]
 
-  if (loading) return <div className="ed-card ed-card-pad text-center"><div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--brand)]" /><p className="mt-5 text-[var(--muted)]">Dashboard wird geladen…</p></div>
+  if (loading) return <div className="dash-card dash-card-pad py-16 text-center"><div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--accent)]" /><p className="mt-5 text-[var(--muted)]">Dashboard wird geladen…</p></div>
 
-  return <div className="animate-fade-up">
-    <div className="flex flex-col justify-between gap-6 border-b border-[#e2e7ee] pb-8 lg:flex-row lg:items-end">
-      <div>
-        <p className="ed-eyebrow">Arbeitgeber</p>
-        <h1 className="mt-4 text-4xl font-light tracking-[-0.03em] text-[var(--navy)] sm:text-5xl text-balance">Mitarbeiter finden.</h1>
-        <p className="mt-4 max-w-2xl leading-relaxed text-[var(--muted)]">Suchen Sie nach Ihren Kriterien und entdecken Sie passende Arbeitnehmerprofile.</p>
+  return <div className="animate-fade-up space-y-6">
+    <section className="dash-hero">
+      <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+        <div className="max-w-2xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-200">Willkommen zurück</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{company?.name ? `${company.name}, finden Sie Ihre nächsten Talente.` : "Finden Sie Ihre nächsten Talente."}</h1>
+          <p className="mt-3 leading-relaxed text-blue-100/85">Suchen Sie nach Beruf, Erfahrung, Skills, Ort und Pensum – und kontaktieren Sie passende Arbeitnehmer direkt.</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <button type="button" onClick={() => void loadDashboard(false)} disabled={refreshing} className="dash-btn dash-btn-glass"><RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} aria-hidden="true" />Aktualisieren</button>
+          <Link href="/arbeitgeber/suche" className="dash-btn dash-btn-light"><Search className="h-4 w-4" aria-hidden="true" />Kandidaten suchen<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+        </div>
       </div>
-      <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={() => void loadDashboard(false)} disabled={refreshing} className="ed-btn-ghost shrink-0"><RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />Aktualisieren</button>
-        <Link href="/arbeitgeber/suche" className="ed-btn-primary shrink-0"><Search className="h-4 w-4" />Kandidaten suchen<ArrowRight className="h-4 w-4" /></Link>
-      </div>
+    </section>
+
+    {error && <div className="alert-error text-sm font-medium" role="alert">{error}</div>}
+
+    <section aria-label="Kennzahlen" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {stats.map(({ label, count, Icon }) => (
+        <div key={label} className="dash-card dash-card-pad">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-[var(--muted)]">{label}</p>
+            <span className="dash-kpi-icon"><Icon className="h-5 w-5" aria-hidden="true" /></span>
+          </div>
+          <p className="mt-4 text-3xl font-semibold tracking-tight text-[var(--navy)]">{count}</p>
+        </div>
+      ))}
+    </section>
+
+    <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
+      <section className="dash-card dash-card-pad" aria-labelledby="requests-heading">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div>
+            <h2 id="requests-heading" className="text-lg font-semibold tracking-tight text-[var(--navy)]">Anfragen &amp; Nachrichten</h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">Kontaktdaten werden erst nach Annahme freigegeben.</p>
+          </div>
+          {requests.length > 0 && <span className="inline-flex items-center gap-2 rounded-full bg-[var(--surface-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--muted)]"><Users className="h-3.5 w-3.5" aria-hidden="true" />{requests.length} Anfrage{requests.length !== 1 ? "n" : ""}</span>}
+        </div>
+
+        {requests.length === 0 ? (
+          <div className="mt-6 rounded-[var(--radius-md)] border border-dashed border-[var(--line-strong)] bg-[var(--background-soft)] p-10 text-center">
+            <span className="dash-kpi-icon mx-auto"><MessageCircle className="h-5 w-5" aria-hidden="true" /></span>
+            <h3 className="mt-4 font-semibold text-[var(--navy)]">Noch keine Kontaktanfragen</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[var(--muted)]">Wenn Sie einen passenden Arbeitnehmer gefunden haben, können Sie über dessen Profil eine Kontaktanfrage senden.</p>
+            <Link href="/arbeitgeber/suche" className="dash-btn mt-6">Kandidaten suchen<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+          </div>
+        ) : (
+          <ul className="mt-6 space-y-3">
+            {requests.map((request) => {
+              const name = getEmployeeName(request.employee_id)
+              const isAccepted = request.status === "accepted"
+              const location = getEmployeeLocation(request.employee_id)
+              return (
+                <li key={request.id} className="dash-row">
+                  <div className="flex min-w-0 items-center gap-4">
+                    <div className="dash-avatar">{getInitials(request.employee_id)}</div>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="font-semibold text-[var(--navy)]">{name}</h3>
+                        {isAccepted && <span className="ed-chip ed-chip-green"><Check className="h-3 w-3" aria-hidden="true" />Angenommen</span>}
+                        {request.status === "pending" && <span className="ed-chip ed-chip-amber"><Clock3 className="h-3 w-3" aria-hidden="true" />Ausstehend</span>}
+                        {request.status === "rejected" && <span className="ed-chip"><X className="h-3 w-3" aria-hidden="true" />Abgelehnt</span>}
+                      </div>
+                      <p className="mt-1 truncate text-sm text-[var(--muted)]">{getEmployeeProfession(request.employee_id)}{location ? ` · ${location}` : ""}</p>
+                      <p className="mt-0.5 text-xs text-[var(--muted-light)]">Anfrage vom {new Date(request.created_at).toLocaleDateString("de-CH")}</p>
+                    </div>
+                  </div>
+                  <Link href={`/arbeitgeber/anfragen/${request.id}`} className={`dash-btn shrink-0 ${isAccepted ? "" : "dash-btn-outline"}`}>
+                    {isAccepted ? <><MessageCircle className="h-4 w-4" aria-hidden="true" />Chat öffnen</> : <>Ansehen<ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </section>
+
+      <aside className="space-y-6">
+        <section className="dash-card dash-card-pad" aria-labelledby="company-heading">
+          <div className="flex items-center gap-4">
+            <div className="dash-avatar h-14 w-14 bg-[var(--navy)] text-xl text-white">{company?.avatar_url ? <img src={company.avatar_url || "/placeholder.svg"} alt="Unternehmensprofilbild" className="h-full w-full object-cover" /> : (company?.name || "U")[0]?.toUpperCase()}</div>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">Unternehmen</p>
+              <h2 id="company-heading" className="mt-1 truncate text-lg font-semibold text-[var(--navy)]">{company?.name || "Ihr Unternehmen"}</h2>
+            </div>
+          </div>
+          <dl className="mt-5 space-y-2 border-t border-[var(--line)] pt-4 text-sm">
+            <div className="flex justify-between gap-4"><dt className="text-[var(--muted)]">Branche</dt><dd className="text-right font-medium text-[var(--navy)]">{company?.industry || "—"}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-[var(--muted)]">Standort</dt><dd className="text-right font-medium text-[var(--navy)]">{company?.city || "—"}</dd></div>
+          </dl>
+          <Link href="/arbeitgeber/firma" className="dash-btn dash-btn-outline mt-5 w-full"><Building2 className="h-4 w-4" aria-hidden="true" />Firmenprofil bearbeiten</Link>
+        </section>
+
+        <section className="dash-card dash-card-pad">
+          <span className="dash-kpi-icon"><Search className="h-5 w-5" aria-hidden="true" /></span>
+          <h2 className="mt-4 font-semibold text-[var(--navy)]">Tipp: Präzise suchen</h2>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">Kombinieren Sie Beruf, Skills und Umkreis, um die Treffer mit dem höchsten Matching-Wert zu sehen.</p>
+          <Link href="/arbeitgeber/suche" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent)] hover:underline">Zur Suche<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+        </section>
+      </aside>
     </div>
 
-    {error && <div className="alert-error mt-6 text-sm font-medium">{error}</div>}
-
-    <section className="mt-8 grid gap-px overflow-hidden rounded-[6px] border border-[#e2e7ee] bg-[#e2e7ee] sm:grid-cols-2 lg:grid-cols-4">{stats.map(({ label, count, Icon }) => <div key={label} className="bg-white p-6"><div className="flex items-center justify-between"><p className="text-[0.72rem] font-semibold uppercase tracking-wider text-[var(--muted-light)]">{label}</p><Icon className="h-4 w-4 text-[var(--muted-light)]" /></div><p className="ed-metric mt-4">{count}</p></div>)}</section>
-
-    <section className="ed-card ed-card-pad mt-8"><div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center"><div className="flex items-center gap-4"><div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[6px] bg-[var(--navy)] text-xl font-normal text-white">{company?.avatar_url ? <img src={company.avatar_url || "/placeholder.svg"} alt="Unternehmensprofilbild" className="h-full w-full object-cover" /> : (company?.name || "O")[0]?.toUpperCase()}</div><div><p className="ed-eyebrow">Unternehmen</p><h2 className="mt-2 text-xl font-normal tracking-tight text-[var(--navy)]">{company?.name || "Ihr Unternehmen"}</h2><p className="mt-1 text-sm text-[var(--muted)]">{company?.industry || "Branche noch nicht angegeben"}{company?.city ? ` · ${company.city}` : ""}</p></div></div><Link href="/arbeitgeber/firma" className="ed-btn-ghost">Unternehmensprofil bearbeiten<ArrowRight className="ml-1 h-4 w-4" /></Link></div></section>
-
     <SubscriptionCard />
-
-    <section className="mt-8 rounded-[6px] bg-[var(--navy)] p-8 text-white sm:p-10"><div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-center"><div><p className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-blue-300">Nächster Schritt</p><h2 className="mt-3 text-3xl font-light tracking-[-0.02em]">Kandidaten finden</h2><p className="mt-3 max-w-2xl leading-relaxed text-blue-100/90">Beruf, Erfahrung, Skills, Ort, Pensum und weitere Kriterien eingeben und passende Arbeitnehmer entdecken.</p></div><Link href="/arbeitgeber/suche" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3.5 font-medium text-[var(--navy)] transition hover:bg-slate-100">Suche starten<ArrowRight className="h-4 w-4" /></Link></div></section>
-
-    <section className="ed-section mt-10"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="ed-eyebrow">Kommunikation</p><h2 className="mt-3 text-2xl font-light tracking-[-0.02em] text-[var(--navy)]">Anfragen &amp; Nachrichten</h2><p className="mt-2 text-sm text-[var(--muted)]">Arbeitgeber links, Arbeitnehmer rechts. Kontaktdaten werden erst nach Annahme freigegeben.</p></div>{requests.length > 0 && <div className="flex items-center gap-2 text-sm font-medium text-[var(--muted-light)]"><Users className="h-4 w-4" />{requests.length} Anfrage{requests.length !== 1 ? "n" : ""}</div>}</div>
-      {requests.length === 0 ? <div className="mt-6 border border-dashed border-[var(--line-strong)] p-12 text-center"><MessageCircle className="mx-auto h-8 w-8 text-[var(--muted-light)]" /><h3 className="mt-4 text-lg font-normal text-[var(--navy)]">Noch keine Kontaktanfragen</h3><p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-[var(--muted)]">Wenn Sie einen passenden Arbeitnehmer gefunden haben, können Sie über dessen Profil eine Kontaktanfrage senden.</p><Link href="/arbeitgeber/suche" className="ed-btn-primary mt-6 inline-flex">Kandidaten suchen<ArrowRight className="h-4 w-4" /></Link></div> : <div className="mt-6 divide-y divide-[#e2e7ee] border-y border-[#e2e7ee]">{requests.map((request) => { const name = getEmployeeName(request.employee_id); const isAccepted = request.status === "accepted"; const location = getEmployeeLocation(request.employee_id); return <div key={request.id} className={`flex flex-col justify-between gap-4 py-5 sm:flex-row sm:items-center ${isAccepted ? "border-l-2 border-l-[var(--success)] pl-4" : ""}`}><div className="flex min-w-0 items-center gap-4"><div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[6px] bg-[var(--navy)] text-lg font-normal text-white">{getInitials(request.employee_id)}</div><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h3 className="text-lg font-normal tracking-tight text-[var(--navy)]">{name}</h3>{isAccepted && <span className="ed-chip ed-chip-green"><Check className="h-3 w-3" />Angenommen</span>}{request.status === "pending" && <span className="ed-chip ed-chip-amber"><Clock3 className="h-3 w-3" />Ausstehend</span>}{request.status === "rejected" && <span className="ed-chip"><X className="h-3 w-3" />Abgelehnt</span>}</div><p className="mt-1 text-sm text-[var(--muted)]">{getEmployeeProfession(request.employee_id)}{location ? ` · ${location}` : ""}</p><p className="mt-0.5 text-xs text-[var(--muted-light)]">Anfrage vom {new Date(request.created_at).toLocaleDateString("de-CH")}</p></div></div><Link href={`/arbeitgeber/anfragen/${request.id}`} className={`shrink-0 ${isAccepted ? "ed-btn-primary" : "ed-btn-ghost"}`}>{isAccepted ? <><MessageCircle className="h-4 w-4" />Chat öffnen</> : <>Ansehen<ArrowRight className="h-4 w-4" /></>}</Link></div> })}</div>}
-    </section>
   </div>
 }

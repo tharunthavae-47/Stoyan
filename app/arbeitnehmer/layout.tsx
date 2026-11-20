@@ -15,25 +15,25 @@ export const metadata: Metadata = {
 const sections: NavSection[] = [
   {
     label: "Übersicht",
-    items: [{ href: "/arbeitnehmer", label: "Dashboard", exact: true }],
+    items: [{ href: "/arbeitnehmer", label: "Dashboard", exact: true, icon: "dashboard" }],
   },
   {
     label: "Mein Profil",
     items: [
-      { href: "/arbeitnehmer/profil", label: "Profil & Angaben" },
-      { href: "/arbeitnehmer/bilder", label: "Bilder" },
-      { href: "/arbeitnehmer/anfragen", label: "Kontaktanfragen" },
+      { href: "/arbeitnehmer/profil", label: "Profil & Angaben", icon: "user" },
+      { href: "/arbeitnehmer/bilder", label: "Bilder", icon: "images" },
+      { href: "/arbeitnehmer/anfragen", label: "Kontaktanfragen", icon: "messages" },
     ],
   },
   {
     label: "Info",
-    items: [{ href: "/preise", label: "Preise & Abo" }],
+    items: [{ href: "/preise", label: "Preise & Abo", icon: "card" }],
   },
 ]
 
 export default function ArbeitnehmerLayout({ children }: { children: React.ReactNode }) {
   return (
-    <DashboardShell sections={sections} eyebrow="Arbeitnehmer-Bereich">
+    <DashboardShell sections={sections} eyebrow="Arbeitnehmer-Bereich" role="arbeitnehmer">
       {children}
     </DashboardShell>
   )
